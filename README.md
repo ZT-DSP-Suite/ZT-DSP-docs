@@ -28,7 +28,7 @@
 | `cn/README.md` | `en/README.md` |
 | `cn/术语对照表.md` | `en/Glossary.md` |
 | `cn/DEFENSIVE-PUBLICATION.md` | `en/DEFENSIVE-PUBLICATION.md` |
-| `cn/spec/ZT-DSP-1.0.0-总指导.md` | `en/spec/ZT-DSP-1.0.0-Master_Guide.md` |
+| `cn/spec/ZT-DSP-1.0.1-总指导.md` | `en/spec/ZT-DSP-1.0.1-Master_Guide.md` |
 
 新增或修改文档时，两侧必须同步；**只改一侧视为缺陷，不视为贡献**。
 
@@ -38,7 +38,7 @@
 
 ### 我要照规范写实现
 
-- 规范正文：[中文](cn/spec/ZT-DSP-1.0.0-总指导.md) ／ [English](en/spec/ZT-DSP-1.0.0-Master_Guide.md)
+- 规范正文：[中文](cn/spec/ZT-DSP-1.0.1-总指导.md) ／ [English](en/spec/ZT-DSP-1.0.1-Master_Guide.md)
 - 术语基线：[术语对照表](cn/术语对照表.md) ／ [Glossary](en/Glossary.md)
 - 自查清单：规范附录 C.1
 - 上手步骤：[开发与验证指南](cn/DEV-GUIDE.md) ／ [Dev guide](en/DEV-GUIDE.md)

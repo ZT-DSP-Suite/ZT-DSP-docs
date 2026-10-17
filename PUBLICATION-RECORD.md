@@ -21,15 +21,15 @@
 
 | File | SHA-256 |
 |---|---|
-| `cn/spec/ZT-DSP-1.0.0-总指导.md` | `0847e4046c6bf9e0b9b799d58709d20d4c063cf97f026f6f9e874f6eddfb26d3` |
-| `en/spec/ZT-DSP-1.0.0-Master_Guide.md` | `7824bd19ccbcf29185aa1331b4c87db8a3b8ed477e38bc9cc9504d5dca1c8fd0` |
+| `cn/spec/ZT-DSP-1.0.1-总指导.md` | `0847e4046c6bf9e0b9b799d58709d20d4c063cf97f026f6f9e874f6eddfb26d3` |
+| `en/spec/ZT-DSP-1.0.1-Master_Guide.md` | `7824bd19ccbcf29185aa1331b4c87db8a3b8ed477e38bc9cc9504d5dca1c8fd0` |
 
 ## How to reproduce
 
 1. Read the timestamps: `gh api repos/SCAL-ROAM/ZT-DSP-docs --jq '{createdAt,pushedAt,visibility}'`.
 2. Read the published commit: `gh api repos/SCAL-ROAM/ZT-DSP-docs/commits/main --jq .sha`.
 3. Read the tags: `git ls-remote --tags https://github.com/SCAL-ROAM/ZT-DSP-docs.git`.
-4. Recompute a hash: `sha256sum 'cn/spec/ZT-DSP-1.0.0-总指导.md'`.
+4. Recompute a hash: `sha256sum 'cn/spec/ZT-DSP-1.0.1-总指导.md'`.
 
 ## What this record is for
 

@@ -13,8 +13,8 @@ import os
 import re
 import sys
 
-CN = "cn/spec/ZT-DSP-1.0.0-总指导.md"
-EN = "en/spec/ZT-DSP-1.0.0-Master_Guide.md"
+CN = "cn/spec/ZT-DSP-1.0.1-总指导.md"
+EN = "en/spec/ZT-DSP-1.0.1-Master_Guide.md"
 
 results = []
 

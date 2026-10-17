@@ -4,8 +4,8 @@ set -eu
 root=$(git rev-parse --show-toplevel)
 cd "$root"
 
-cn_file="cn/spec/ZT-DSP-1.0.0-总指导.md"
-en_file="en/spec/ZT-DSP-1.0.0-Master_Guide.md"
+cn_file="cn/spec/ZT-DSP-1.0.1-总指导.md"
+en_file="en/spec/ZT-DSP-1.0.1-Master_Guide.md"
 for f in "$cn_file" "$en_file"; do
   [ -f "$f" ] || { echo "missing spec file: $f"; exit 1; }
 done

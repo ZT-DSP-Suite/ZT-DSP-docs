@@ -18,6 +18,7 @@
 - **Maintaining team**: Protocol Founding Team
 - **Document version**: **1.0.1** (2026-10-18). It merges two text revisions: four security boundaries in A1-A4 moved from advisory to mandatory, and TPM/HWID is marked deprecated for removal in the next revision.
 - **Wire format**: unchanged between 1.0.0 and 1.0.1.
+- **Numbering gaps**: Appendices A, D and E, and Volumes 2, 6 and 7, were removed in an earlier revision; the numbering was not shifted and this document does not contain them.
 
 > **What this document is and what it governs** (two-way declaration · document side):
 >
@@ -88,7 +89,7 @@ This document is aimed at three kinds of readers:
 
 ### [About the Version Number]
 
-**1.0.0 is the first published version of this guide.** **The technical content of this document is itself the normative baseline** — for what actually binds, see Part 0, section 0.4.
+**1.0.1 is the current document version of this guide.** **The technical content of this document is itself the normative baseline** — for what actually binds, see Part 0, section 0.4.
 
 ## Table of Contents
 
@@ -126,7 +127,7 @@ This document is aimed at three kinds of readers:
 
 | Item | Value |
 |---|---|
-| Document identifier | `ZT-DSP-1.0.0` |
+| Document identifier | `ZT-DSP-1.0.1` |
 | Status | The only current revision. No earlier version has been published |
 | Nature | A normative document, but not all of it binds — see 0.4 |
 | Program identifier | ~B~<language>_<version>~B~, for example ~B~ZT-DSP_PY-1.0.0~B~; the version is the program's own and is unrelated to the document version |
@@ -1847,7 +1848,7 @@ The file is a JSON object carrying `schema`, `note`, `labels` and `vectors`. Eac
 Format: `<LANGUAGE>_<version>`, for example `ZT-DSP_PY-1.0.0`.
 
 - The language token is uppercase ASCII; the separator is a single underscore.
-- The version is the version of **this document** that the implementation targets, not the implementation's own release number.
+- The version is the Program Version: the program's own version, unrelated to the document version. The document version the program aligns with is declared separately (see 0.1).
 - An implementation MUST report its identifier from its `--version` output, in the form `<identifier> (docs <document version>)`.
 
 ## J.5 Registry

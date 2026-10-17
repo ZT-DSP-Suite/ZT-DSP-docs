@@ -53,7 +53,17 @@ This is a defensive publication. The public disclosure date above is the date th
 
 本记录用于防御性公开举证：上述时刻即本规范对公众可见的时刻。
 
+## Revision R2 — not published
+
+| Item | Value |
+|---|---|
+| Status | Committed locally only. **Not pushed.** |
+| Scope | TPM and HWID only. The design is now marked deprecated and will be removed in the next revision |
+| Fact | Neither official client implements it; the earlier text promised it for a later version, which was wrong |
+| Effect on the record above | None. Nothing was pushed |
+
 ## Revision R1 — not published
+
 
 | Item | Value |
 |---|---|

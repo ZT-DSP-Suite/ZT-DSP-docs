@@ -369,11 +369,11 @@ Hash (Hash, Hash Function)
 
 ## 4.1 Identity and Credential System
 
-> **Version support statement (TPM and HWID)** The storage, binding and writing of the TPM (Trusted Platform Module) and HWID (Hardware Identifier) described in this section is a **design goal at the protocol level**, and the **current 1.0.0 release does not implement it**. The official clients `zt_dsp_py` and `zt_dsp_rs` **do not support writing, reading or modifying the TPM or the HWID in any way**; the PSK and the token are currently supplied as ordinary configuration values (`--psk-file` / `--psk-env` / `--psk`), and keeping them secret is the caller's responsibility -- the client provides no hardware-level protection. This capability is **planned for a later version**; only then will the "storage location / physical binding / non-exportable" statements in this section correspond to running code. wherever TPM/HWID appears in this section, this statement governs.
+> **Deprecation statement (TPM and HWID), revision R2, 2026-10-18** This section and the rest of the document describe the storage, binding and writing of the TPM (Trusted Platform Module) and the HWID (Hardware Identifier). **That design is deprecated and will be removed in the next revision.** Neither official client, `zt_dsp_py` or `zt_dsp_rs`, implements it. What holds today: the PSK and the token are supplied as ordinary configuration values (`--psk-file` / `--psk-env` / `--psk`), keeping them secret is the caller's responsibility, and the client provides no hardware-level protection. **Wherever TPM/HWID appears in this section, the wording is neither a requirement nor a recommendation**; it is kept as a record of an earlier design until the next revision removes it.
 
 In ZT-DSP, your identity consists of two parts:
 
-1. **Token** -- your "identity card", issued by a TCA and, by protocol design, stored in the device's TPM/HWID (**not implemented in 1.0.0 -- see the version support statement at the head of this section**)
+1. **Token** -- your "identity card", issued by a TCA. An earlier design required storing it in the device's TPM/HWID; **that requirement is deprecated and neither client implements it** (see the deprecation statement at the head of this section)
 2. **Token Hash (H(Token))** -- your "room number", used to find the other party on the server
 
 ```plain
@@ -391,7 +391,7 @@ Token
 > **Privacy Risk** Once a token leaks (e.g., the device is implanted with malware or a backup file is stolen), an attacker can impersonate your identity and join any session. Although the token hash (room number) can be public, long-term use of the same room number will be used by servers or observers to correlate your behavioral trail (traffic analysis).
 >
 > **Mandatory** **MUST NOT** write the token to disk in plaintext; **MUST NOT** export it; **MUST NOT** back it up.
-> [Recommendation] Store the token in the TPM/HWID (hardware secure area); if you need to change your identity, you can apply for a new token and change the room number. (**Not implemented in 1.0.0: no TPM/HWID storage** -- this is a protocol-level goal state; the current client treats the token as ordinary configuration and hardware-level protection must be provided by the deployer)
+> [Deprecated] storing the token in the TPM/HWID (hardware secure area) is deprecated and will be removed in the next revision. To change identity, request a new token and change the room number.
 >
 > **Compliance Note** A token is "identity-identifying data" and should follow the **principle of minimization**: store only the fields necessary to perform the protocol functions (see the field table in 4.1.1), and do not write any personally identifying information (name, phone number, etc.), so as to reduce the damage in case of a data leak.
 
@@ -483,7 +483,7 @@ CRL (Certificate Revocation List)
 
 ### 4.1.3 Authorization Code (Optional Strengthening Layer)
 
-Some servers require the client to provide an authorization code in addition to the token. The authorization code is issued by a TCA and bound to a specific server, and by protocol design the device writes it into the TPM/HWID on first access (**not implemented in 1.0.0 -- writing to TPM/HWID is planned for a later version**). The server can thereby manage each device individually (ban, mute, rate-limit). A client without an authorization code cannot enter a server that requires one, even if it holds a valid token.
+Some servers require the client to provide an authorization code in addition to the token. The authorization code is issued by a TCA and bound to a specific server, and by protocol design the device writes it into the TPM/HWID on first access (**not implemented in 1.0.0 -- writing to TPM/HWID is planned for a later version**). The server can thereby manage each device individually (ban, mute, rate-limit). A client without an authorization code cannot enter a server that requires one, even if it holds a valid token. (deprecated)
 
 - **Token = identity card**: proves "you are a legitimate person"
 - **Authorization code = access card**: proves "you are allowed to enter this particular hotel"
@@ -496,23 +496,25 @@ Some servers require the client to provide an authorization code in addition to 
 PSK (Pre-Shared Key) is the core anchor of the ZT-DSP security system.
 
 - **Length**: a 256-bit true random number
-- **Storage location**: by protocol design, the device's TPM (Trusted Platform Module) or HWID (Hardware Identifier); **not implemented in 1.0.0 -- the caller keeps it in a configuration file or environment variable**
-- **Properties**: the protocol goal is physical binding, non-exportability and non-copyability; **1.0.0 provides none of these hardware protections -- planned for a later version**
+- **Storage location**: an earlier design recommended the device's TPM (Trusted Platform Module) or HWID (Hardware Identifier); **that recommendation is deprecated and will be removed in the next revision**; neither client implements it, and the caller keeps the PSK in a configuration file or an environment variable
+- **Properties**: an earlier design goal was physical binding, non-exportability and non-copyability; **that goal is deprecated** and neither client provides hardware protection
 - **Purpose**: participates in session key derivation; it is the root basis of trust across all communication scenarios
 
 ```plain
-TPM (Trusted Platform Module)
+TPM (Trusted Platform Module) (deprecated)
 ├── Meaning: an independent security chip soldered onto the motherboard, dedicated to securely generating and storing keys
 ├── Principle: key generation and signature operations are performed inside the chip, and the private key never leaves the chip; even if the operating system is compromised, the attacker cannot export the key inside the chip
-└── Rationale: keys stored in software can be read by malicious programs; the TPM uses "hardware isolation" to lock keys into a physical chip, which is the industry-standard practice for mobile devices/computers
+└── Rationale: keys stored in software can be read by malicious programs; the TPM uses "hardware isolation" to lock keys into a physical chip, which is the industry-standard practice for mobile devices/computers (deprecated)
 ```
 
 ```plain
-HWID (Hardware Identifier)
+HWID (Hardware Identifier) (deprecated)
 ├── Meaning: a unique device identifier derived from device hardware characteristics (CPU serial number, storage serial number, etc.)
 ├── Principle: binds the key to "this device" -- it becomes invalid when the device is changed, preventing the key from being copied to other machines
-└── Rationale: low-cost devices without a TPM chip (IoT sensors, etc.) need an alternative; HWID provides "physical binding at the software level"
+└── Rationale: low-cost devices without a TPM chip (IoT sensors, etc.) need an alternative; HWID provides "physical binding at the software level" (deprecated)
 ```
+
+> The two TPM/HWID explanations above describe a deprecated design. They are kept as history and will be removed in the next revision.
 
 **Key security properties:**
 
@@ -522,7 +524,7 @@ HWID (Hardware Identifier)
 
 > **Privacy Risk** The PSK is key material with "single-point leakage causing global damage": after a leak, an attacker can impersonate your identity, decrypt communications (within the range of the leaked history), and join any session. It is also a primary target of supply-chain attacks (implanting a backdoor before the hardware/software leaves the factory).
 >
-> **Protection Recommendation** (1) Use only devices with a TPM (the PSK never leaves the chip) -- **note: the 1.0.0 client neither writes the PSK into a chip nor uses a TPM, so the deployer must enforce this themselves**; (2) regularly check the origin of device firmware and be wary of "preinstalled software" of unknown origin; (3) if you suspect the PSK has leaked, immediately revoke the old token, apply for a new token, and change the device (when the PSK is bound to hardware, changing the device changes the key); (4) side-channel attacks (power analysis, electromagnetic leakage) are threats in physical-contact scenarios, and high-security scenarios should use devices with shielding measures.
+> **Protection Recommendation** (1) Use only devices with a TPM (the PSK never leaves the chip) -- **note: the 1.0.0 client neither writes the PSK into a chip nor uses a TPM, so the deployer must enforce this themselves**; (2) regularly check the origin of device firmware and be wary of "preinstalled software" of unknown origin; (3) if you suspect the PSK has leaked, immediately revoke the old token, apply for a new token, and change the device (when the PSK is bound to hardware, changing the device changes the key); (4) side-channel attacks (power analysis, electromagnetic leakage) are threats in physical-contact scenarios, and high-security scenarios should use devices with shielding measures. (deprecated)
 >
 > **Compliance Note** The PSK is "key material"; follow cryptographic management best practices: keys should be managed in layers (root keys / session keys separated), the scope of use should be minimized (the PSK only participates in derivation and does not directly encrypt data), and key rotation and destruction mechanisms should be established.
 
@@ -583,7 +585,7 @@ Field mapping:
 • access nonce (nonce, limit 512 bytes) → see the formula below; the peer verifies whether its length equals the declared random_len
 ```
 
-> **The true origin of the access nonce (common pitfall)**: a common misreading treats the access nonce as "derived from the PSK, the TPM/HWID, and the TCA token", which does not match the official implementation. The official client actually does:
+> **The true origin of the access nonce (common pitfall)**: a common misreading treats the access nonce as "derived from the PSK, the TPM/HWID, and the TCA token", which does not match the official implementation. The official client actually does: (deprecated)
 
 ```plain
 access nonce = HKDF-SHA3-256(IKM = PSK, salt = fresh random salt(32B), info = "ZT-DSP-PHASE1-NONCE-v3", output length = random_len bits)
@@ -1059,7 +1061,7 @@ Under the layered attacks (nine-layer threat) above, ZT-DSP can guarantee:
 >
 > [Privacy Risk] Boundaries of the threat model: this protocol does not defend against "physical contact attacks" (forensics after a device is confiscated), does not defend against "side-channel attacks" (power/electromagnetic analysis), and does not defend against "social engineering" (tricking you into handing over a token/door number).
 >
-> [Protection Recommendation] Complete protection in high-threat scenarios = protocol encryption (this protocol) + device physical security (TPM, full-disk encryption) + operational discipline (OPSEC, not using it on insecure devices). The absence of any single link lowers the overall security level.
+> [Protection Recommendation] Complete protection in high-threat scenarios = protocol encryption (this protocol) + device physical security (TPM, full-disk encryption) + operational discipline (OPSEC, not using it on insecure devices). The absence of any single link lowers the overall security level. (deprecated)
 
 # Volume 8: FAQ and Common Misconceptions
 
@@ -1081,7 +1083,7 @@ The flow is: ① Before going out, obtain the other party's door number H(Token_
 
 - TCA = identity factory: after verifying your device, it issues a token (containing a random seed + Ed25519 signature)
 - Door number = the hash of the ID card: you make a copy of the ID card (SHA-3-256) to obtain the door number, which is used to find people in the hotel
-- Token storage: by protocol design your original ID card (token) should be securely kept in the device's TPM/HWID, non-exportable and non-copyable (**no hardware storage is implemented in 1.0.0**)
+- Token storage: by protocol design your original ID card (token) should be securely kept in the device's TPM/HWID, non-exportable and non-copyable (**no hardware storage is implemented in 1.0.0**) (deprecated)
 
 Key point: one device can hold multiple ID cards issued by multiple TCAs (multiple tokens); a TCA is only responsible for "does this person have a legitimate ID card", not for "whom this person wants to find"; finding people is your own business.
 
@@ -1239,7 +1241,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key Exchange | X25519 ECDH | Provides Forward Secrecy |
 | Key Derivation | HKDF-SHA-3-256 | Standardized extract-expand; session_salt is the salt parameter (RFC 5869) |
 | Token Signature | Ed25519 | High-performance elliptic curve (implemented by the TCA module, verified by the core client through a hook) |
-| Device-Specific Key PSK | 32 bytes (256 bits) true random | At the protocol level, storage in TPM/HWID (physical binding) is recommended; **the 1.0.0 official clients do not implement TPM/HWID storage -- planned for a later version**; the official client accepts 64-character hex/Base64 and rejects weak keys and public default values |
+| Device-Specific Key PSK | 32 bytes (256 bits) true random | At the protocol level, storage in TPM/HWID (physical binding) is recommended; **the 1.0.0 official clients do not implement TPM/HWID storage -- planned for a later version**; the official client accepts 64-character hex/Base64 and rejects weak keys and public default values (deprecated) |
 | Default Port | 37291 | Official client default (changeable with `--port`) |
 | Handshake Timeout | 15 seconds | Total time limit for each of Phases 1-3 |
 | Data-Phase Timeout | 60 seconds | Socket timeout after handshake completion (prevents silent disconnection at the 15-second handshake timeout) |
@@ -1324,7 +1326,7 @@ Before releasing your ZT-DSP implementation, confirm the following:
 Before using ZT-DSP, confirm the following:
 
 - [ ] Understanding Out-of-Band Exchange: you have obtained the peer's house number through a secure channel (1.3/3.4)
-- [ ] Understanding PSK protection: the protocol requires your PSK to be stored in the TPM/HWID and to be non-exportable (4.1.4); **the 1.0.0 official clients do not implement this binding -- use `--psk-file` with 0600 permissions as the substitute**
+- [ ] Understanding PSK protection: the protocol requires your PSK to be stored in the TPM/HWID and to be non-exportable (4.1.4); **the 1.0.0 official clients do not implement this binding -- use `--psk-file` with 0600 permissions as the substitute** (deprecated)
 - [ ] Understanding TCA selection: the TCA you trust is community-recognized, not a mandatory authority (4.1.2)
 - [ ] Understanding parameter matching: your client parameters are consistent with the target server's library declaration (Appendix B)
 - [ ] Understanding risk: you understand your own threat model and the protocol's limitations (Volume 5)

@@ -14,6 +14,19 @@ stay in step and that CI itself remains runnable; see the pull request checklist
 
 ## [Unreleased]
 
+### Deprecated — document revision R2
+
+TPM and HWID support is deprecated and will be removed in the next revision.
+
+- Neither official client, `zt_dsp_py` or `zt_dsp_rs`, contains any code that reads,
+  writes or modifies a TPM or an HWID. The earlier wording promised the feature for
+  "a later version"; it now says the design is deprecated and will be removed.
+- The declaration in Master Guide 4.1.4, the storage and property bullets, the two
+  explanatory blocks, and every other TPM/HWID mention now carry a deprecation
+  marker, so no reader can mistake the text for a live requirement or advice.
+- The client declarations in `version.py` and `version.rs` say the same thing, so the
+  specification and the code no longer contradict each other.
+
 ### Changed — document revision R1
 
 Four security boundaries were advisory and are now mandatory. The wire format is

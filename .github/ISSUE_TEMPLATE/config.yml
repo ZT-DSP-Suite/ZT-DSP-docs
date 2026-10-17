@@ -4,5 +4,5 @@ contact_links:
     url: https://github.com/ZT-DSP-Suite/ZT-DSP-docs/security/advisories/new
     about: Report privately. Do not open a public issue for a vulnerability.
   - name: Implementation defect
-    url: https://github.com/ZT-DSP-Suite/ZT-DSP-client/issues
+    url: https://github.com/ZT-DSP-Suite/ZT-DSP-docs/issues
     about: Bugs in the Python or Rust implementation belong in the code repository.

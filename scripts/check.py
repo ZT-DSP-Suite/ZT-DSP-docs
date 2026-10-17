@@ -11,6 +11,7 @@ Nine checks. Exit code 0 only when all pass. Run from the repository root:
 import io
 import os
 import re
+import glob
 import sys
 
 CN = "cn/spec/ZT-DSP-1.0.1-总指导.md"
@@ -125,6 +126,44 @@ for m in re.finditer(r"Appendix ([A-Z])\.", "\n".join(en)):
     refs.add(m.group(1))
 dangling = sorted(refs - existing)
 record("9 appendix references", not dangling, ("dangling " + ", ".join(dangling)) if dangling else "all resolve")
+
+# ---------- external links: report only ----------
+# Until now every http(s) link was skipped here, so a 404 could not be seen.
+# This block reports them and never fails the run: a network blip or a
+# third-party outage must not turn the gate red.
+ext_warn = []
+try:
+    import urllib.request
+    pat = re.compile(r"https?://[^\s)\]]+")
+    seen = set()
+    for rel in sorted(glob.glob("**/*.md", recursive=True)):
+        try:
+            body = open(rel, encoding="utf-8").read()
+        except Exception:
+            continue
+        for u in pat.findall(body):
+            u = u.rstrip(".,;:)")
+            if u.endswith(".git") or u in seen:
+                continue
+            seen.add(u)
+            if len(seen) > 40:
+                break
+            try:
+                req = urllib.request.Request(u, method="HEAD",
+                                             headers={"User-Agent": "zt-dsp-check"})
+                code = urllib.request.urlopen(req, timeout=6).status
+                if code >= 400:
+                    ext_warn.append((u, code))
+            except Exception as e:
+                ext_warn.append((u, getattr(e, "code", "unreachable")))
+except Exception as e:
+    print("  external link check skipped: %s" % e)
+
+if ext_warn:
+    print()
+    print("WARN external links (not counted in the 9):")
+    for u, code in ext_warn[:10]:
+        print("   %s  ->  %s" % (u, code))
 
 for name, ok, detail in results:
     print("%s  %-24s %s" % ("PASS" if ok else "FAIL", name, detail))

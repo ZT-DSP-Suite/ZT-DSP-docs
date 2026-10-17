@@ -7,10 +7,10 @@
 
 | Item | Value |
 |---|---|
-| Repository | `https://github.com/SCAL-ROAM/ZT-DSP-docs` |
+| Repository | `https://github.com/ZT-DSP-Suite/ZT-DSP-docs` |
 | Visibility | PUBLIC |
 | Created (UTC) | 2026-10-17T17:43:46Z |
-| Last pushed (UTC) | 2026-10-17T17:44:19Z |
+| Last pushed (UTC) | 2026-10-17T19:04:50Z (this record's own commit) |
 | Default branch | `main` |
 | First public commit | `3642082ee5e805428e8aa11200555c09f04f3198` |
 | Release tag | `pub-2026-10-18` → `3642082` (annotated) |
@@ -26,9 +26,9 @@
 
 ## How to reproduce
 
-1. Read the timestamps: `gh api repos/SCAL-ROAM/ZT-DSP-docs --jq '{createdAt,pushedAt,visibility}'`.
-2. Read the published commit: `gh api repos/SCAL-ROAM/ZT-DSP-docs/commits/main --jq .sha`.
-3. Read the tags: `git ls-remote --tags https://github.com/SCAL-ROAM/ZT-DSP-docs.git`.
+1. Read the timestamps: `gh api repos/ZT-DSP-Suite/ZT-DSP-docs --jq '{createdAt,pushedAt,visibility}'`.
+2. Read the published commit: `gh api repos/ZT-DSP-Suite/ZT-DSP-docs/commits/main --jq .sha`.
+3. Read the tags: `git ls-remote --tags https://github.com/ZT-DSP-Suite/ZT-DSP-docs.git`.
 4. Recompute a hash: `sha256sum 'cn/spec/ZT-DSP-1.0.1-总指导.md'`.
 
 ## What this record is for

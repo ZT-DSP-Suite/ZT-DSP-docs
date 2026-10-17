@@ -9,7 +9,7 @@
 **Zero Trust Dynamic Synchronization Protocol**
 (Zero Trust Dynamic Synchronization Protocol)
 
-- **docs version**: 1.0.0 (the revision number of this document itself, not involved in network communication)
+- **document version**: 1.0.1 (the revision number of this document itself, not involved in network communication)
 - **applicable client versions**: `ZT-DSP_PY-1.0.0` (Python), `ZT-DSP_RS-1.0.0` (Rust)
 - **applicable server version**: `ZT-DSP_SV-1.0.0` (no implementation yet)
 - **Release date**: 2026-10-11
@@ -25,7 +25,7 @@
 > - **This document**: the *ZT-DSP Protocol Master Guide*.
 > - **Applies to**: This file specifies the protocol behavior and tunable parameters on the code side — `random_len`, `random_rate`, `window`, `time_window`, `key_len`, `hash`, `aead`, `module_flags`, `padding`, `jitter`, etc.; adjusting these settings is governed by this document.
 > - **Corresponding implementation**: the code side declares at its entry point that "this implementation follows the *ZT-DSP Protocol Master Guide*" (for the Python implementation in this repository, see `FOLLOWS_DOC` in `zt_dsp_py/version.py`).
-> - **About version numbers**: this project has three kinds of version number — the **total-guide version** (the revision number of this document itself, 1.0.0), and the **client versions** / **server versions** (the full identifier of each implementation). The relation between them and this document is **many-to-many**, not one-to-one: several implementations of the same kind whose protocol behaviour has not changed share one applicability declaration, and the same guide may apply to several client and server versions at once. **Identical version numbers do not mean the same implementation and do not constitute a compatibility claim.** **The handshake frames carry no version string whatsoever**: neither the Phase One parameter JSON nor the Phase Four AAD contains a version or protocol identifier field. Whether the peer is compatible is reflected by the Phase Three confirmation tag check.
+> - **About version numbers**: this project has two kinds of version number — the **document version** (the revision number of this document itself, 1.0.0), and the **client versions** / **server versions** (the full identifier of each implementation). The relation between them and this document is **many-to-many**, not one-to-one: several implementations of the same kind whose protocol behaviour has not changed share one applicability declaration, and the same guide may apply to several client and server versions at once. **Identical version numbers do not mean the same implementation and do not constitute a compatibility claim.** **The handshake frames carry no version string whatsoever**: neither the Phase One parameter JSON nor the Phase Four AAD contains a version or protocol identifier field. Whether the peer is compatible is reflected by the Phase Three confirmation tag check.
 
 ## Beginner's Guide (Please Read This First)
 
@@ -1148,7 +1148,7 @@ Key features: content is not saved (all data flows only in memory; the server ne
 
 **A:** In Phase Four, each encrypted data packet, besides carrying a message, additionally carries a pre-key seed: current packet = encrypted message + "key seed of the next packet"; next packet = derive a new EK using the seed announced by the previous packet, then carry the seed of the packet after next.
 
-This is sustained lock: even if an attacker intercepts the Nth packet, they cannot decrypt the N+1th packet (the key has changed); the two parties keep "hopping channels" through pre-keys, forming a forward-secure chain; the virtual room ensures this hopping process cannot be interrupted by external connections; sub-channels allow multiple independent forward-secure chains to exist in parallel within the same room.
+This is sustained lock: an attacker holding only ciphertext, even after intercepting the Nth packet, cannot decrypt the N+1th packet (the key has changed); but an attacker holding both the current EK and that packet's next_seed can derive every later key, as 5.5 states; the two parties keep "hopping channels" through pre-keys, forming a forward-secure chain; the virtual room ensures this hopping process cannot be interrupted by external connections; sub-channels allow multiple independent forward-secure chains to exist in parallel within the same room.
 
 > **Everyday Analogy**: Picture this scenario: sustained lock is like "changing to a new password in every exchange" -- the last character of the previous sentence tells you the password for the next one. Even if an eavesdropper records the entire conversation, without the ability to derive the "next sentence's password", they can only hear a mass of encrypted noise.
 > (The above is a scenario, not a technical description)
@@ -1831,7 +1831,7 @@ Every hard upper bound is stated in **F.6**. An implementation MUST enforce each
 
 ## J.1 Where the vectors live
 
-`test-vectors/vectors.json` in the `ZT-DSP-client` repository. Nine vectors: four reproduced from RFC 5869 Appendix A.1 and A.3 and RFC 7748 section 6.1, five generated by `test-vectors/generate_vectors.py`.
+`test-vectors/vectors.json` in this repository (the public copy and the authoritative one; the file of the same name in `ZT-DSP-client` is a working copy). Nine vectors: four reproduced from RFC 5869 Appendix A.1 and A.3 and RFC 7748 section 6.1, five generated by `test-vectors/generate_vectors.py`.
 
 ## J.2 Format
 

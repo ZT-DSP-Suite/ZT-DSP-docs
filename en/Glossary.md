@@ -1,8 +1,8 @@
-# ZT-DSP Chinese–English Glossary (translation baseline)
+# ZT-DSP Chinese-English Glossary (translation baseline)
 
 > Purpose: every English document and every code comment in this project must use the English wording given here, so that terminology stays consistent throughout.
 > Status: this file is the **single authoritative source** of terminology and depends on no other document.
-> Entries: 116. Register new terms here before using them.
+> Entries: 119. Register new terms here before using them.
 
 | English | Chinese | Note |
 |---|---|---|
@@ -122,6 +122,9 @@
 | Framing | 帧界定 | 解决粘包与拆包的对策 |
 | Offer Packet | 提议包 | 阶段二由发起方提交，含其临时公钥与会话盐；对方据此协商后应答 |
 | Answer Packet | 应答包 | 阶段二由响应方返还，含其临时公钥；与提议包成对 |
+| Document Version | 文档版本 | 规范文本自身的版本，兼容性的唯一锚点 |
+| Program Version | 程序版本 | 每个程序自身的版本，与文档版本无关 |
+| Program Identifier | 程序标识 | `<语言>_<版本>`，例如 `ZT-DSP_PY-1.0.0` |
 
 ## 使用规则
 

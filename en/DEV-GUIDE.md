@@ -36,7 +36,7 @@ The interop gate depends on the binary from B.2 step 2. No build means no intero
 |---|---|
 | Wire field names (`random_len`, `next_seed`, `session_salt` and the rest) | Frozen; renaming them changes the protocol |
 | The Appendix F byte layout | Interoperability depends on it byte for byte |
-| The implementation identifier form `<language>_<version>` | Conformance determination depends on it |
+| The program identifier form `<language>_<version>` | Conformance determination depends on it |
 
 ## B.5 Before committing
 

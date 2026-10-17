@@ -15,11 +15,11 @@ The definitions come from Part 0, section 0.3. This document adds no requirement
 
 ## A.2 Five audit steps
 
-1. Take the implementation identifier the subject declares, in the form `<language>_<version>`.
+1. Take the program identifier the subject declares, in the form `<language>_<version>`.
 2. Run every self-check item in Appendix C.1.
 3. Run every test vector in Appendix J and compare output byte for byte.
 4. Compare against the Appendix F byte layout. Look at bytes only, not at behaviour.
-5. State the conclusion under A.1. The conclusion must name the implementation identifier and the document version judged.
+5. State the conclusion under A.1. The conclusion must name the program identifier and the document version judged.
 
 ## A.3 What the subject must supply
 
@@ -34,7 +34,7 @@ The definitions come from Part 0, section 0.3. This document adds no requirement
 
 | IF | THEN |
 |---|---|
-| No implementation identifier | The claim does not stand and the subject is not judged |
+| No program identifier | The claim does not stand and the subject is not judged |
 | Any vector output mismatches | Not conformant |
 | Any byte-level deviation from Appendix F | Not conformant |
 | Subset implemented and the missing MUSTs are listed | Partially conformant |

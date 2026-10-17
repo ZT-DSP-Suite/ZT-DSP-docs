@@ -14,7 +14,7 @@ stay in step and that CI itself remains runnable; see the pull request checklist
 
 ## [Unreleased]
 
-### Deprecated — document revision R2
+### Deprecated — part of document version 1.0.1
 
 TPM and HWID support is deprecated and will be removed in the next revision.
 
@@ -27,7 +27,7 @@ TPM and HWID support is deprecated and will be removed in the next revision.
 - The client declarations in `version.py` and `version.rs` say the same thing, so the
   specification and the code no longer contradict each other.
 
-### Changed — document revision R1
+### Changed — part of document version 1.0.1
 
 Four security boundaries were advisory and are now mandatory. The wire format is
 unchanged, and so are the protocol version and the implementation identifiers, which

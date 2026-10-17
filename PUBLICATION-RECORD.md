@@ -53,24 +53,14 @@ This is a defensive publication. The public disclosure date above is the date th
 
 本记录用于防御性公开举证：上述时刻即本规范对公众可见的时刻。
 
-## Revision R2 — not published
+## Document version 1.0.1 — not published
 
 | Item | Value |
 |---|---|
 | Status | Committed locally only. **Not pushed.** |
-| Scope | TPM and HWID only. The design is now marked deprecated and will be removed in the next revision |
-| Fact | Neither official client implements it; the earlier text promised it for a later version, which was wrong |
-| Effect on the record above | None. Nothing was pushed |
+| Document version | 1.0.1, merging two text revisions that were never published |
+| What changed | Security boundaries made mandatory; TPM/HWID deprecated for removal; the version model reduced to document version plus program version |
+| Wire format | Unchanged |
+| Effect on the record above | None. Nothing was pushed, so the published commit and hashes stand |
 
-## Revision R1 — not published
-
-
-| Item | Value |
-|---|---|
-| Status | Committed locally only. **Not pushed.** |
-| Reason | Four security boundaries moved from advisory to mandatory; the change is reviewed locally before it reaches the public repository |
-| Effect on the record above | None. The published commit and the published hashes are unchanged, because nothing was pushed |
-| Scope | Normative wording only. The wire format, the protocol version and the implementation identifiers are unchanged |
-
-When R1 is pushed, this section gains the push timestamp and the new commit identifier, and the hashes above stay attached to the tag that pins the first publication.
-
+When 1.0.1 is pushed, this section gains the push timestamp and the commit identifier.

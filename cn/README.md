@@ -30,11 +30,9 @@ ZT-DSP-docs/
 ├─ cn/                       中文侧
 │  ├─ spec/ZT-DSP-1.0.1-总指导.md      规范正文（唯一现行版）
 │  ├─ 术语对照表.md                     中→英术语基线
-│  └─ PRIOR-PUBLICATION.md          先行公开记录
 ├─ en/                       英文侧（与 cn/ 逐份对应）
 │  ├─ spec/ZT-DSP-1.0.1-Master_Guide.md
 │  ├─ Glossary.md
-│  └─ PRIOR-PUBLICATION.md
 └─ .github/                  议题表单与 Pages 工作流
 ```
 

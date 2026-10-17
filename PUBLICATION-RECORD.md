@@ -64,3 +64,24 @@ This is a prior publication. The public disclosure date above is the date the sp
 | Effect on the record above | None. Nothing was pushed, so the published commit and hashes stand |
 
 When 1.0.1 is pushed, this section gains the push timestamp and the commit identifier.
+
+## Patents
+
+The maintainers do not seek, and do not intend to seek, patent protection for the
+protocol technology described in this repository, in the PRC or anywhere else. The
+protocol is published as open documentation and an open implementation, and on the
+day of publication the disclosed technology becomes prior art.
+
+Nothing else follows from that. It does not change the licence (CC BY-SA 4.0, see
+`LICENSE`), it does not grant or waive rights in the name or mark (see
+`TRADEMARK.md`), and it is not a statement about anyone else's patents.
+
+Two limits are worth stating plainly:
+
+- publication only affects filings made **after** it. A filing made earlier is
+  unaffected, and the answer to that is a prior-art defence, not this record;
+- whether a given disclosure defeats a given claim is a legal question. The
+  maintainers record the facts; a lawyer decides what they achieve.
+
+The evidence that makes the record usable is the same evidence listed at the top of
+this file: the push timestamp, the commit, the tag, and the content hashes.

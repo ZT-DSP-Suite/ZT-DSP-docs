@@ -58,6 +58,6 @@ Every command names its working directory. Drop one and the step 4 conclusion ca
 | Security strength | This document judges conformance, not security |
 | Code quality | Unrelated to interoperability |
 | Performance | The specification sets no performance target |
-| Third-party patent status | See Appendix K and `en/PRIOR-PUBLICATION.md` |
+| Third-party patent status | See Appendix K and `PUBLICATION-RECORD.md` |
 
 An audit conclusion must not reach beyond this table. Any judgement outside it does not stand.

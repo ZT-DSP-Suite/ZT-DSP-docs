@@ -127,7 +127,7 @@ This protocol does not rely on any centralized trust anchor. Every device holds 
 | Program identifier | ~B~<language>_<version>~B~, for example ~B~ZT-DSP_PY-1.0.0~B~; the version is the program's own and is unrelated to the document version |
 | Compatibility declaration | Every program must declare the document version it aligns with, for example "aligns with document 1.0.1"; no synchronisation is required between two programs |
 | License | The text is CC BY-SA 4.0; see `LICENSE` and `LICENSING.md` at the repository root |
-| Patents | The maintainers do not patent this protocol; see `en/PRIOR-PUBLICATION.md` |
+| Patents | The maintainers do not patent this protocol; see `PUBLICATION-RECORD.md` |
 
 ## 0.2 Normative terminology
 
@@ -1864,7 +1864,7 @@ Descriptive vocabulary is deliberately excluded. Words, names, categories and ex
 
 ## K.2 Why it exists
 
-This project does not patent the protocol; see `PRIOR-PUBLICATION.md`. Prior publication creates prior art, and prior art only defeats patents whose filing date falls **after** the publication date. It does nothing about patents filed earlier.
+This project does not patent the protocol; see `PUBLICATION-RECORD.md`. Prior publication creates prior art, and prior art only defeats patents whose filing date falls **after** the publication date. It does nothing about patents filed earlier.
 
 This appendix marks the places where an earlier patent would be most likely to bite, so that a freedom-to-operate search knows where to look. It is a map of where to dig, not a finding.
 

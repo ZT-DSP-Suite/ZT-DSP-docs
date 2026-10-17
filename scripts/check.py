@@ -110,11 +110,13 @@ need = ["LICENSE", "LICENSING.md", "NOTICE", "TRADEMARK.md", "CONTRIBUTING.md", 
 missing = [n for n in need if not os.path.exists(n)]
 record("6 licence files", not missing, ("missing " + ", ".join(missing)) if missing else "6 present")
 
-# 7. Both prior publication statements exist
-need2 = ["cn/PRIOR-PUBLICATION.md", "en/PRIOR-PUBLICATION.md"]
-missing2 = [n for n in need2 if not os.path.exists(n)]
-record("7 publication statements", not missing2,
-       ("missing " + ", ".join(missing2)) if missing2 else "both present")
+# 7. The publication record carries the patent statement, in one place
+rec_txt = read("PUBLICATION-RECORD.md") if os.path.exists("PUBLICATION-RECORD.md") else ""
+has_patent = "## Patents" in rec_txt
+no_split = not any(os.path.exists(n) for n in ("cn/PRIOR-PUBLICATION.md", "en/PRIOR-PUBLICATION.md"))
+record("7 publication record", has_patent and no_split,
+       "Patents section present" if has_patent and no_split else
+       ("missing ## Patents in PUBLICATION-RECORD.md" if not has_patent else "a split statement file is back"))
 
 # 8. Every markdown file is reachable from the document map in README.md
 allmd = set()

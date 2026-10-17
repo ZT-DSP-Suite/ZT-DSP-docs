@@ -27,7 +27,7 @@
 |---|---|
 | `cn/README.md` | `en/README.md` |
 | `cn/术语对照表.md` | `en/Glossary.md` |
-| `cn/PRIOR-PUBLICATION.md` | `en/PRIOR-PUBLICATION.md` |
+| `PUBLICATION-RECORD.md` | `PUBLICATION-RECORD.md` |
 | [branding/README.md](branding/README.md) | the mark, and which file to use where |
 | `cn/spec/ZT-DSP-1.0.1-总指导.md` | `en/spec/ZT-DSP-1.0.1-Master_Guide.md` |
 
@@ -42,7 +42,7 @@
 | [术语对照表](cn/术语对照表.md) · [Glossary](en/Glossary.md) | 术语的唯一出处 |
 | [符合性判定指南](cn/CONFORMANCE-GUIDE.md) · [Conformance guide](en/CONFORMANCE-GUIDE.md) | 一次实现是否合规的判定方法 |
 | [开发与验证指南](cn/DEV-GUIDE.md) · [Dev guide](en/DEV-GUIDE.md) | 构建与验证命令 |
-| [先行公开记录](cn/PRIOR-PUBLICATION.md) · [Prior publication](en/PRIOR-PUBLICATION.md) | 公开时刻与哈希 |
+| [先行公开记录](PUBLICATION-RECORD.md) · [Prior publication](PUBLICATION-RECORD.md) | 公开时刻与哈希 |
 | [LICENSING.md](LICENSING.md) · [LICENSE](LICENSE) | 许可条款 |
 | [TRADEMARK.md](TRADEMARK.md) | 标识 |
 | [CONTRIBUTING.md](CONTRIBUTING.md) · [CONTRIBUTORS.md](CONTRIBUTORS.md) | 贡献方式与署名 |

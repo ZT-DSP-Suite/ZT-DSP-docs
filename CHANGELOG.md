@@ -14,6 +14,21 @@ stay in step and that CI itself remains runnable; see the pull request checklist
 
 ## [Unreleased]
 
+### Changed — document revision R1
+
+Four security boundaries were advisory and are now mandatory. The wire format is
+unchanged, and so are the protocol version and the implementation identifiers, which
+is why this is a document revision and not a protocol release.
+
+- Token and PSK storage: an implementation **MUST NOT** write the token to disk in
+  plaintext, **MUST NOT** export it, and **MUST NOT** back it up. Storage in the
+  TPM/HWID stays a recommendation, and 1.0.0 still does not implement it.
+- Silent drop: the implementation **MUST NOT** write a log entry for a discarded packet.
+- Timing: the silent path **MUST NOT** produce a measurable response-time difference
+  from the normal path.
+- Operators: a server operator **MUST NOT** record the phase one pairing information,
+  and **MUST NOT** record correlatable data such as session duration or traffic volume.
+
 ### Added
 
 - `CHANGELOG.md`, `CODE_OF_CONDUCT.md`, a pull request template, and `dependabot.yml`

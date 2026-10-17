@@ -52,3 +52,15 @@ This is a defensive publication. The public disclosure date above is the date th
 | 是否申请专利 | 否 |
 
 本记录用于防御性公开举证：上述时刻即本规范对公众可见的时刻。
+
+## Revision R1 — not published
+
+| Item | Value |
+|---|---|
+| Status | Committed locally only. **Not pushed.** |
+| Reason | Four security boundaries moved from advisory to mandatory; the change is reviewed locally before it reaches the public repository |
+| Effect on the record above | None. The published commit and the published hashes are unchanged, because nothing was pushed |
+| Scope | Normative wording only. The wire format, the protocol version and the implementation identifiers are unchanged |
+
+When R1 is pushed, this section gains the push timestamp and the new commit identifier, and the hashes above stay attached to the tag that pins the first publication.
+

@@ -16,6 +16,7 @@
 - **Document status**: **Public Test Release**
 - **Content classification**: The main body of this specification is an implementation specification; sections marked [Theory] [Experimental] are ideas and do not mean they have been implemented or verified.
 - **Maintaining team**: Protocol Founding Team
+- **Revision**: R1 (2026-10-18) -- four security boundaries in A1-A4 moved from advisory to mandatory. The wire format is unchanged; the protocol version and the implementation identifiers are unchanged.
 
 > **What this document is and what it governs** (two-way declaration · document side):
 >
@@ -389,7 +390,8 @@ Token
 
 > **Privacy Risk** Once a token leaks (e.g., the device is implanted with malware or a backup file is stolen), an attacker can impersonate your identity and join any session. Although the token hash (room number) can be public, long-term use of the same room number will be used by servers or observers to correlate your behavioral trail (traffic analysis).
 >
-> **Protection Recommendation** Store the token only in the TPM/HWID (hardware secure area); do not write it to disk in plaintext, do not export it, and do not back it up; if you need to change your identity, you can apply for a new token and change the room number. (**Not implemented in 1.0.0: no TPM/HWID storage** -- this is a protocol-level goal state; the current client treats the token as ordinary configuration and hardware-level protection must be provided by the deployer)
+> **Mandatory** **MUST NOT** write the token to disk in plaintext; **MUST NOT** export it; **MUST NOT** back it up.
+> [Recommendation] Store the token in the TPM/HWID (hardware secure area); if you need to change your identity, you can apply for a new token and change the room number. (**Not implemented in 1.0.0: no TPM/HWID storage** -- this is a protocol-level goal state; the current client treats the token as ordinary configuration and hardware-level protection must be provided by the deployer)
 >
 > **Compliance Note** A token is "identity-identifying data" and should follow the **principle of minimization**: store only the fields necessary to perform the protocol functions (see the field table in 4.1.1), and do not write any personally identifying information (name, phone number, etc.), so as to reduce the damage in case of a data leak.
 
@@ -603,7 +605,7 @@ access nonce = HKDF-SHA3-256(IKM = PSK, salt = fresh random salt(32B), info = "Z
 >
 > **Protection Recommendation** (1) The token hash can be changed periodically (change the token); (2) in multi-server scenarios use different tokens to avoid cross-server correlation; (3) from phase four onward the token hash is transmitted encrypted (see 4.2.4), so the server can see only the session ID needed for routing.
 >
-> **Compliance Note** "Who is looking for whom" is communication metadata. Under privacy protection principles, server operators should **not record and not store** the pairing information of phase one (the 30-second automatic clearing of the waiting pool was designed precisely for this) and should state this clearly in the privacy policy.
+> **Compliance Note** "Who is looking for whom" is communication metadata. Under privacy protection principles, server operators **MUST NOT** record or store the pairing information of phase one (the 30-second automatic clearing of the waiting pool was designed precisely for this) and should state this clearly in the privacy policy.
 
 **Server Processing Flow:**
 
@@ -858,7 +860,7 @@ AAD (Additional Authenticated Data)
 >
 > [Protection Recommendations] (1) Use random padding (512~2048B) to flatten the length fingerprint; (2) enable send timing jitter in high-security scenarios (Appendix G.3); (3) the session ID is derived from the fixed MK and stays constant for the whole session; it cannot be rotated in-session -- a new session ID requires a new handshake.
 >
-> [Compliance Note] Under end-to-end encryption (E2EE), the server never touches plaintext, which is itself the strongest privacy protection practice. But operators should still follow the metadata minimization principle: do not record correlatable data such as session duration or traffic volume.
+> [Compliance Note] Under end-to-end encryption (E2EE), the server never touches plaintext, which is itself the strongest privacy protection practice. Operators **MUST NOT** record correlatable data such as session duration or traffic volume.
 
 **[Sending Flow]:**
 
@@ -974,9 +976,10 @@ WireGuard (a modern VPN tunneling protocol)
 
 > [Privacy Risk] Although the server cannot decrypt the content, it **still possesses communication metadata**: the correspondence between session IDs, traffic volume and frequency, and connection duration. Under extreme surveillance, metadata suffices to paint a social graph of "who communicates with whom and when" (even without knowing what is said).
 >
-> [Protection Recommendations] (1) The server operator voluntarily "does not record" ; (2) users spread and break up correlation through multiple servers; (3) scenarios sensitive to session duration can reconnect periodically (cutting off correlatable continuous sessions).
+> **Mandatory** (1) The server operator **MUST NOT** record the phase one pairing information;
+> [Protection Recommendations] (2) users spread and break up correlation through multiple servers; (3) scenarios sensitive to session duration can reconnect periodically (cutting off correlatable continuous sessions).
 >
-> [Compliance Note] The server operator is in the position of a "data processor": even if it technically cannot decrypt content, it should follow the metadata minimization principle and publish a privacy policy stating "what is recorded and what is not."
+> [Compliance Note] The server operator is in the position of a "data processor": even if it technically cannot decrypt content, it **MUST NOT** retain metadata beyond what it has published, and it must publish a privacy policy stating "what is recorded and what is not."
 
 ## 5.2 Untrusted Client Scenario
 
@@ -1401,7 +1404,7 @@ Section 4.3 explained the **idea** of Silent Drop; this section gives its **beha
 1. **Send no bytes at all**. This includes error responses, empty packets, and any application-layer response beyond the TCP layer.
 2. **Do not actively close the connection**. Closing a connection (FIN/RST) is itself an observable signal — an attacker can use it to distinguish "rejected because of a parameter mismatch" from "nobody is listening on the port at all".
 3. **Hang, read, and discard subsequent data**: continuously `recv` in 8192-byte blocks and discard them until the peer closes or the hold duration is exhausted. The hold duration defaults to the handshake timeout (**15 seconds, configurable**; for server-embedded scenarios it is advisable to reduce it and combine it with per-IP rate limiting, to prevent malicious connections from occupying connection slots for a long time).
-4. **Diagnostics go only to the local stderr**: the discard reason (such as "Phase 1 parse failed" or "parameter mismatch: random_len") is printed for the local operator to see, **never enters the network side**, and should not be connected to an externally facing logging system.
+4. **Diagnostics go only to the local stderr**: the discard reason (such as "Phase 1 parse failed" or "parameter mismatch: random_len") is printed for the local operator to see, **never enters the network side**, and **MUST NOT** be connected to an externally facing logging system.
 5. **Network appearance is indistinguishable from a "closed port"**: from the attacker's perspective, a scan against a nonexistent service and a ZT-DSP server with wrong parameters should look like the same kind of "silence".
 
 **Complete trigger-point table** (responder's perspective; any single trigger immediately enters strict silence):
@@ -1414,7 +1417,7 @@ Section 4.3 explained the **idea** of Silent Drop; this section gives its **beha
 
 **Initiator asymmetry**: the initiator has already actively sent a frame in Phase 1, so the peer already knows it exists; therefore, when the initiator detects a failure it **actively disconnects and raises a local exception** (such as ZTDSPParamError) without breaking silence. The silence constraint applies only to "the side that waits passively".
 
-**Timing consistency**: the silent path should avoid producing a measurable response-time difference from the normal path (the silent path has no response anyway; what is meant here is that the "hold duration" should not vary with the error type).
+**Timing consistency**: the silent path **MUST NOT** produce a measurable response-time difference from the normal path (the silent path has no response anyway; what is meant here is that the "hold duration" should not vary with the error type).
 
 ## F.3 Phase 2 Frame: Ephemeral Public Key and Session Salt Exchange
 

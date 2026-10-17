@@ -1,16 +1,26 @@
 # Branding
 
-The files here are the ZT-DSP mark: a letter Z drawn in two strokes with a single
-cyan dot at its centre.
+> 读者：要用 ZT-DSP 标识的人。
+> 状态：现行。
 
-| File | What it is |
+## 读者
+
+要用这张标识做头像、封面或印刷品的人，以及要判断「能不能用」的人。
+
+## 这里有什么
+
+ZT-DSP 的标识：一个双层线条画出的字母 Z，中心一颗青蓝点。
+
+| 文件 | 是什么 |
 |---|---|
-| `icon-1024.png` | Transparent background, 1024 px |
-| `icon-512.png` | Transparent background, 512 px |
-| `icon-512-black.png` | Solid black background, 512 px; use this where the surface is light |
+| `icon-1024.png` | 透明底，1024 px |
+| `icon-512.png` | 透明底，512 px |
+| `icon-512-black.png` | 纯黑底，512 px，浅色背景用这个 |
 
-The transparent versions carry a white Z, so they disappear on a light surface.
-Pick `icon-512-black.png` for avatars and anything printed on white.
+透明版本是白 Z，放在浅色面上会消失。头像与白底印刷一律用 `icon-512-black.png`。
 
-`TRADEMARK.md` in every sub-repository refers to these files. The marks are
-claimed, not registered; see that file for what that does and does not give.
+## 按什么找
+
+1. 浅色背景取 `icon-512-black.png`。
+2. 深色背景取 `icon-512.png` 或 `icon-1024.png`。
+3. 他用前读同仓的 `TRADEMARK.md`：标识是「主张」而非「注册」，该文件写明这给出什么、不给出什么。

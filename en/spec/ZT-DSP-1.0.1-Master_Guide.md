@@ -16,9 +16,6 @@
 - **Document status**: **Public Test Release**
 - **Content classification**: The main body of this specification is an implementation specification; sections marked [Theory] [Experimental] are ideas and do not mean they have been implemented or verified.
 - **Maintaining team**: Protocol Founding Team
-- **Document version**: **1.0.1** (2026-10-18). It merges two text revisions: four security boundaries in A1-A4 moved from advisory to mandatory, and TPM/HWID is marked deprecated for removal in the next revision.
-- **Wire format**: unchanged between 1.0.0 and 1.0.1.
-- **Numbering gaps**: Appendices A, D and E, and Volumes 2, 6 and 7, were removed in an earlier revision; the numbering was not shifted and this document does not contain them.
 
 > **What this document is and what it governs** (two-way declaration · document side):
 >
@@ -81,12 +78,6 @@ This document is the **master guide** to the ZT-DSP protocol, maintained with fu
 
 This protocol does not rely on any centralized trust anchor. Every device holds a unique identity credential (token), issued by a third-party certification authority (TCA), but the TCA does not take part in the communication process, nor does it hold any key material. The two communicating parties exchange token hashes in advance out of band, then look for each other on the network and establish a connection.
 
-This document is aimed at three kinds of readers:
-
-1. **Beginners**: who wish to understand the protocol's principles and connect to an existing network
-2. **Server builders**: who wish to deploy their own ZT-DSP relay node
-3. **Protocol developers**: who wish to develop a custom implementation based on ZT-DSP
-
 ### [About the Version Number]
 
 **1.0.1 is the current document version of this guide.** **The technical content of this document is itself the normative baseline** — for what actually binds, see Part 0, section 0.4.
@@ -128,6 +119,9 @@ This document is aimed at three kinds of readers:
 | Item | Value |
 |---|---|
 | Document identifier | `ZT-DSP-1.0.1` |
+| Document version | `1.0.1` (2026-10-18), merging two text revisions never published |
+| Wire format | unchanged between 1.0.0 and 1.0.1 |
+| Numbering gaps | Appendices A, D, E and Volumes 2, 6, 7 were removed in an earlier revision and were not renumbered |
 | Status | The only current revision. No earlier version has been published |
 | Nature | A normative document, but not all of it binds — see 0.4 |
 | Program identifier | ~B~<language>_<version>~B~, for example ~B~ZT-DSP_PY-1.0.0~B~; the version is the program's own and is unrelated to the document version |

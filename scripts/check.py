@@ -33,8 +33,26 @@ cn = read(CN).splitlines()
 en = read(EN).splitlines()
 h1cn = [l for l in cn if l.startswith("# ")]
 h1en = [l for l in en if l.startswith("# ")]
-record("1 language parity", len(cn) == len(en) and len(h1cn) == len(h1en),
-       "lines CN=%d EN=%d; level-1 headings %d/%d" % (len(cn), len(en), len(h1cn), len(h1en)))
+def shape(lines):
+    h = sum(1 for l in lines if l.startswith("#"))
+    t = sum(1 for l in lines if l.startswith("|"))
+    b = sum(1 for l in lines if l.startswith(("- ", "* ")))
+    n = sum(1 for l in lines if re.match(r"^\d+\. ", l))
+    para, cur = 0, False
+    for l in lines:
+        if not l.strip() or l.startswith(("#", "|")) or l.startswith(("- ", "* ")) or re.match(r"^\d+\. ", l):
+            cur = False
+            continue
+        if not cur:
+            para += 1
+            cur = True
+    return h, t, b, n, para
+
+
+scn, sen = shape(cn), shape(en)
+record("1 language parity", scn == sen,
+       "headings %d/%d, table rows %d/%d, list items %d/%d, numbered %d/%d, paragraphs %d/%d"
+       % (scn[0], sen[0], scn[1], sen[1], scn[2], sen[2], scn[3], sen[3], scn[4], sen[4]))
 
 # 2. No placeholders left behind
 found = []
@@ -142,7 +160,7 @@ try:
         except Exception:
             continue
         for u in pat.findall(body):
-            u = u.rstrip(".,;:)")
+            u = u.rstrip(chr(96) + chr(34) + chr(39) + ".,;:)")
             if u.endswith(".git") or u in seen:
                 continue
             seen.add(u)

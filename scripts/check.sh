@@ -10,10 +10,30 @@ for f in "$cn_file" "$en_file"; do
   [ -f "$f" ] || { echo "missing spec file: $f"; exit 1; }
 done
 
-cn=$(wc -l < "$cn_file" | tr -d ' ')
-en=$(wc -l < "$en_file" | tr -d ' ')
-if [ "$cn" != "$en" ]; then
-  echo "spec mirrors are not aligned: cn=$cn en=$en"
-  exit 1
-fi
-echo "spec mirrors aligned at $cn lines"
+python - "$cn_file" "$en_file" <<'PY'
+import re, sys
+
+
+def shape(path):
+    lines = open(path, encoding="utf-8").read().split("\n")
+    h = sum(1 for l in lines if l.startswith("#"))
+    t = sum(1 for l in lines if l.startswith("|"))
+    b = sum(1 for l in lines if l.startswith(("- ", "* ")))
+    n = sum(1 for l in lines if re.match(r"^\d+\. ", l))
+    para, cur = 0, False
+    for l in lines:
+        if not l.strip() or l.startswith(("#", "|")) or l.startswith(("- ", "* ")) or re.match(r"^\d+\. ", l):
+            cur = False
+            continue
+        if not cur:
+            para += 1
+            cur = True
+    return (h, t, b, n, para)
+
+
+a, b = shape(sys.argv[1]), shape(sys.argv[2])
+if a != b:
+    print("spec mirrors differ in shape: cn=%s en=%s" % (a, b))
+    sys.exit(1)
+print("spec mirrors aligned: headings %d, table rows %d, list items %d, numbered %d, paragraphs %d" % a)
+PY

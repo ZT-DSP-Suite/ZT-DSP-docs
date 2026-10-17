@@ -27,7 +27,7 @@
 > - **Corresponding implementation**: the code side declares at its entry point that "this implementation follows the *ZT-DSP Protocol Master Guide*" (for the Python implementation in this repository, see `FOLLOWS_DOC` in `zt_dsp_py/version.py`).
 > - **About version numbers**: this project has two kinds of version number — the **document version** (the revision number of this document itself, 1.0.0), and the **client versions** / **server versions** (the full identifier of each implementation). The relation between them and this document is **many-to-many**, not one-to-one: several implementations of the same kind whose protocol behaviour has not changed share one applicability declaration, and the same guide may apply to several client and server versions at once. **Identical version numbers do not mean the same implementation and do not constitute a compatibility claim.** **The handshake frames carry no version string whatsoever**: neither the Phase One parameter JSON nor the Phase Four AAD contains a version or protocol identifier field. Whether the peer is compatible is reflected by the Phase Three confirmation tag check.
 
-## Beginner's Guide (Please Read This First)
+## Overview
 
 ### What is this file for?
 
@@ -506,7 +506,7 @@ PSK (Pre-Shared Key) is the core anchor of the ZT-DSP security system.
 ```plain
 TPM (Trusted Platform Module) (deprecated)
 ├── Meaning: an independent security chip soldered onto the motherboard, dedicated to securely generating and storing keys
-├── Principle: key generation and signature operations are performed inside the chip, and the private key never leaves the chip; even if the operating system is compromised, the attacker cannot export the key inside the chip
+├── Principle: key generation and signature operations are performed inside the chip, and the private key does not leave the chip, provided the deployment actually enables one; even if the operating system is compromised, the attacker cannot export the key inside the chip
 └── Rationale: keys stored in software can be read by malicious programs; the TPM uses "hardware isolation" to lock keys into a physical chip, which is the industry-standard practice for mobile devices/computers (deprecated)
 ```
 
@@ -521,7 +521,7 @@ HWID (Hardware Identifier) (deprecated)
 
 **Key security properties:**
 
-- The PSK never leaves the device. It is not transmitted over the network, not stored in the cloud, and not backed up to an SD card
+- The PSK does not appear in network traffic and is not written to a cloud service or to removable media; how the device holds it is up to the deployment
 - The PSK is a long-term key. Unlike a session key, it is not replaced after every communication; it is the device's "root identity"
 - **PSK leak = total collapse.** If an attacker obtains your PSK by some means (such as a side-channel attack or a supply-chain implant), he can impersonate you and join any session. Therefore the physical protection of the PSK is the highest priority
 
@@ -833,7 +833,7 @@ Plaintext payload (before encryption, i.e. the content of the GCM ciphertext):
 | Ciphertext length | 4B | No | Plaintext length field; the receiver reads it first, then reads the ciphertext |
 | GCM authentication tag | 16B | No | The authentication tag automatically attached by AES-256-GCM. **Authentication scope = AAD + all ciphertext**; tampering with any field causes validation to fail |
 
-> **Two key constructions (required reading for implementers)**:
+> **Two key constructions**:
 >
 > - **AAD (Additional Authenticated Data, not encrypted but authenticated)**: `AAD = session ID ‖ sequence number(8B big-endian)`, 40 bytes in total. The server must be able to read the session ID and sequence number to route and filter, yet must not let attackers tamper with them -- AAD exactly satisfies "visible and tamper-proof." AAD contains no version string.
 > - **GCM nonce (number used once)**: `nonce = 0x00000000(4B) ‖ sequence number(8B big-endian)`, 12 bytes in total. The sequence number increases monotonically -> each packet's nonce is unique, satisfying the hard requirement that "a nonce is never reused under the same key."

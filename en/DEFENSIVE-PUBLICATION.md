@@ -56,8 +56,25 @@ them. In that situation you need the prior-art defence under Article 67, not thi
 Which is exactly why the evidence in section 3 has to be collected from the start rather than
 reconstructed after a dispute begins.
 
+## 6. The jurisdiction this statement is actually about
+
+The threat this project names is US10412063B1, a United States patent. The provisions
+above are PRC law, and a PRC prior-art defence does not decide a question of US patent
+validity. The provisions that matter are 35 U.S.C. §102 and §103.
+
+- §102(a)(1) bars a US patent where the claimed invention was patented, described in a
+  printed publication, or in public use before the effective filing date. A dated,
+  public and immutable publication is what that provision asks for.
+- §103 adds that the disclosure must also make the invention obvious to a person skilled
+  in the art. Publishing the full specification, not a summary, serves that.
+- The publication must be dated and citable. The tag, the commit and the hashes in
+  PUBLICATION-RECORD.md exist for that purpose.
+
+The PRC Articles above are kept as background for Chinese readers. Neither set is legal
+advice; whether a given disclosure defeats a given claim is a question for a lawyer.
+
 ---
 
-Provisions cited: the Patent Law of the PRC as amended in 2020, Articles 22, 24, 67 and 75.
+Provisions cited: the Patent Law of the PRC as amended in 2020, Articles 22, 24, 67 and 75 (reference); 35 U.S.C. §102 and §103 (the jurisdiction of the named threat).
 
 This file is not legal advice.

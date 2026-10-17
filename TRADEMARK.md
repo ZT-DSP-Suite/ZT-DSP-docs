@@ -3,6 +3,8 @@
 ## The marks
 
 ZT-DSP, ZT-DSP-Suite and the ZT-DSP logo are marks claimed by
+
+The logo files are `branding/icon-1024.png`, `branding/icon-512.png` and `branding/icon-512-black.png` in the ZT-DSP-docs repository.
 **ZT-DSP Suite maintainers (copyright holder: SCAL-ROAM)**.
 
 Copyright licenses grant no trademark rights:

@@ -28,6 +28,7 @@
 | `cn/README.md` | `en/README.md` |
 | `cn/术语对照表.md` | `en/Glossary.md` |
 | `cn/DEFENSIVE-PUBLICATION.md` | `en/DEFENSIVE-PUBLICATION.md` |
+| [branding/README.md](branding/README.md) | the mark, and which file to use where |
 | `cn/spec/ZT-DSP-1.0.1-总指导.md` | `en/spec/ZT-DSP-1.0.1-Master_Guide.md` |
 
 新增或修改文档时，两侧必须同步；**只改一侧视为缺陷，不视为贡献**。

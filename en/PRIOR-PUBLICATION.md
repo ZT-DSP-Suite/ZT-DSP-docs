@@ -1,7 +1,6 @@
-# Defensive Publication Statement
+# Prior Publication Record
 
 > This file records a decision by the maintainers: **the ZT-DSP protocol will not be patented.**
-> The point is not to sue anyone with a patent. It is to **stop someone else's patent from being used against this project and its users.**
 
 ## 1. The statement
 
@@ -48,7 +47,7 @@ This is not ceremony. Articles 67 and 75 both require **proof**; without it the 
 
 ## 5. One limit you must know
 
-Defensive publication only blocks patents whose **filing date falls after your publication date**.
+Prior publication only blocks patents whose **filing date falls after your publication date**.
 
 If someone filed for the same technology before you published, this publication does not stop
 them. In that situation you need the prior-art defence under Article 67, not this statement.

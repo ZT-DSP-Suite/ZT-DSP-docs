@@ -27,55 +27,30 @@
 |---|---|
 | `cn/README.md` | `en/README.md` |
 | `cn/术语对照表.md` | `en/Glossary.md` |
-| `cn/DEFENSIVE-PUBLICATION.md` | `en/DEFENSIVE-PUBLICATION.md` |
+| `cn/PRIOR-PUBLICATION.md` | `en/PRIOR-PUBLICATION.md` |
 | [branding/README.md](branding/README.md) | the mark, and which file to use where |
 | `cn/spec/ZT-DSP-1.0.1-总指导.md` | `en/spec/ZT-DSP-1.0.1-Master_Guide.md` |
 
 新增或修改文档时，两侧必须同步；**只改一侧视为缺陷，不视为贡献**。
 
-## 文档地图
+## 文件
 
-按你要做的事找文件。
-
-### 我要照规范写实现
-
-- 规范正文：[中文](cn/spec/ZT-DSP-1.0.1-总指导.md) ／ [English](en/spec/ZT-DSP-1.0.1-Master_Guide.md)
-- 术语基线：[术语对照表](cn/术语对照表.md) ／ [Glossary](en/Glossary.md)
-- 自查清单：规范附录 C.1
-- 上手步骤：[开发与验证指南](cn/DEV-GUIDE.md) ／ [Dev guide](en/DEV-GUIDE.md)
-
-### 我要审计别人的实现
-
-- [符合性判定指南](cn/CONFORMANCE-GUIDE.md) ／ [Conformance guide](en/CONFORMANCE-GUIDE.md)
-- [LICENSING.md](LICENSING.md) · [NOTICE](NOTICE) · [TRADEMARK.md](TRADEMARK.md)
-- [防御性公开声明](cn/DEFENSIVE-PUBLICATION.md) ／ [Defensive publication](en/DEFENSIVE-PUBLICATION.md)
-- [SECURITY.md](SECURITY.md)
-- 公开时刻与举证：[PUBLICATION-RECORD.md](PUBLICATION-RECORD.md)
-
-### 我要参与开发
-
-- [开发与验证指南](cn/DEV-GUIDE.md) ／ [Dev guide](en/DEV-GUIDE.md)
-- [CONTRIBUTING.md](CONTRIBUTING.md) · [CONTRIBUTORS.md](CONTRIBUTORS.md)
-- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) · [CHANGELOG.md](CHANGELOG.md)
-
-### 我只想知道这是什么
-
-- 中文入口：[cn/README.md](cn/README.md)
-- 英文入口：[en/README.md](en/README.md)
-- [防御性公开声明](cn/DEFENSIVE-PUBLICATION.md) · [LICENSING.md](LICENSING.md)
-
-### 我是下游集成方
-
-- 参数与上限：规范附录 B、附录 I
-- [符合性判定指南](cn/CONFORMANCE-GUIDE.md) ／ [Conformance guide](en/CONFORMANCE-GUIDE.md)
-- [开发与验证指南](cn/DEV-GUIDE.md) ／ [Dev guide](en/DEV-GUIDE.md)
-
-### 我是监管或评估方
-
-- [符合性判定指南](cn/CONFORMANCE-GUIDE.md) 第 A.6 节：判定范围到哪为止
-- [防御性公开声明](cn/DEFENSIVE-PUBLICATION.md) ／ [Defensive publication](en/DEFENSIVE-PUBLICATION.md)
-- [TRADEMARK.md](TRADEMARK.md)
-
+| 文件 | 它是什么 |
+|---|---|
+| [cn/README.md](cn/README.md) · [en/README.md](en/README.md) | 中英文入口 |
+| [规范（中文）](cn/spec/ZT-DSP-1.0.1-总指导.md) · [specification](en/spec/ZT-DSP-1.0.1-Master_Guide.md) | 协议正文，含第零部分与附录 A–K |
+| [术语对照表](cn/术语对照表.md) · [Glossary](en/Glossary.md) | 术语的唯一出处 |
+| [符合性判定指南](cn/CONFORMANCE-GUIDE.md) · [Conformance guide](en/CONFORMANCE-GUIDE.md) | 一次实现是否合规的判定方法 |
+| [开发与验证指南](cn/DEV-GUIDE.md) · [Dev guide](en/DEV-GUIDE.md) | 构建与验证命令 |
+| [先行公开记录](cn/PRIOR-PUBLICATION.md) · [Prior publication](en/PRIOR-PUBLICATION.md) | 公开时刻与哈希 |
+| [LICENSING.md](LICENSING.md) · [LICENSE](LICENSE) | 许可条款 |
+| [TRADEMARK.md](TRADEMARK.md) | 标识 |
+| [CONTRIBUTING.md](CONTRIBUTING.md) · [CONTRIBUTORS.md](CONTRIBUTORS.md) | 贡献方式与署名 |
+| [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | 行为准则 |
+| [SECURITY.md](SECURITY.md) | 漏洞上报 |
+| [CHANGELOG.md](CHANGELOG.md) | 变更记录 |
+| [PUBLICATION-RECORD.md](PUBLICATION-RECORD.md) | 发布记录 |
+| [branding/README.md](branding/README.md) | 标识文件与用法 |
 
 ## 相关仓库
 

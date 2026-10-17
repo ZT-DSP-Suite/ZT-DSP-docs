@@ -30,11 +30,11 @@ ZT-DSP-docs/
 ├─ cn/                       Chinese side
 │  ├─ spec/ZT-DSP-1.0.1-总指导.md      the specification (the only current revision)
 │  ├─ 术语对照表.md                    Chinese-to-English terminology baseline
-│  └─ DEFENSIVE-PUBLICATION.md         defensive publication statement
+│  └─ PRIOR-PUBLICATION.md         prior publication statement
 ├─ en/                       English side (mirrors cn/ document by document)
 │  ├─ spec/ZT-DSP-1.0.1-Master_Guide.md
 │  ├─ Glossary.md
-│  └─ DEFENSIVE-PUBLICATION.md
+│  └─ PRIOR-PUBLICATION.md
 └─ .github/                  issue forms and the Pages workflow
 ```
 

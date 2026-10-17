@@ -33,7 +33,7 @@
 
 ## What this record is for
 
-This is a defensive publication. The public disclosure date above is the date the specification became available to the public.
+This is a prior publication. The public disclosure date above is the date the specification became available to the public.
 
 | Question | Answer |
 |---|---|
@@ -51,7 +51,7 @@ This is a defensive publication. The public disclosure date above is the date th
 | 公开时分支 | 仅 `main` |
 | 是否申请专利 | 否 |
 
-本记录用于防御性公开举证：上述时刻即本规范对公众可见的时刻。
+本记录用于先行公开举证：上述时刻即本规范对公众可见的时刻。
 
 ## Document version 1.0.1 — not published
 

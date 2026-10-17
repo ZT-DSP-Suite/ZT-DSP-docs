@@ -92,8 +92,8 @@ need = ["LICENSE", "LICENSING.md", "NOTICE", "TRADEMARK.md", "CONTRIBUTING.md", 
 missing = [n for n in need if not os.path.exists(n)]
 record("6 licence files", not missing, ("missing " + ", ".join(missing)) if missing else "6 present")
 
-# 7. Both defensive publication statements exist
-need2 = ["cn/DEFENSIVE-PUBLICATION.md", "en/DEFENSIVE-PUBLICATION.md"]
+# 7. Both prior publication statements exist
+need2 = ["cn/PRIOR-PUBLICATION.md", "en/PRIOR-PUBLICATION.md"]
 missing2 = [n for n in need2 if not os.path.exists(n)]
 record("7 publication statements", not missing2,
        ("missing " + ", ".join(missing2)) if missing2 else "both present")

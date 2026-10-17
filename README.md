@@ -82,7 +82,6 @@
 |---|---|---|
 | `ZT-DSP-docs` | 本仓库：协议规范、术语基线 | `docs-v*` |
 | `ZT-DSP-client` | 官方实现：`zt_dsp_py/`（Python，实现标识 `ZT-DSP_PY-1.0.0`）与 `zt_dsp_rs/`（Rust，实现标识 `ZT-DSP_RS-1.0.0`） | `client-v*` |
-| `ZT-DSP-server` | 服务端实现骨架（占位，**尚未开始实现**） | `server-v*` |
 
 ## 许可
 

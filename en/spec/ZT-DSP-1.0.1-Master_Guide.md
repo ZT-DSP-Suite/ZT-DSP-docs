@@ -11,7 +11,7 @@
 
 - **docs version**: 1.0.0 (the revision number of this document itself, not involved in network communication)
 - **applicable client versions**: `ZT-DSP_PY-1.0.0` (Python), `ZT-DSP_RS-1.0.0` (Rust)
-- **applicable server version**: `ZT-DSP_SV-1.0.0` (repository `ZT-DSP-server`, placeholder, not implemented yet)
+- **applicable server version**: `ZT-DSP_SV-1.0.0` (no implementation yet)
 - **Release date**: 2026-10-11
 - **Document status**: **Public Test Release**
 - **Content classification**: The main body of this specification is an implementation specification; sections marked [Theory] [Experimental] are ideas and do not mean they have been implemented or verified.

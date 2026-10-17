@@ -66,7 +66,7 @@ The project has **three kinds of version number** and one **two-way declaration*
 
 - **total-guide version (1.0.0)** — the revision number of this documentation repository, written `docs 1.0.0`. It never appears on the wire.
 - **client version** — the full identifier of a client implementation, `ZT-DSP_<language prefix>-<major.minor.patch>` — `ZT-DSP_PY-1.0.0` for Python, `ZT-DSP_RS-1.0.0` for Rust. Implementations in different languages may share a version number and are distinguished by the prefix.
-- **server version** — the full identifier of a server implementation, `ZT-DSP_SV-1.0.0` (repository `ZT-DSP-server`, placeholder, not implemented yet). `SV` is a role prefix, not a language prefix.
+- **server version** — the full identifier of a server implementation, `ZT-DSP_SV-1.0.0` (no implementation yet). `SV` is a role prefix, not a language prefix.
 - **Two-way declaration** — the document side (the head of `spec/`) lists **the client and server versions to which it applies** and declares which settings it governs; the implementation side (`FOLLOWS_DOC` and `APPLIES_TO_DOC_VERSIONS` in `zt_dsp_py/version.py`) declares which document it applies to. **The two are not bound by version numbers.**
 
 **Applicability is many-to-many, not one-to-one**: several implementations of the same kind whose protocol behaviour has not changed share one applicability declaration, and the same guide may apply to several client and server versions at once. **Identical version numbers do not mean the same implementation and do not constitute a compatibility claim.**
@@ -79,7 +79,7 @@ The project has **three kinds of version number** and one **two-way declaration*
 
 - **This repository (ZT-DSP-docs)**: protocol specification, terminology baselines, design assets, repository configuration.
 - **The code repository (ZT-DSP-client)**: the official implementations `zt_dsp_py/` (Python) and `zt_dsp_rs/` (Rust), plus run scripts and engineering files.
-- **The server repository (ZT-DSP-server)**: a skeleton for the server side — placeholder documentation only, **implementation not started**; its version tags follow `server-v*`.
+- **The server side**: no implementation yet. The identifier form is reserved for when one exists.
 - Paths such as `zt_dsp_py/` and `zt_dsp_rs/` appearing in the documentation refer to the official implementation directories **inside the code repository**, not to this one.
 - Nothing is carried across: documentation changes go here, code changes go to the code repository, server changes go to the server repository.
 

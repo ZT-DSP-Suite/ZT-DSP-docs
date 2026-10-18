@@ -1,0 +1,14 @@
+# Dependabot configuration.
+#
+# Two workflows remain: codeql.yml, which pins GitHub-owned actions by SHA.
+# A pinned SHA does not move by itself, so the only way a security fix reaches
+# this repository is an update proposal.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"

@@ -38,8 +38,9 @@ which carries the program's own version.
 
 - Token and PSK storage: an implementation **MUST NOT** write the token to disk in
   plaintext, **MUST NOT** export it, and **MUST NOT** back it up. Storage in the
-  TPM/HWID stays a recommendation, and the reference implementation does not
-  implement it.
+  Storing the token in the TPM or HWID is the recommended way to meet that: the
+  requirement forbids the token reaching disk, leaving the process or being backed
+  up, and the reference implementation does not implement TPM/HWID storage yet.
 - Silent drop: the implementation **MUST NOT** write a log entry for a discarded packet.
 - Timing: the silent path **MUST NOT** produce a measurable response-time difference
   from the normal path.

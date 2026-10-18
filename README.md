@@ -56,7 +56,7 @@
 | 仓库 | 内容 | 版本标签 |
 |---|---|---|
 | `ZT-DSP-docs` | 本仓库：协议规范、术语基线 | `docs-v*` |
-| `ZT-DSP-client` | 官方实现：`zt_dsp_py/`（Python，实现标识 `ZT-DSP_PY-1.0.0`）与 `zt_dsp_rs/`（Rust，实现标识 `ZT-DSP_RS-1.0.0`） | `client-v*` |
+| `ZT-DSP-client` | 参考实现：`zt_dsp_py/`（Python，实现标识 `ZT-DSP_PY-1.0.0`）与 `zt_dsp_rs/`（Rust，实现标识 `ZT-DSP_RS-1.0.0`） | `client-v*` |
 
 ## 许可
 

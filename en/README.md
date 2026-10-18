@@ -8,11 +8,11 @@ The English specification and the glossary.
 
 The full map is in the [repository README](../README.md).
 
-> The specification for the current protocol. The authoritative text is `en/spec/ZT-DSP-1.0.1-Master_Guide.md` (docs version 1.0.0).
+> The specification for the current protocol. The governing text is `en/spec/ZT-DSP-1.0.1-Master_Guide.md` (docs version 1.0.0).
 >
 > **How this repository relates to the implementations**: the specification defines the protocol behaviour and tunable parameters; each implementation declares at its entry point which guide it applies to, and each guide lists the client and server versions it applies to. The relation is **many-to-many**, not bound by version numbers.
 
-This repository carries **documentation only**; the official implementations and runtime code live in the separate `ZT-DSP-client` repository.
+This repository carries **documentation only**; the reference implementations and runtime code live in the separate `ZT-DSP-client` repository.
 
 > The full document map, grouped by what you want to do, is in the [repository README](../README.md).
 
@@ -56,7 +56,7 @@ The current revision is **docs 1.0.0**, and it is the **only** specification fil
 | `cn/术语对照表.md` | Chinese-to-English terminology baseline |
 | `en/Glossary.md` | English-to-Chinese terminology baseline |
 
-These two files are the single authoritative source of terminology.
+These two files are the single governing clause of terminology.
 
 ## Versions
 
@@ -76,9 +76,9 @@ The project has **three kinds of version number** and one **two-way declaration*
 ## Repository boundary
 
 - **This repository (ZT-DSP-docs)**: protocol specification, terminology baselines, design assets, repository configuration.
-- **The code repository (ZT-DSP-client)**: the official implementations `zt_dsp_py/` (Python) and `zt_dsp_rs/` (Rust), plus run scripts and engineering files.
+- **The code repository (ZT-DSP-client)**: the reference implementations `zt_dsp_py/` (Python) and `zt_dsp_rs/` (Rust), plus run scripts and engineering files.
 - **The server side**: no implementation yet. The identifier form is reserved for when one exists.
-- Paths such as `zt_dsp_py/` and `zt_dsp_rs/` appearing in the documentation refer to the official implementation directories **inside the code repository**, not to this one.
+- Paths such as `zt_dsp_py/` and `zt_dsp_rs/` appearing in the documentation refer to the reference implementation directories **inside the code repository**, not to this one.
 - Nothing is carried across: documentation changes go here, code changes go to the code repository, server changes go to the server repository.
 
 ## Licence

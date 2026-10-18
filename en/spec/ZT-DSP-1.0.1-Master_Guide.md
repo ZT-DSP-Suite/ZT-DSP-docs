@@ -55,7 +55,7 @@ Imagine a scenario: you want to send a letter to a friend, but the postal worker
 
 > **Reading tip**: When you hit a term you do not understand, look it up in the Glossary, then come back and keep reading. Every term has a [Terminology Note] pointer and a one-sentence explanation the first time it appears in the main text.
 >
-> **Note for new readers**: appendices F/G/H are at the "protocol engineering blueprint" level — when writing an implementation, take Appendix F/H as authoritative (every sentence of them has been checked line by line against the official implementations), while Volume 4 is better suited to understanding and remembering; for byte-level self-checks, compare against Appendix F.
+> **Note for new readers**: appendices F/G/H are at the "protocol engineering blueprint" level — when writing an implementation, take Appendix F/H as governing (every sentence of them has been checked line by line against the reference implementations), while Volume 4 is better suited to understanding and remembering; for byte-level self-checks, compare against Appendix F.
 
 ### Terminology Annotation Rules (learn these rules first, and reading will be much easier)
 
@@ -216,7 +216,7 @@ In traditional network communication, we usually assume that certain links are t
 
 ### Principle One: Open protocol, free implementation
 
-All ZT-DSP specifications are public. Anyone may read, modify, and implement their own version. There is no *mandatory* official client, no forced update, no centralized control. This openness is both the protocol's advantage and the source of its security — an attacker cannot control the whole network by breaking a single official client.
+All ZT-DSP specifications are public. Anyone may read, modify, and implement their own version. There is no *mandatory* reference client, no forced update, no centralized control. This openness is both the protocol's advantage and the source of its security — an attacker cannot control the whole network by breaking a single reference client.
 
 > **Related knowledge**: This resembles the idea of Open Source software — public code does not mean insecure; "security rests on public review" (Kerckhoffs's principle: even if an attacker knows the entire design of the system, the system remains secure as long as the key is kept secret). Kerckhoffs's principle is explained in the Glossary.
 
@@ -358,7 +358,7 @@ Hash (Hash, Hash Function)
 
 > **Reading Guide to This Volume** This volume is the **core protocol** of zt-dsp-py -- any implementation claiming compatibility with ZT-DSP must support the contents of this volume (the extension modules in Volume 3 are all optional). This volume answers: where identity comes from (4.1), how two parties establish an encrypted session (4.2), and how the server stays hidden (4.3).
 >
-> **Focus for Beginners** First understand the identity system in 4.1 (the difference between a token and a room number), then walk through the four-phase flow in 4.2. Every formula block has line-by-line comments; read them by matching "Input → Compute → Output". The descriptions in this volume have been checked item by item against the implementation of the official client `zt_dsp_py`  (client version `ZT-DSP_PY-1.0.0`), and you can verify them by running the `ZT-DSP-client` implementation as its README describes.
+> **Focus for Beginners** First understand the identity system in 4.1 (the difference between a token and a room number), then walk through the four-phase flow in 4.2. Every formula block has line-by-line comments; read them by matching "Input → Compute → Output". The descriptions in this volume have been checked item by item against the implementation of the reference client `zt_dsp_py`  (client version `ZT-DSP_PY-1.0.0`), and you can verify them by running the `ZT-DSP-client` implementation as its README describes.
 >
 > **Prerequisites** the hotel model of Volume 3 (this volume is its technical implementation); the explanations of the four concepts "hash, encryption, key exchange, digital signature" in the Glossary.
 >
@@ -366,7 +366,7 @@ Hash (Hash, Hash Function)
 
 ## 4.1 Identity and Credential System
 
-> **Deprecation statement (TPM and HWID), revision R2, 2026-10-18** This section and the rest of the document describe the storage, binding and writing of the TPM (Trusted Platform Module) and the HWID (Hardware Identifier). **That design is deprecated and will be removed in the next revision.** Neither official client, `zt_dsp_py` or `zt_dsp_rs`, implements it. What holds today: the PSK and the token are supplied as ordinary configuration values (`--psk-file` / `--psk-env` / `--psk`), keeping them secret is the caller's responsibility, and the client provides no hardware-level protection. **Wherever TPM/HWID appears in this section, the wording is neither a requirement nor a recommendation**; it is kept as a record of an earlier design until the next revision removes it.
+> **Deprecation statement (TPM and HWID), revision R2, 2026-10-18** This section and the rest of the document describe the storage, binding and writing of the TPM (Trusted Platform Module) and the HWID (Hardware Identifier). **That design is deprecated and will be removed in the next revision.** Neither reference client, `zt_dsp_py` or `zt_dsp_rs`, implements it. What holds today: the PSK and the token are supplied as ordinary configuration values (`--psk-file` / `--psk-env` / `--psk`), keeping them secret is the caller's responsibility, and the client provides no hardware-level protection. **Wherever TPM/HWID appears in this section, the wording is neither a requirement nor a recommendation**; it is kept as a record of an earlier design until the next revision removes it.
 
 In ZT-DSP, your identity consists of two parts:
 
@@ -422,7 +422,7 @@ CRC-16 (Cyclic Redundancy Check)
 
 **Token Hash = SHA-3-256 (full token)**
 
-> **Addendum (P2P direct-connection placeholder path)**: The above is the standard algorithm for the case "with a TCA token". However, the **pure P2P direct-connection** scenario without a TCA (the official client's default mode) has no token body, so in this case the official client derives a **placeholder token hash** from the PSK:
+> **Addendum (P2P direct-connection placeholder path)**: The above is the standard algorithm for the case "with a TCA token". However, the **pure P2P direct-connection** scenario without a TCA (the reference client's default mode) has no token body, so in this case the reference client derives a **placeholder token hash** from the PSK:
 
 ```plain
 placeholder token hash = first 32 bytes of HMAC-SHA3-256(PSK, role label)
@@ -582,7 +582,7 @@ Field mapping:
 • access nonce (nonce, limit 512 bytes) → see the formula below; the peer verifies whether its length equals the declared random_len
 ```
 
-> **The true origin of the access nonce (common pitfall)**: a common misreading treats the access nonce as "derived from the PSK, the TPM/HWID, and the TCA token", which does not match the official implementation. The official client actually does: (deprecated)
+> **The true origin of the access nonce (common pitfall)**: a common misreading treats the access nonce as "derived from the PSK, the TPM/HWID, and the TCA token", which does not match the reference implementation. The reference client actually does: (deprecated)
 
 ```plain
 access nonce = HKDF-SHA3-256(IKM = PSK, salt = fresh random salt(32B), info = "ZT-DSP-PHASE1-NONCE-v3", output length = random_len bits)
@@ -613,7 +613,7 @@ access nonce = HKDF-SHA3-256(IKM = PSK, salt = fresh random salt(32B), info = "Z
 3. **Waiting-pool matching**: look in the waiting pool for whether there is a guest holding H(Token_A) (that is, B has already arrived and is waiting for A). If there is → pair A and B and send them into the same room; if there is not → put A into the waiting pool and wait for B to arrive
 4. **Waiting-pool management**: each registration form in the waiting pool is stored independently and is invisible to the others; waiting entries are automatically cleared after 30 seconds (to prevent long-term occupation of memory); the front desk never broadcasts A's registration information to the other people in the lobby
 
-> **Practical Note (parameter-tuning pitfall)**: The most common mistake beginners make when setting up a server is "parameters not aligned" -- the client sends packets with the default parameters while the server checks against a custom library declaration, so all packets are silently dropped, showing up as "cannot connect and no error at all". Troubleshooting method: compare, one by one, the **7 matching parameters** in both parties' library files -- random nonce length (random_len), generation rate (random_rate), negotiation window (window), key length (key_len), hash algorithm (hash), encryption algorithm (aead), module flags (module_flags) -- they must match exactly (the official client's `--version` and its startup parameter printout can be compared directly).
+> **Practical Note (parameter-tuning pitfall)**: The most common mistake beginners make when setting up a server is "parameters not aligned" -- the client sends packets with the default parameters while the server checks against a custom library declaration, so all packets are silently dropped, showing up as "cannot connect and no error at all". Troubleshooting method: compare, one by one, the **7 matching parameters** in both parties' library files -- random nonce length (random_len), generation rate (random_rate), negotiation window (window), key length (key_len), hash algorithm (hash), encryption algorithm (aead), module flags (module_flags) -- they must match exactly (the reference client's `--version` and its startup parameter printout can be compared directly).
 
 ### 4.2.2 Phase Two: Key Synchronization (Exchanging Secret Codes Inside the Room)
 
@@ -648,7 +648,7 @@ Forward Secrecy (FS)
 
 A and B exchange public keys pk_A and pk_B through the server. Public keys can be transmitted openly, and it does no harm even if they are intercepted; the server is only responsible for forwarding the public keys and cannot derive the shared secret.
 
-> **On-the-wire flow (checked against the official client)**:
+> **On-the-wire flow (checked against the reference client)**:
 >
 > 1. Initiator A sends: `[pub_len(4B)] [pk_A(32B)] [session_salt(32B)]` -- the session salt is sent together with A's public-key packet
 > 2. After receiving it, responder B **computes DH first**, and only then decides whether to respond: if the public-key length is abnormal or it is a low-order point (such as all zeros, u=1, or other invalid values), B will **strictly silently drop** it -- sending no bytes at all and not actively closing the connection (security hardening: prevents "the response frame from being leaked before verification fails")
@@ -687,7 +687,7 @@ MK = HKDF-SHA3-256(IKM = PSK ‖ DH, salt = session_salt, info = "ZT-DSP-MK-v3",
 | 1 | `info = "ZT-DSP-MK-v3"` | **Context string**: a purpose identifier. Prevents key confusion between different purposes (if two protocols derived from the same input, they would get the same key, which is dangerous) |
 | 1 | `output = 256 bits` | **Output length**: requires deriving a 256-bit key |
 
-> **Common Misconception (common pitfall)**: a common way to write the formula is `MK = HKDF(PSK ‖ DH ‖ session_salt)`, which makes the three inputs look "equal and parallel". But the official implementation (the `HKDF` class of the `cryptography` library) passes `session_salt` as a **separate salt parameter** (the standard usage of RFC 5869), and the IKM is only `PSK ‖ DH`. The two derivation results are **completely different** -- a client implemented with the "three equal inputs" form will inevitably fail the handshake with the official client (the phase-three confirmation tags will not match). This is also a cautionary tale about "open protocol, free implementation": freedom of implementation does not mean that formula details may be changed at will; the parameters and the formula must be consistent with the library declaration.
+> **Common Misconception (common pitfall)**: a common way to write the formula is `MK = HKDF(PSK ‖ DH ‖ session_salt)`, which makes the three inputs look "equal and parallel". But the reference implementation (the `HKDF` class of the `cryptography` library) passes `session_salt` as a **separate salt parameter** (the standard usage of RFC 5869), and the IKM is only `PSK ‖ DH`. The two derivation results are **completely different** -- a client implemented with the "three equal inputs" form will inevitably fail the handshake with the reference client (the phase-three confirmation tags will not match). This is also a cautionary tale about "open protocol, free implementation": freedom of implementation does not mean that formula details may be changed at will; the parameters and the formula must be consistent with the library declaration.
 
 > **Practical Interpretation (triple-input formula)**: Why three inputs instead of one? Historical lessons tell us: using only the PSK (the DRNG approach) → a leak means total collapse; using only DH → impersonation cannot be prevented; using only a salt → anyone can compute it. Each of the three has its own role: **the PSK handles "who you are" (identity anchoring, as part of the IKM), DH handles "this session is unique" (forward secrecy, the other part of the IKM), and the salt handles "cannot be guessed" (as the salt parameter of HKDF)**. If any one is missing, the security model collapses.
 
@@ -753,7 +753,7 @@ EK_recv = HKDF-SHA3-256(IKM = MK ‖ anchor ‖ 0x02, info = "ZT-DSP-EK-v3", out
 | 1 | `0x01 / 0x02` | **Role byte**: `0x01` is appended to the end of the IKM for the Initiator direction, and `0x02` for the Responder direction. Role: **distinguish the keys of the send and receive directions** -- A's EK_send exactly equals B's EK_recv, and vice versa; neither side can impersonate the peer using "its own send key" |
 | 1 | `info = "ZT-DSP-EK-v3"` | **Context string**: marks the key's purpose as "encryption," distinguishing it from keys for the anchor, authentication, and other purposes |
 
-> **Common Misconception (common pitfall)**: a common way to write it is `EK = HKDF(MK ‖ anchor, ...)` -- direction-agnostic, as if both sides shared a single EK. The official implementation actually derives **two** directional keys, distinguished by the role byte (0x01/0x02) at the end of the IKM. This is both a security design (preventing "reflection attacks": bouncing a packet the peer sent you straight back) and an interoperability detail: a client implemented with the direction-agnostic EK form will fail the handshake due to key mismatch.
+> **Common Misconception (common pitfall)**: a common way to write it is `EK = HKDF(MK ‖ anchor, ...)` -- direction-agnostic, as if both sides shared a single EK. The reference implementation actually derives **two** directional keys, distinguished by the role byte (0x01/0x02) at the end of the IKM. This is both a security design (preventing "reflection attacks": bouncing a packet the peer sent you straight back) and an interoperability detail: a client implemented with the direction-agnostic EK form will fail the handshake due to key mismatch.
 
 **4. Exchange confirmation tags (anchor confirmation)**
 
@@ -773,7 +773,7 @@ Responder sends: confirm_tag_B = HMAC-SHA3-256(MK, "ZT-DSP-CONFIRM-RESP-v3" ‖ 
 | 1 | `"ZT-DSP-CONFIRM-INIT-v3"` / `"ZT-DSP-CONFIRM-RESP-v3"` | **Context string**: distinguishes the tag purposes of initiator and responder, preventing "reflection attacks" (bouncing the peer's tag straight back to impersonate it) |
 | 1 | `confirmation tag` | **Output**: a 32-byte HMAC tag. Each side sends one and verifies one: the initiator verifies B's tag, and the responder verifies A's tag |
 
-Exchange order (per the official implementation): the initiator sends its own tag first -> the responder reads it (silently discarding only on frame-level errors -- read failure/abnormal length/timeout) -> the responder sends its own tag -> **both parties each** compare the peer's tag in constant time; on mismatch -> erase all keys and report "anchor confirmation failed: PSK mismatch, role mismatch, or reflection/man-in-the-middle attack." Note: validation of the tag **content** happens after both parties have finished exchanging, not "the responder validates before sending" -- this differs from the "validate first, then respond" order of Phases 1/2 (for the precise timing see Appendix F.4 and Appendix H).
+Exchange order (per the reference implementation): the initiator sends its own tag first -> the responder reads it (silently discarding only on frame-level errors -- read failure/abnormal length/timeout) -> the responder sends its own tag -> **both parties each** compare the peer's tag in constant time; on mismatch -> erase all keys and report "anchor confirmation failed: PSK mismatch, role mismatch, or reflection/man-in-the-middle attack." Note: validation of the tag **content** happens after both parties have finished exchanging, not "the responder validates before sending" -- this differs from the "validate first, then respond" order of Phases 1/2 (for the precise timing see Appendix F.4 and Appendix H).
 
 > **Practical Interpretation**: The confirmation tag is the "final exam" of the whole handshake -- if any earlier step (the identity announcement of Phase 1, the public keys and DH of Phase 2) was tampered with or miscomputed, the final tag is bound to mismatch and the handshake fails outright. This is also where the "PSK prevents impersonation" of 4.2.2 truly lands: an attacker without the PSK completes DH but derives a wrong MK, so tag validation is bound to fail.
 
@@ -792,7 +792,7 @@ Replay Attack
 
 **6. Erase root key material**
 
-After the confirmation tag is verified and the handshake announcement is complete, **MK, anchor, and PSK are all zeroed from memory** (the official client executes `secure_zero` at the end of Phase 3). Thereafter the entire session retains only: EK_send / EK_recv (for data encryption), the session ID (for routing), and the sequence number (for anti-replay).
+After the confirmation tag is verified and the handshake announcement is complete, **MK, anchor, and PSK are all zeroed from memory** (the reference client executes `secure_zero` at the end of Phase 3). Thereafter the entire session retains only: EK_send / EK_recv (for data encryption), the session ID (for routing), and the sequence number (for anti-replay).
 
 > **Practical Interpretation**: Why erase after use? This is the "minimal exposure surface" principle: the PSK and MK are needed only during the handshake; the earlier they are destroyed, the less key material remains on a compromised device. Even if an attacker compromises the device at that moment, they cannot obtain the PSK and MK -- only the current session's EK, and the EK is continuously locked and constantly rotated (4.2.5).
 
@@ -802,7 +802,7 @@ After the confirmation tag is verified and the handshake announcement is complet
 
 **[Packet Structure (complete fields)]:**
 
-> **Wire Layout (verified byte-by-byte against the official client)**: A Phase 4 packet consists of two parts, a "plaintext header + GCM ciphertext," and inside the ciphertext are 7 more fields (**the byte-by-byte layout table with offsets, the fixed order of the receive-validation pipeline, and the measured 165-byte heartbeat packet size are in Appendix F.5; the precise encoding of random padding and the fmt marker is in Appendix G**):
+> **Wire Layout (verified byte-by-byte against the reference client)**: A Phase 4 packet consists of two parts, a "plaintext header + GCM ciphertext," and inside the ciphertext are 7 more fields (**the byte-by-byte layout table with offsets, the fixed order of the receive-validation pipeline, and the measured 165-byte heartbeat packet size are in Appendix F.5; the precise encoding of random padding and the fmt marker is in Appendix G**):
 
 ```plain
 Wire packet (after encryption):
@@ -818,8 +818,8 @@ Plaintext payload (before encryption, i.e. the content of the GCM ciphertext):
 | Destination token hash | 32B | Yes | Encrypted with the session key EK, preventing plaintext identity linkage. The server sees the encrypted destination hash and cannot know whom the message is sent to |
 | Source token hash | 32B | Yes | Same as above. Encryption prevents traffic analysts from building a social graph through source-destination linkage |
 | Timestamp | 8B | Yes | Millisecond Unix timestamp (uint64 big-endian). The receiver checks `|current time − timestamp| <= timestamp window` (default 30 seconds), preventing replay and delayed interception |
-| Payload format marker fmt | 1B | Yes | `0x00` = no random padding (default), `0x01` = with random padding. The receiver strips padding per this marker; the official client can enable padding unilaterally without negotiation between the two parties |
-| Random padding | 0~2048B | Yes | Reference recommendation 512~2048B. Padding removes the length fingerprint so that all packets are similar in size. Off by default in the official client (enabled via `--padding-min/max`) |
+| Payload format marker fmt | 1B | Yes | `0x00` = no random padding (default), `0x01` = with random padding. The receiver strips padding per this marker; the reference client can enable padding unilaterally without negotiation between the two parties |
+| Random padding | 0~2048B | Yes | Reference recommendation 512~2048B. Padding removes the length fingerprint so that all packets are similar in size. Off by default in the reference client (enabled via `--padding-min/max`) |
 | Pre-key seed next_seed | 32B | Yes | Ratchet seed for the next packet: `new_EK = HKDF-SHA3-256(IKM = current EK ‖ next_seed, info = "ZT-DSP-EK-ROTATE", output 256 bits)` (sustained lock, see 4.2.5) |
 | User plaintext | variable | Yes | The actual message content (including heartbeat empty packets: plaintext length 0) |
 | Session ID | 32B | No | Plaintext routing field, derived from the anchor. The server delivers the packet to the correct room based on the session ID |
@@ -868,7 +868,7 @@ AAD (Additional Authenticated Data)
 3. A forwards the entire packet to B through the server
 4. The server is responsible only for delivery; it does not open the box
 
-> **Practical Detail ("consume state first, then attempt to send")**: Before sending, the official client first completes three things: (1) generates a new next_seed and derives the next packet's key `new_EK = HKDF(current EK ‖ next_seed, "ZT-DSP-EK-ROTATE")`; (2) zeroes the current EK in memory and replaces it with new_EK; (3) increments the sequence number by 1. Only then does it encrypt and send the current packet. This means: even if the send fails (network outage, connection cut), the key has already been rotated -- an attacker cannot exploit "send failure means the key was not rotated" to replay old packets. The price is that the session cannot recover after a send failure and can only reconnect (the official client prompts "the session has irreversibly desynchronized").
+> **Practical Detail ("consume state first, then attempt to send")**: Before sending, the reference client first completes three things: (1) generates a new next_seed and derives the next packet's key `new_EK = HKDF(current EK ‖ next_seed, "ZT-DSP-EK-ROTATE")`; (2) zeroes the current EK in memory and replaces it with new_EK; (3) increments the sequence number by 1. Only then does it encrypt and send the current packet. This means: even if the send fails (network outage, connection cut), the key has already been rotated -- an attacker cannot exploit "send failure means the key was not rotated" to replay old packets. The price is that the session cannot recover after a send failure and can only reconnect (the reference client prompts "the session has irreversibly desynchronized").
 
 **[Receiving Flow]:**
 
@@ -877,7 +877,7 @@ AAD (Additional Authenticated Data)
 3. B verifies the **GCM authentication tag**; on failure -> **drop the packet and terminate the session** (data tampered with or key mismatch)
 4. After decrypting the payload, B performs **three internal checks**: (1) whether the payload structure length is self-consistent (bounds checking); (2) whether the payload format marker is valid (unknown fmt); (3) **bidirectional token hash validation** -- the in-packet destination token hash must equal the local identity and the source token hash must equal the peer identity (preventing traffic reflection/crosstalk/identity forgery). Failure of any of these -> **drop the packet and terminate the session**
 5. B checks the timestamp: `|current time − timestamp| > timestamp window` (default 30 seconds) -> the packet **has passed GCM authentication but is outside the window**; in this case **only the plaintext is discarded, while the EK is still rotated and the sequence number advanced** (preventing a permanent session desynchronization when the sender has rotated but the receiver has not) -- **this is the only failure branch that does not terminate the session**
-6. B obtains the plaintext message normally. A packet with plaintext length 0 is a **heartbeat packet**, which the receiver silently skips (the official client sends one every 30 seconds to detect half-open connections)
+6. B obtains the plaintext message normally. A packet with plaintext length 0 is a **heartbeat packet**, which the receiver silently skips (the reference client sends one every 30 seconds to detect half-open connections)
 
 > **Practical Tip (both the receive order and the failure policy matter)**: Always process in the order "sequence number -> session ID -> authentication tag -> decryption and internal validation -> timestamp." This order is itself a security design: cheap filtering first (sequence number/session ID), then expensive cryptographic verification (GCM), and only then decryption -- preventing both DoS (junk packets do not trigger decryption) and information leakage (not exposing "why it was dropped"). **Except for the timestamp-window case in step 5, every validation failure must "terminate silently"**: drop the packet, wipe all keys, end the session, and return no error code to the peer -- consistent with the termination policy of Appendix F.5 and with the reference implementation's `session.py` behavior.
 
@@ -888,7 +888,7 @@ In the fourth phase, each encrypted data packet carries not only a message but a
 - Current packet: encrypted message + "key seed for the next packet"
 - Next packet: uses the seed announced by the previous packet to derive a new EK, then carries the seed for the packet after that
 
-The official client's ratchet rotation formula (once per packet):
+The reference client's ratchet rotation formula (once per packet):
 
 ```plain
 new_EK = HKDF-SHA3-256(IKM = current EK ‖ next_seed, info = "ZT-DSP-EK-ROTATE", output = 256 bits)
@@ -907,7 +907,7 @@ This process is **sustained lock**:
 - The virtual room ensures this hopping process is not interrupted by external connections
 - Sub-channels allow multiple independent forward-secrecy chains to exist in parallel within the same room
 
-> **Practical Tip (keepalive and desynchronization)**: The official client sends an **empty-payload heartbeat packet** (plaintext length 0) every 30 seconds, specifically to detect "half-open connections" (one side has dropped off, but the TCP connection is undetected because no data was sent). Heartbeat packets also participate in ratchet rotation -- even with no messages, the key chain keeps advancing. This is also why "an out-of-window packet must still rotate the EK and advance the sequence number" (4.2.4 receiving flow step 5) is so important: if the sender's heartbeat packet is discarded wholesale for being outside the timestamp window without rotation, the two ratchets desynchronize and all subsequent packets become undecryptable.
+> **Practical Tip (keepalive and desynchronization)**: The reference client sends an **empty-payload heartbeat packet** (plaintext length 0) every 30 seconds, specifically to detect "half-open connections" (one side has dropped off, but the TCP connection is undetected because no data was sent). Heartbeat packets also participate in ratchet rotation -- even with no messages, the key chain keeps advancing. This is also why "an out-of-window packet must still rotate the EK and advance the sequence number" (4.2.4 receiving flow step 5) is so important: if the sender's heartbeat packet is discarded wholesale for being outside the timestamp window without rotation, the two ratchets desynchronize and all subsequent packets become undecryptable.
 
 > **Related Knowledge**: Sustained lock shares its origin with the "Double Ratchet" idea of the Signal protocol (the encryption foundation of WhatsApp/Signal) -- both "change the key with every message sent." The difference is that ZT-DSP's hopping is done entirely internally by the two parties (the pre-key seed travels with the packet) and does not depend on any server logic.
 
@@ -1161,7 +1161,7 @@ More importantly, the 32KB exchange brings problems such as traffic correlation 
 
 ## Q12: Can I modify the protocol's parameters?
 
-**A: Yes, and this is a core feature of the protocol design.** ZT-DSP is an open protocol, and all parameters can be modified freely: random number length (16-bit, 64-bit, 256-bit, 1024-bit), generation rate (1 per second, 128 per second, 1024 per second, no software upper limit), time window (10 seconds, 30 seconds, 60 seconds, custom), encryption algorithm (AES-GCM, ChaCha20-Poly1305, or another algorithm you trust). The official client also provides two additional adjustable items: the **timestamp window** (`--time-window`, default 30 seconds, configurable per-peer; a narrow window gives high security, a wide window gives high availability) and **random padding/timing jitter** (`--padding-min/max`, `--jitter`, off by default).
+**A: Yes, and this is a core feature of the protocol design.** ZT-DSP is an open protocol, and all parameters can be modified freely: random number length (16-bit, 64-bit, 256-bit, 1024-bit), generation rate (1 per second, 128 per second, 1024 per second, no software upper limit), time window (10 seconds, 30 seconds, 60 seconds, custom), encryption algorithm (AES-GCM, ChaCha20-Poly1305, or another algorithm you trust). The reference client also provides two additional adjustable items: the **timestamp window** (`--time-window`, default 30 seconds, configurable per-peer; a narrow window gives high security, a wide window gives high availability) and **random padding/timing jitter** (`--padding-min/max`, `--jitter`, off by default).
 
 But note: **the client and the server must use the same parameters to communicate.** If the server declares "I only accept 128 64-bit random numbers per second" while your client sends "1024 16-bit random numbers per second", the server will directly silently discard your packet, with no error message at all. This is the role of the "library": the server declares its parameter dialect in its library, and the client must fetch the library and match its parameters.
 
@@ -1229,24 +1229,24 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 
 | Parameter | Reference Value | Description |
 |--------|--------|------|
-| Random number length random_len | 256 bits (default); 1024 bits (optional) | Provides a 2^256 space, freely modifiable (official client `--random-len`) |
+| Random number length random_len | 256 bits (default); 1024 bits (optional) | Provides a 2^256 space, freely modifiable (reference client `--random-len`) |
 | Random number generation rate random_rate | 1024 per second (default); no software upper limit (optional) | Freely modifiable, server-defined (`--random-rate`) |
 | Negotiation window window | 60 seconds (default) | **Both parties' parameters must be consistent** (one of the parameter matching check items); note that it ≠ the timestamp window (`--window`) |
-| Timestamp window time_window | 30 seconds (default, per-peer configurable) | Packet timestamp tolerance; the official client `--time-window` is adjustable; a narrow window means high security, a wide window means high availability |
+| Timestamp window time_window | 30 seconds (default, per-peer configurable) | Packet timestamp tolerance; the reference client `--time-window` is adjustable; a narrow window means high security, a wide window means high availability |
 | Hash algorithm | SHA-3-256 | NIST standard, collision-resistant and length-extension resistant |
 | Symmetric Encryption | AES-256-GCM (Phase 4 standard) | Replaceable with other trusted algorithms |
 | Key Exchange | X25519 ECDH | Provides Forward Secrecy |
 | Key Derivation | HKDF-SHA-3-256 | Standardized extract-expand; session_salt is the salt parameter (RFC 5869) |
 | Token Signature | Ed25519 | High-performance elliptic curve (implemented by the TCA module, verified by the core client through a hook) |
 | Device-Specific Key PSK | 32 bytes (256 bits) true random | At the protocol level, storage in TPM/HWID (physical binding) is recommended; **the 1.0.0 official clients do not implement TPM/HWID storage -- planned for a later version**; the official client accepts 64-character hex/Base64 and rejects weak keys and public default values (deprecated) |
-| Default Port | 37291 | Official client default (changeable with `--port`) |
+| Default Port | 37291 | Reference client default (changeable with `--port`) |
 | Handshake Timeout | 15 seconds | Total time limit for each of Phases 1-3 |
 | Data-Phase Timeout | 60 seconds | Socket timeout after handshake completion (prevents silent disconnection at the 15-second handshake timeout) |
 | Heartbeat Interval | 30 seconds (empty-payload packet) | Detects half-open connections and participates in ratchet rotation |
 | Connection Retry | 3 times, 5-second interval | Initiator only (`--retry-count` / `--retry-interval`) |
 | Silent-Drop Hold Duration | 15 seconds (= handshake timeout, configurable) | Holds the read and discards peer data; for server-embedded scenarios it is advisable to reduce it and combine it with per-IP rate limiting |
 | Session Salt session_salt | 32 bytes (256 bits) random | Generated by the initiator, sent in plaintext with the public-key packet, and used as the HKDF salt parameter |
-| Random Padding | Reference 512~2048B; disabled by default in the official client | 0~2048B configurable (`--padding-min/max`), can be enabled on one side only, eliminates the packet-length fingerprint |
+| Random Padding | Reference 512~2048B; disabled by default in the reference client | 0~2048B configurable (`--padding-min/max`), can be enabled on one side only, eliminates the packet-length fingerprint |
 | Send-Timing Jitter jitter | Default 0 (disabled) | Configurable via `--jitter`, eliminates the timing fingerprint |
 | Waiting-Pool Timeout | 30 seconds | Prevents long-term memory occupation |
 | Frame and Payload Limits | Parameter JSON ≤ 4096B, identity announcement ≤ 8192B, ciphertext ≤ 1MiB, etc. | See Appendix F.6 for the complete limit-constant table |
@@ -1307,12 +1307,12 @@ Before releasing your ZT-DSP implementation, confirm the following:
 - [ ] **Sequence number check**: strictly increasing; packets equal to or smaller than the last received value are dropped (4.2.3)
 - [ ] **GCM nonce construction**: nonce = 4-byte zero prefix ‖ 8-byte big-endian sequence number (12B total); never reused under the same key (4.2.4)
 - [ ] **AAD content**: AAD = session ID ‖ sequence number (8B big-endian), 40 bytes total; routing fields are visible but tamper-proof (4.2.4)
-- [ ] **Timestamp window**: configurable (official default 30 seconds); out-of-window packets **still rotate the EK and advance the sequence number, and only the plaintext is dropped**, preventing ratchet desynchronization (4.2.4)
+- [ ] **Timestamp window**: configurable (documented default 30 seconds); out-of-window packets **still rotate the EK and advance the sequence number, and only the plaintext is dropped**, preventing ratchet desynchronization (4.2.4)
 - [ ] **Bidirectional Token Hash verification**: after decryption, verify that dst_hash in the packet == the local identity and src_hash == the peer identity (4.2.4)
 - [ ] **Confirmation tag exchange**: Phase 3 exchanges HMAC confirmation tags (CONFIRM-INIT/RESP), and the transcript binds both sides' Phase 1 raw frames + session salt + both public keys (4.2.3)
 - [ ] **Root key erasure**: after Phase 3 confirms successfully, the MK, Anchor, and PSK are all zeroed, and the session retains only the EK/session ID/sequence number (4.2.3)
 - [ ] **Ratchet rotation**: each packet carries next_seed, new_EK = HKDF(current EK ‖ next_seed, "ZT-DSP-EK-ROTATE"); rotate before sending (consume state first, then send) (4.2.5)
-- [ ] **Heartbeat keep-alive**: during the data phase, periodically send empty-payload packets (official client: 30 seconds) to detect half-open connections (4.2.5)
+- [ ] **Heartbeat keep-alive**: during the data phase, periodically send empty-payload packets (reference client: 30 seconds) to detect half-open connections (4.2.5)
 - [ ] **Token verification**: TCA signature verification + CRL query + Authorization Code whitelist (if required) (4.1.2/4.1.3)
 - [ ] **Waiting-pool management**: cleared on 30-second timeout, registry entries are mutually invisible, no broadcasting (4.2.1)
 - [ ] **TCA optional**: allow a TCA-less P2P direct-connection mode (placeholder Token Hash derivation), or support multi-TCA federation (4.1.1/4.1.2)
@@ -1330,7 +1330,7 @@ Before using ZT-DSP, confirm the following:
 
 # Appendix F: Byte-by-Byte On-Wire Protocol Specification
 
-> **[Appendix Guide]** Volume 4 explains "what the protocol does"; this appendix explains "what it actually looks like on the wire". This appendix describes the precise byte layout of **all four on-wire frame types** of ZT-DSP, the common encoding conventions, the limit constants, and the Silent Drop behavior contract; every sentence has been checked line by line against the implementation of the official client (`zt_dsp_py`). **Any two implementations claiming ZT-DSP compatibility must produce network traffic identical to this appendix at the byte level** — otherwise the Phase 3 confirmation tag verification will fail immediately.
+> **[Appendix Guide]** Volume 4 explains "what the protocol does"; this appendix explains "what it actually looks like on the wire". This appendix describes the precise byte layout of **all four on-wire frame types** of ZT-DSP, the common encoding conventions, the limit constants, and the Silent Drop behavior contract; every sentence has been checked line by line against the implementation of the reference client (`zt_dsp_py`). **Any two implementations claiming ZT-DSP compatibility must produce network traffic identical to this appendix at the byte level** — otherwise the Phase 3 confirmation tag verification will fail immediately.
 >
 > **[Points of Interest for Beginners]** This appendix is an "engineering blueprint"; absolute beginners do not need to read it through. It is suggested to first read the four common conventions in F.0 to build intuition, and then consult each section as needed.
 >
@@ -1367,7 +1367,7 @@ The following conventions apply to **all four frame types**:
 | … | nonce_len | 4B | uint32 BE | Access nonce length, ≤ 512 |
 | … | nonce | nonce_len | Raw bytes | Access nonce (derivation formula in 4.2.1) |
 
-**On-wire structure of the parameter JSON**: keys are arranged in **lexicographic order**, using **compact separators** (`,` and `:`, no spaces) and UTF-8 encoding. The parameter JSON **contains no version or protocol identifier field**. Actual on-wire bytes under the official default parameters (120 bytes total):
+**On-wire structure of the parameter JSON**: keys are arranged in **lexicographic order**, using **compact separators** (`,` and `:`, no spaces) and UTF-8 encoding. The parameter JSON **contains no version or protocol identifier field**. Actual on-wire bytes under the documented default parameters (120 bytes total):
 
 ```json
 {"aead":"AES-256-GCM","hash":"SHA3-256","key_len":256,"module_flags":{},"random_len":256,"random_rate":1024,"window":60}
@@ -1375,14 +1375,14 @@ The following conventions apply to **all four frame types**:
 
 **Parameter validation rules** (both sides must execute these when constructing and parsing; if any rule is not satisfied the parameters are judged invalid):
 
-| Key | Validation Rule | Official Default |
+| Key | Validation Rule | Documented Default |
 |----|----------|-----------|
 | random_len | Positive integer and a **multiple of 8** | 256 |
 | random_rate | Positive integer | 1024 |
 | window | Positive integer | 60 |
 | key_len | Only **128 / 192 / 256** allowed | 256 |
-| hash | Officially supports SHA3-256/384/512 and SHA-256/384/512 | `"SHA3-256"` |
-| aead | The official implementation contains only AES-256-GCM | `"AES-256-GCM"` |
+| hash | Supports SHA3-256/384/512 and SHA-256/384/512 | `"SHA3-256"` |
+| aead | The reference implementation contains only AES-256-GCM | `"AES-256-GCM"` |
 | module_flags | Keys must be strings; values may only be string/integer/float/boolean/list/dict/null; **nesting depth ≤ 32, total node count ≤ 1024** | `{}` |
 
 **Parameter match verification**: both sides must be **equal item by item** on the following 7 items, and verification is performed in this fixed order (it stops at the first unequal item):
@@ -1463,7 +1463,7 @@ tag_resp = HMAC-SHA3-256(MK, "ZT-DSP-CONFIRM-RESP-v3" ‖ transcript)
 
 > **The transcript contains no version or protocol identifier**: there is no version string in the concatenated material. Whether the peer follows the same document is reflected by the `tag_init` / `tag_resp` verification — a mismatch means the tags do not match.
 
-**Exchange sequencing (per the official implementation)**:
+**Exchange sequencing (per the reference implementation)**:
 
 1. The initiator sends the `tag_init` frame
 2. The responder reads that frame — **only frame-level errors** (read failure / length ≠ 32 / timeout) trigger strict silence
@@ -1559,7 +1559,7 @@ The implementation must build in the following hard upper bounds; **all upper-bo
 
 ## G.2 Exact Encoding of Random Padding
 
-- **Configuration**: the sender holds a pair `(padding_min, padding_max)` satisfying `0 ≤ min ≤ max ≤ 2048` (unit: bytes). Official CLI parameters `--padding-min` / `--padding-max` (must be given together); **no configuration by default = padding off**.
+- **Configuration**: the sender holds a pair `(padding_min, padding_max)` satisfying `0 ≤ min ≤ max ≤ 2048` (unit: bytes). Reference CLI parameters `--padding-min` / `--padding-max` (must be given together); **no configuration by default = padding off**.
 - **Independent per packet**: `pad_len = randbelow(max − min + 1) + min` (uniform distribution within the interval); the padding content is **truly random bytes** (zero padding must not be used — a zero run is a low-entropy fingerprint).
 - **Wire encoding**: when enabled, `fmt = 0x01`, and the payload layout becomes `…user plaintext ‖ random padding (pad_len B) ‖ pad_len (2B uint16 BE) ‖ next_seed (32B)`. **The pad_len field must be immediately before next_seed** — the receiver reads it from a fixed position at the tail of the payload (bytes 34–33 counted from the end), so that it can locate the padding boundary without knowing the plaintext length.
 - **Receive-side stripping**: the receiver parses padding only when it sees `fmt = 0x01`; a packet with `fmt = 0x00` is legal even when it comes from "a peer that pads" (**padding is decided per packet, enabled unilaterally, and requires no negotiation**). pad_len > 2048 → protocol error.
@@ -1567,20 +1567,20 @@ The implementation must build in the following hard upper bounds; **all upper-bo
 
 ## G.3 Sending Timing Jitter
 
-- **Configuration**: `jitter ≥ 0` (seconds), official CLI `--jitter`, default 0 (off).
+- **Configuration**: `jitter ≥ 0` (seconds), published CLI `--jitter`, default 0 (off).
 - **Behavior**: each data packet waits a random duration in the interval `[0, jitter)` after encryption is complete and before it is actually written to the socket.
 - **Semantics**: purely **local sending behavior**; it changes no wire bytes at all; the peer is unaware and needs no cooperation.
 - **Design boundary**: jitter smooths only the "sending instant", not the "packet rate distribution" — when defense against statistical rhythm analysis is needed, it should be combined with the heartbeat baseline (G.5).
 
 ## G.4 Timestamp Window
 
-- **Configuration**: `time_window > 0` (seconds), official CLI `--time-window`, default 30; **configurable per peer** (the same client can use different windows for different peers).
+- **Configuration**: `time_window > 0` (seconds), published CLI `--time-window`, default 30; **configurable per peer** (the same client can use different windows for different peers).
 - **Semantics**: the receiver verifies `|current time − in-packet timestamp| ≤ time_window × 1000` (comparison in milliseconds). Delivery is normal within the window; **a packet that is out of window but has already passed GCM authentication still performs the ratchet rotation and the sequence-number advance, and only the plaintext is discarded** (see F.5 pipeline step 8) — this "availability completion" is the key to preventing permanent desynchronization when "the sender has rotated but the receiver has not", and **implementers must not omit it**.
 - **Trade-off**: a narrow window (e.g. 10s) → rejects delayed replay packets faster, but requires small clock skew between the two sides and low network latency; a wide window (e.g. 60s) → tolerates slow networks and clock drift, at the cost that replay packets have a longer "validity period". The core line of replay defense is always the sequence number (F.5 step 1); the timestamp window is the second line.
 
 ## G.5 Heartbeat as Baseline Traffic
 
-- The official client sends a **heartbeat packet with empty plaintext** every **30 seconds** (165 bytes on the wire under default parameters, see F.5).
+- The reference client sends a **heartbeat packet with empty plaintext** every **30 seconds** (165 bytes on the wire under default parameters, see F.5).
 - Triple role: (1) detect half-open connections (TCP is usually unaware that "the peer has disappeared" until send fails); (2) flatten the "silent period" — a traffic observer cannot infer that the session is idle from "no packets for a long time"; (3) participate in ratchet rotation so that the key chain keeps advancing even with no messages.
 - A heartbeat failure (send error) is treated as the connection being broken, and the session is cleaned up.
 
@@ -1740,7 +1740,7 @@ The implementation must build in the following hard upper bounds; **all upper-bo
 
 ## H.5 Protocol-Layer Exception Hierarchy
 
-Implementers should converge local errors into **typed exceptions**, so that the upper layer can distinguish "should retry" from "should terminate" (the following is the exception tree of the official client; other implementations are advised to keep the same classification granularity):
+Implementers should converge local errors into **typed exceptions**, so that the upper layer can distinguish "should retry" from "should terminate" (the following is the exception tree of the reference client; other implementations are advised to keep the same classification granularity):
 
 ```plain
 ZTDSPError (protocol exception base class)
@@ -1825,7 +1825,7 @@ Every hard upper bound is stated in **F.6**. An implementation MUST enforce each
 
 ## J.1 Where the vectors live
 
-`test-vectors/vectors.json` in this repository (the public copy and the authoritative one; the file of the same name in `ZT-DSP-client` is a working copy). Nine vectors: four reproduced from RFC 5869 Appendix A.1 and A.3 and RFC 7748 section 6.1, five generated by `test-vectors/generate_vectors.py`.
+`test-vectors/vectors.json` in this repository (the public copy and the governing one; the file of the same name in `ZT-DSP-client` is a working copy). Nine vectors: four reproduced from RFC 5869 Appendix A.1 and A.3 and RFC 7748 section 6.1, five generated by `test-vectors/generate_vectors.py`.
 
 ## J.2 Format
 

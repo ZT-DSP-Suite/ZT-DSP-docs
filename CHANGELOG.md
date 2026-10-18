@@ -6,7 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note on authority:** this file is a convenience record, not the source of truth. The
-authoritative change history is `git log`. If the two ever disagree, `git log` wins.
+governing change history is `git log`. If the two ever disagree, `git log` wins.
 
 This repository holds the protocol specification. It ships no test suite — it is a
 normative document. What runs mechanically is `scripts/check.py`: it verifies that the
@@ -19,7 +19,7 @@ that no machine-specific string slipped in.
 
 TPM and HWID support is deprecated and will be removed in the next revision.
 
-- Neither official client, `zt_dsp_py` or `zt_dsp_rs`, contains any code that reads,
+- Neither reference client, `zt_dsp_py` or `zt_dsp_rs`, contains any code that reads,
   writes or modifies a TPM or an HWID. The earlier wording promised the feature for
   "a later version"; it now says the design is deprecated and will be removed.
 - The declaration in Master Guide 4.1.4, the storage and property bullets, the two
@@ -54,7 +54,7 @@ which carries the program's own version.
 ### Planned — not part of 1.0.1
 
 Recorded so the intent is not lost. **None of this is implemented**, and 1.0.1 remains
-authoritative until a later revision ships these:
+governing until a later revision ships these:
 
 - Time-slot driven rotation: one key generation per second rather than per packet.
 - Lock packet: the same packet structure, sent on a fixed cadence so the chain keeps

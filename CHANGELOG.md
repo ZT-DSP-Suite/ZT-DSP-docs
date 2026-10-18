@@ -8,11 +8,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 **Note on authority:** this file is a convenience record, not the source of truth. The
 authoritative change history is `git log`. If the two ever disagree, `git log` wins.
 
-This repository holds the protocol specification. It has **no automated tests** — it is
-a normative document. What is checked mechanically is that the two language mirrors
-stay in step and that CI itself remains runnable; see the pull request checklist.
+This repository holds the protocol specification. It ships no test suite — it is a
+normative document. What runs mechanically is `scripts/check.py`: it verifies that the
+two language mirrors have the same structure, that every relative link resolves, and
+that no machine-specific string slipped in.
 
-## [Unreleased]
+## [1.0.1] - 2026-10-18
 
 ### Deprecated — part of document version 1.0.1
 
@@ -30,12 +31,15 @@ TPM and HWID support is deprecated and will be removed in the next revision.
 ### Changed — part of document version 1.0.1
 
 Four security boundaries were advisory and are now mandatory. The wire format is
-unchanged, and so are the protocol version and the implementation identifiers, which
-is why this is a document revision and not a protocol release.
+unchanged, which is why this is a document revision and not a protocol release. The
+version model changed in the same revision: the protocol version is withdrawn, and
+what used to be called the implementation identifier is now the program identifier,
+which carries the program's own version.
 
 - Token and PSK storage: an implementation **MUST NOT** write the token to disk in
   plaintext, **MUST NOT** export it, and **MUST NOT** back it up. Storage in the
-  TPM/HWID stays a recommendation, and 1.0.0 still does not implement it.
+  TPM/HWID stays a recommendation, and the reference implementation does not
+  implement it.
 - Silent drop: the implementation **MUST NOT** write a log entry for a discarded packet.
 - Timing: the silent path **MUST NOT** produce a measurable response-time difference
   from the normal path.
@@ -47,10 +51,10 @@ is why this is a document revision and not a protocol release.
 - `CHANGELOG.md`, `CODE_OF_CONDUCT.md`, a pull request template, and `dependabot.yml`
   for GitHub Actions.
 
-### Planned — not part of 1.0.0
+### Planned — not part of 1.0.1
 
-Recorded so the intent is not lost. **None of this is implemented in 1.0.0**, and
-1.0.0 remains authoritative until a later revision ships these:
+Recorded so the intent is not lost. **None of this is implemented**, and 1.0.1 remains
+authoritative until a later revision ships these:
 
 - Time-slot driven rotation: one key generation per second rather than per packet.
 - Lock packet: the same packet structure, sent on a fixed cadence so the chain keeps

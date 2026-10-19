@@ -55,7 +55,7 @@ Imagine a scenario: you want to send a letter to a friend, but the postal worker
 
 > **Reading tip**: When you hit a term you do not understand, look it up in the Glossary, then come back and keep reading. Every term has a [Terminology Note] pointer and a one-sentence explanation the first time it appears in the main text.
 >
-> **Note for new readers**: appendices F/G/H are at the "protocol engineering blueprint" level — when writing an implementation, take Appendix F/H as authoritative (every sentence of them has been checked line by line against the reference implementations), while Volume 4 is better suited to understanding and remembering; for byte-level self-checks, compare against Appendix F.
+> **Note for new readers**: appendices F/G/H are at the "protocol engineering blueprint" level — when writing an implementation, take Appendix F/H as the binding text (every sentence of them has been checked line by line against the reference implementations), while Volume 4 is better suited to understanding and remembering; for byte-level self-checks, compare against Appendix F.
 
 ### Terminology Annotation Rules (learn these rules first, and reading will be much easier)
 
@@ -551,7 +551,7 @@ In ZT-DSP, the handshake is divided into four phases:
 5. **Capability flags**: declares the modules and cryptographic parameters that A supports (such as the list of supported encryption algorithms and parameters)
 6. **Access nonce**: conforms to the parameters declared by the server library (length, rate, format); it serves as an identity heartbeat, proving that A is "alive" and holds the correct key material
 
-> **On-the-wire frame format (checked byte by byte against the official client)**: On the network, the above 6 items of information are not "6 independent fields"; they are packed into one phase-one frame (**for the complete byte-by-byte layout, the on-the-wire structure and validation rules of the parameter JSON, and the upper-limit constants, see Appendix F.1; under the default parameters this frame is about 228 bytes minimum**):
+> **On-the-wire frame format (checked byte by byte against the reference client)**: On the network, the above 6 items of information are not "6 independent fields"; they are packed into one phase-one frame (**for the complete byte-by-byte layout, the on-the-wire structure and validation rules of the parameter JSON, and the upper-limit constants, see Appendix F.1; under the default parameters this frame is about 228 bytes minimum**):
 
 ```plain
 Phase-one frame (on-the-wire format):
@@ -1232,7 +1232,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key Exchange | X25519 ECDH | Provides Forward Secrecy |
 | Key Derivation | HKDF-SHA-3-256 | Standardized extract-expand; session_salt is the salt parameter (RFC 5869) |
 | Token Signature | Ed25519 | High-performance elliptic curve (implemented by the TCA module, verified by the core client through a hook) |
-| Device-Specific Key PSK | 32 bytes (256 bits) true random | The official client accepts 64-character hex/Base64 and rejects weak keys and public default values; storage and secrecy are the caller's responsibility |
+| Device-Specific Key PSK | 32 bytes (256 bits) true random | The reference client accepts 64-character hex/Base64 and rejects weak keys and public default values; storage and secrecy are the caller's responsibility |
 | Default Port | 37291 | Reference client default (changeable with `--port`) |
 | Handshake Timeout | 15 seconds | Total time limit for each of Phases 1-3 |
 | Data-Phase Timeout | 60 seconds | Socket timeout after handshake completion (prevents silent disconnection at the 15-second handshake timeout) |
@@ -1464,7 +1464,7 @@ tag_resp = HMAC-SHA3-256(MK, "ZT-DSP-CONFIRM-RESP-v3" ‖ transcript)
 3. The responder sends the `tag_resp` frame (note: at this point it has **not yet** verified the peer's tag content)
 4. Each side checks the peer's tag using **constant-time comparison**; if either side does not match → erase all key material → handshake failure (both the initiator and the responder report ZTDSPSecurityError)
 
-> **Common misconception**: "the responder sends its own tag only after verification passes" is a common misreading and does not match the official implementation. The responder "sends first, compares after". This is not a security hole: the tags are each side's own HMAC, and an attacker cannot impersonate either side by "sending a correct tag first" — it has no MK and cannot compute either side's correct tag; whichever side compares wrong immediately erases the keys and terminates.
+> **Common misconception**: "the responder sends its own tag only after verification passes" is a common misreading and does not match the reference implementation. The responder "sends first, compares after". This is not a security hole: the tags are each side's own HMAC, and an attacker cannot impersonate either side by "sending a correct tag first" — it has no MK and cannot compute either side's correct tag; whichever side compares wrong immediately erases the keys and terminates.
 
 **Binding meaning**: the transcript covers the **raw bytes** of both sides' Phase One frames — the parameter JSON, the identity declaration, and the access nonce are all included. Any substitution of the identity declaration or parameters by a man-in-the-middle, and any "canonical re-encoding" in either implementation, will make the transcript differ and the tags necessarily wrong. Legitimate modifications to parameters/identity by the TCA extension layer also cause no false failure, because "what is changed is the raw frame that both sides can see" (both sides bind the same byte sequence).
 
@@ -1821,7 +1821,7 @@ Every hard upper bound is stated in **F.6**. An implementation MUST enforce each
 
 ## J.1 Where the vectors live
 
-`test-vectors/vectors.json` in this repository (the public copy and the authoritative one; the file of the same name in `ZT-DSP-client` is a working copy). Nine vectors: four reproduced from RFC 5869 Appendix A.1 and A.3 and RFC 7748 section 6.1, five generated by `test-vectors/generate_vectors.py`.
+`test-vectors/vectors.json` in this repository (the public copy is the source of record; the file of the same name in `ZT-DSP-client` is a working copy). Nine vectors: four reproduced from RFC 5869 Appendix A.1 and A.3 and RFC 7748 section 6.1, five generated by `test-vectors/generate_vectors.py`.
 
 ## J.2 Format
 

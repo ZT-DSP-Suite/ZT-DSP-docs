@@ -1044,13 +1044,12 @@ Under the layered attacks (nine-layer threat) above, ZT-DSP can guarantee:
 
 ## 5.6 Risks and deployment constraints
 
-A session's terminal state cannot be recovered: when any check in Volume 4 fails, the receiver wipes every session key and ends the session; recovery requires a new handshake. The five conditions below are deployment conditions; when one is violated, the symptom is a session that terminates repeatedly, or a live session in which the messages never arrive.
+A session's terminal state cannot be recovered: when any check in Volume 4 fails, the receiver wipes every session key and ends the session; recovery requires a new handshake. The four conditions below are deployment conditions; when one is violated, the symptom is a session that terminates repeatedly.
 
 - **Transport**: Phase Four packets travel on one reliable, ordered stream (TCP, or a QUIC stream's reliable ordered delivery). Do not use bare UDP, multi-path spreading or per-packet round-robin.
 - **Routing**: Phase Four packets of one session land on the same node. For horizontal scaling, route consistently on the plaintext `session_id`.
 - **Reconnection**: an implementation may reconnect automatically; reconnection performs a new handshake and derives a new EK, never reusing the old session's key material.
 - **Observability**: the receiver records the number of terminated sessions and the triggering step (F.5 steps 1 to 8), so operators can tell attacks from network faults.
-- **Clock**: Phase Four packets carry the sender's wall-clock timestamp, and the receiver checks it against its own clock (F.5 step 8). The clock difference between the two ends must stay below the timestamp window; otherwise the receiver drops the plaintext without reporting an error and without ending the session.
 
 This section is deployment guidance and is not a conformance requirement under 0.3; conformance is judged by Appendix F.
 

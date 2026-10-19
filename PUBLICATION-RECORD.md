@@ -64,7 +64,7 @@ The specification became available to the public at the time recorded above. Thi
 | Status | Local working tree. Not pushed; awaiting review and a push order. |
 | Document version | 1.0.2 |
 | Wire format | Unchanged from 1.0.0 |
-| Content | `cn/spec/ZT-DSP-1.0.2-总指导.md` `1ca1990bf6972f6e8b529e6048155632df3994bff8c9c4e78b41a00a800f35f1`<br>`en/spec/ZT-DSP-1.0.2-Master_Guide.md` `08c97c8d037d866a3650226331eaf17f4568a9ac9f7dd8048b181945b3e21962` |
+| Content | `cn/spec/ZT-DSP-1.0.2-总指导.md` `177a976d606d3b3e9dea3a347bcb51645e89a1444161fae0cd112b2c64c458b9`<br>`en/spec/ZT-DSP-1.0.2-Master_Guide.md` `5c48ed7ea38b7fda843f253e801c800c3529135b0be7a16f031b49a7bd4502af` |
 
 ## Document version 1.0.1
 

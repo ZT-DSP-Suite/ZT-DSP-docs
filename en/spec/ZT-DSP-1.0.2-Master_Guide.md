@@ -268,7 +268,7 @@ principle of least privilege (Principle of Least Privilege)
 >
 > **[What beginners should focus on]** Remember the role mapping table in 3.3 and the five core rules in 3.4. After reading, try to restate in your own words the duties of the "door number" and the "front desk"; if you can do that, you have grasped the skeleton of the protocol.
 >
-> **[Related knowledge]** Every concept in this volume has a corresponding technical implementation in Volume 4: door number = token hash (4.1.1), front desk = server, security guard = TCA (4.1.2).
+> **[Related knowledge]** The main concepts of this volume have a corresponding technical implementation in Volume 4: door number = token hash (4.1.1), front desk = server, security guard = TCA (4.1.2), lobby = waiting pool (4.2.1 Phase One).
 
 ## 3.1 Why use a hotel as the metaphor?
 
@@ -296,8 +296,7 @@ Imagine a scenario: a special hotel —
 | Hotel | Server | Provides a place to connect and forwards data packets |
 | Front desk | Server software | Registers, matches, and forwards, without decrypting |
 | Security guard | TCA (token certification authority) | Issues identity cards and verifies their authenticity |
-| Butler | TCA inspection program | Periodically checks whether credentials have expired or been revoked |
-| Room | Matching pool (pairing space) | Only two parties holding the same door number can enter |
+| Room | The session after pairing (Phases Two to Four) | Only two parties holding the same door number can enter |
 | Lobby | Waiting area (waiting pool) | Holds temporary devices that have not yet matched with the other party |
 | Guest | Client device | The two parties actually communicating |
 | Box | Encrypted data packet | The front desk can only see the outside and cannot open it |

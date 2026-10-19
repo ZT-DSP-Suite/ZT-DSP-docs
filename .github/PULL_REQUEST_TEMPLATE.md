@@ -25,5 +25,5 @@ repository. Please check both before opening.
 numbers. Renumbering breaks them silently.
 
 **Is `1.0.0` still accurate?** The declared documentation version, and the statement
-that TPM/HWID are not implemented in 1.0.0, must stay true. If either changes, say so
+that every declared capability has an implementation, must stay true. If either changes, say so
 explicitly in the PR.

@@ -1,4 +1,4 @@
-# ZT-DSP Protocol Master Guide Library (document version 1.0.1)
+# ZT-DSP Protocol Master Guide Library (document version 1.0.2)
 
 > **Generalisation proposal (2026-10-14, draft)**
 > A proposal exists to lift ZT-DSP from a communication protocol to a **general-purpose one**: a core layer doing PSK-based
@@ -9,10 +9,10 @@
 **Zero Trust Dynamic Synchronization Protocol**
 (Zero Trust Dynamic Synchronization Protocol)
 
-- **document version**: 1.0.1 (the revision number of this document itself, not involved in network communication)
+- **document version**: 1.0.2 (the revision number of this document itself, not involved in network communication)
 - **applicable client versions**: `ZT-DSP_PY-1.0.0` (Python), `ZT-DSP_RS-1.0.0` (Rust)
 - **applicable server version**: `ZT-DSP_SV-1.0.0` (no implementation yet)
-- **Release date**: 2026-10-11
+- **Release date**: 2026-10-19
 - **Document status**: **Public Test Release**
 - **Content classification**: The main body of this specification is an implementation specification; sections marked [Theory] [Experimental] are ideas and do not mean they have been implemented or verified.
 - **Maintaining team**: Protocol Founding Team
@@ -22,7 +22,7 @@
 > - **This document**: the *ZT-DSP Protocol Master Guide*.
 > - **Applies to**: This file specifies the protocol behavior and tunable parameters on the code side — `random_len`, `random_rate`, `window`, `time_window`, `key_len`, `hash`, `aead`, `module_flags`, `padding`, `jitter`, etc.; adjusting these settings is governed by this document.
 > - **Corresponding implementation**: the code side declares at its entry point that "this implementation follows the *ZT-DSP Protocol Master Guide*" (for the Python implementation in this repository, see `FOLLOWS_DOC` in `zt_dsp_py/version.py`).
-> - **About version numbers**: this project has two kinds of version number — the **document version** (the revision number of this document itself, 1.0.0), and the **client versions** / **server versions** (the full identifier of each implementation). The relation between them and this document is **many-to-many**, not one-to-one: several implementations of the same kind whose protocol behaviour has not changed share one applicability declaration, and the same guide may apply to several client and server versions at once. **Identical version numbers do not mean the same implementation and do not constitute a compatibility claim.** **The handshake frames carry no version string whatsoever**: neither the Phase One parameter JSON nor the Phase Four AAD contains a version or protocol identifier field. Whether the peer is compatible is reflected by the Phase Three confirmation tag check.
+> - **About version numbers**: this project has two kinds of version number — the **document version** (the revision number of this document itself, 1.0.2), and the **client versions** / **server versions** (the full identifier of each implementation). The relation between them and this document is **many-to-many**, not one-to-one: several implementations of the same kind whose protocol behaviour has not changed share one applicability declaration, and the same guide may apply to several client and server versions at once. **Identical version numbers do not mean the same implementation and do not constitute a compatibility claim.** **The handshake frames carry no version string whatsoever**: neither the Phase One parameter JSON nor the Phase Four AAD contains a version or protocol identifier field. Whether the peer is compatible is reflected by the Phase Three confirmation tag check.
 
 ## Overview
 
@@ -118,14 +118,14 @@ This protocol does not rely on any centralized trust anchor. Every device holds 
 
 | Item | Value |
 |---|---|
-| Document identifier | `ZT-DSP-1.0.1` |
-| Document version | `1.0.1` (2026-10-18), merging two text revisions never published |
-| Wire format | unchanged between 1.0.0 and 1.0.1 |
+| Document identifier | `ZT-DSP-1.0.2` |
+| Document version | `1.0.2` (2026-10-19), a text revision: it adds 5.6 deployment constraints, an F.5 step-1 note and a J.4 version-string note, and removes the deprecated hardware key-storage design description; the history is in `CHANGELOG.md` |
+| Wire format | unchanged between 1.0.0 and 1.0.2 |
 | Numbering gaps | Appendices A, D, E and Volumes 2, 6, 7 were removed in an earlier revision and were not renumbered |
-| Status | The only current revision. No earlier version has been published |
+| Status | The only current revision; the previous public revision is 1.0.1 |
 | Nature | A normative document, but not all of it binds — see 0.4 |
 | Program identifier | ~B~<language>_<version>~B~, for example ~B~ZT-DSP_PY-1.0.0~B~; the version is the program's own and is unrelated to the document version |
-| Compatibility declaration | Every program must declare the document version it aligns with, for example "aligns with document 1.0.1"; no synchronisation is required between two programs |
+| Compatibility declaration | Every program must declare the document version it aligns with, for example "aligns with document 1.0.2"; no synchronisation is required between two programs |
 | License | The text is CC BY-SA 4.0; see `LICENSE` and `LICENSING.md` at the repository root |
 | Patents | The maintainers do not patent this protocol; see `PUBLICATION-RECORD.md` |
 
@@ -366,11 +366,9 @@ Hash (Hash, Hash Function)
 
 ## 4.1 Identity and Credential System
 
-> **Deprecation statement (TPM and HWID), revision R2, 2026-10-18** This section and the rest of the document describe the storage, binding and writing of the TPM (Trusted Platform Module) and the HWID (Hardware Identifier). **That design is deprecated and will be removed in the next revision.** Neither reference client, `zt_dsp_py` or `zt_dsp_rs`, implements it. What holds today: the PSK and the token are supplied as ordinary configuration values (`--psk-file` / `--psk-env` / `--psk`), keeping them secret is the caller's responsibility, and the client provides no hardware-level protection. **Wherever TPM/HWID appears in this section, the wording is neither a requirement nor a recommendation**; it is kept as a record of an earlier design until the next revision removes it.
-
 In ZT-DSP, your identity consists of two parts:
 
-1. **Token** -- your "identity card", issued by a TCA. An earlier design required storing it in the device's TPM/HWID; **that requirement is deprecated and neither client implements it** (see the deprecation statement at the head of this section)
+1. **Token** -- your "identity card", issued by a TCA; the server identifies you by it. The client does not write it to disk, does not export it and does not back it up (see the **Mandatory** clause below)
 2. **Token Hash (H(Token))** -- your "room number", used to find the other party on the server
 
 ```plain
@@ -388,7 +386,8 @@ Token
 > **Privacy Risk** Once a token leaks (e.g., the device is implanted with malware or a backup file is stolen), an attacker can impersonate your identity and join any session. Although the token hash (room number) can be public, long-term use of the same room number will be used by servers or observers to correlate your behavioral trail (traffic analysis).
 >
 > **Mandatory** **MUST NOT** write the token to disk in plaintext; **MUST NOT** export it; **MUST NOT** back it up.
-> [Deprecated] storing the token in the TPM/HWID (hardware secure area) is deprecated and will be removed in the next revision. To change identity, request a new token and change the room number.
+>
+> To change identity, request a new token and change the room number.
 >
 > **Compliance Note** A token is "identity-identifying data" and should follow the **principle of minimization**: store only the fields necessary to perform the protocol functions (see the field table in 4.1.1), and do not write any personally identifying information (name, phone number, etc.), so as to reduce the damage in case of a data leak.
 
@@ -480,7 +479,7 @@ CRL (Certificate Revocation List)
 
 ### 4.1.3 Authorization Code (Optional Strengthening Layer)
 
-Some servers require the client to provide an authorization code in addition to the token. The authorization code is issued by a TCA and bound to a specific server, and by protocol design the device writes it into the TPM/HWID on first access (**not implemented in 1.0.0 -- writing to TPM/HWID is planned for a later version**). The server can thereby manage each device individually (ban, mute, rate-limit). A client without an authorization code cannot enter a server that requires one, even if it holds a valid token. (deprecated)
+Some servers require the client to provide an authorization code in addition to the token. The authorization code is issued by a TCA and bound to a specific server, and the deployer distributes and keeps it. The server can thereby manage each device individually (ban, mute, rate-limit). A client without an authorization code cannot enter a server that requires one, even if it holds a valid token.
 
 - **Token = identity card**: proves "you are a legitimate person"
 - **Authorization code = access card**: proves "you are allowed to enter this particular hotel"
@@ -493,25 +492,9 @@ Some servers require the client to provide an authorization code in addition to 
 PSK (Pre-Shared Key) is the core anchor of the ZT-DSP security system.
 
 - **Length**: a 256-bit true random number
-- **Storage location**: an earlier design recommended the device's TPM (Trusted Platform Module) or HWID (Hardware Identifier); **that recommendation is deprecated and will be removed in the next revision**; neither client implements it, and the caller keeps the PSK in a configuration file or an environment variable
-- **Properties**: an earlier design goal was physical binding, non-exportability and non-copyability; **that goal is deprecated** and neither client provides hardware protection
+- **Storage location**: the caller keeps the PSK in a configuration file or an environment variable (`--psk-file` / `--psk-env` / `--psk`)
+- **Properties**: the client does not write it to disk, does not export it, and provides no hardware-level protection; keeping it secret is the caller's responsibility
 - **Purpose**: participates in session key derivation; it is the root basis of trust across all communication scenarios
-
-```plain
-TPM (Trusted Platform Module) (deprecated)
-├── Meaning: an independent security chip soldered onto the motherboard, dedicated to securely generating and storing keys
-├── Principle: key generation and signature operations are performed inside the chip, and the private key does not leave the chip, provided the deployment actually enables one; even if the operating system is compromised, the attacker cannot export the key inside the chip
-└── Rationale: keys stored in software can be read by malicious programs; the TPM uses "hardware isolation" to lock keys into a physical chip, which is the industry-standard practice for mobile devices/computers (deprecated)
-```
-
-```plain
-HWID (Hardware Identifier) (deprecated)
-├── Meaning: a unique device identifier derived from device hardware characteristics (CPU serial number, storage serial number, etc.)
-├── Principle: binds the key to "this device" -- it becomes invalid when the device is changed, preventing the key from being copied to other machines
-└── Rationale: low-cost devices without a TPM chip (IoT sensors, etc.) need an alternative; HWID provides "physical binding at the software level" (deprecated)
-```
-
-> The two TPM/HWID explanations above describe a deprecated design. They are kept as history and will be removed in the next revision.
 
 **Key security properties:**
 
@@ -521,7 +504,7 @@ HWID (Hardware Identifier) (deprecated)
 
 > **Privacy Risk** The PSK is key material with "single-point leakage causing global damage": after a leak, an attacker can impersonate your identity, decrypt communications (within the range of the leaked history), and join any session. It is also a primary target of supply-chain attacks (implanting a backdoor before the hardware/software leaves the factory).
 >
-> **Protection Recommendation** (1) Use only devices with a TPM (the PSK never leaves the chip) -- **note: the 1.0.0 client neither writes the PSK into a chip nor uses a TPM, so the deployer must enforce this themselves**; (2) regularly check the origin of device firmware and be wary of "preinstalled software" of unknown origin; (3) if you suspect the PSK has leaked, immediately revoke the old token, apply for a new token, and change the device (when the PSK is bound to hardware, changing the device changes the key); (4) side-channel attacks (power analysis, electromagnetic leakage) are threats in physical-contact scenarios, and high-security scenarios should use devices with shielding measures. (deprecated)
+> **Protection Recommendation** (1) Use devices with dedicated key storage, and enable full-disk encryption and screen locking; (2) regularly check the origin of device firmware and be wary of "preinstalled software" of unknown origin; (3) if you suspect the PSK has leaked, immediately revoke the old token, apply for a new token, and change the device; (4) side-channel attacks (power analysis, electromagnetic leakage) are threats in physical-contact scenarios, and high-security scenarios use devices with shielding measures.
 >
 > **Compliance Note** The PSK is "key material"; follow cryptographic management best practices: keys should be managed in layers (root keys / session keys separated), the scope of use should be minimized (the PSK only participates in derivation and does not directly encrypt data), and key rotation and destruction mechanisms should be established.
 
@@ -582,7 +565,7 @@ Field mapping:
 • access nonce (nonce, limit 512 bytes) → see the formula below; the peer verifies whether its length equals the declared random_len
 ```
 
-> **The true origin of the access nonce (common pitfall)**: a common misreading treats the access nonce as "derived from the PSK, the TPM/HWID, and the TCA token", which does not match the reference implementation. The reference client actually does: (deprecated)
+> **The true origin of the access nonce (common pitfall)**: the access nonce is derived only from the PSK, a fresh random salt and a fixed info string; the token plays no part. The reference client does:
 
 ```plain
 access nonce = HKDF-SHA3-256(IKM = PSK, salt = fresh random salt(32B), info = "ZT-DSP-PHASE1-NONCE-v3", output length = random_len bits)
@@ -1058,7 +1041,18 @@ Under the layered attacks (nine-layer threat) above, ZT-DSP can guarantee:
 >
 > [Privacy Risk] Boundaries of the threat model: this protocol does not defend against "physical contact attacks" (forensics after a device is confiscated), does not defend against "side-channel attacks" (power/electromagnetic analysis), and does not defend against "social engineering" (tricking you into handing over a token/door number).
 >
-> [Protection Recommendation] Complete protection in high-threat scenarios = protocol encryption (this protocol) + device physical security (TPM, full-disk encryption) + operational discipline (OPSEC, not using it on insecure devices). The absence of any single link lowers the overall security level. (deprecated)
+> [Protection Recommendation] Complete protection in high-threat scenarios = protocol encryption (this protocol) + device physical security (full-disk encryption, screen locking) + operational discipline (OPSEC, not using it on insecure devices). The absence of any single link lowers the overall security level.
+
+## 5.6 Risks and deployment constraints
+
+A session's terminal state cannot be recovered: when any check in Volume 4 fails, the receiver wipes every session key and ends the session; recovery requires a new handshake. The four conditions below are deployment conditions; when one is violated, the symptom is a session that terminates repeatedly.
+
+- **Transport**: Phase Four packets travel on one reliable, ordered stream (TCP, or a QUIC stream's reliable ordered delivery). Do not use bare UDP, multi-path spreading or per-packet round-robin.
+- **Routing**: Phase Four packets of one session land on the same node. For horizontal scaling, route consistently on the plaintext `session_id`.
+- **Reconnection**: an implementation may reconnect automatically; reconnection performs a new handshake and derives a new EK, never reusing the old session's key material.
+- **Observability**: the receiver records the number of terminated sessions and the triggering step (F.5 steps 1 to 8), so operators can tell attacks from network faults.
+
+This section is deployment guidance and is not a conformance requirement under 0.3; conformance is judged by Appendix F.
 
 # Volume 8: FAQ and Common Misconceptions
 
@@ -1080,7 +1074,7 @@ The flow is: ① Before going out, obtain the other party's door number H(Token_
 
 - TCA = identity factory: after verifying your device, it issues a token (containing a random seed + Ed25519 signature)
 - Door number = the hash of the ID card: you make a copy of the ID card (SHA-3-256) to obtain the door number, which is used to find people in the hotel
-- Token storage: by protocol design your original ID card (token) should be securely kept in the device's TPM/HWID, non-exportable and non-copyable (**no hardware storage is implemented in 1.0.0**) (deprecated)
+- Token storage: your original ID card (token) is kept by the caller; the client does not write it to disk
 
 Key point: one device can hold multiple ID cards issued by multiple TCAs (multiple tokens); a TCA is only responsible for "does this person have a legitimate ID card", not for "whom this person wants to find"; finding people is your own business.
 
@@ -1238,7 +1232,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key Exchange | X25519 ECDH | Provides Forward Secrecy |
 | Key Derivation | HKDF-SHA-3-256 | Standardized extract-expand; session_salt is the salt parameter (RFC 5869) |
 | Token Signature | Ed25519 | High-performance elliptic curve (implemented by the TCA module, verified by the core client through a hook) |
-| Device-Specific Key PSK | 32 bytes (256 bits) true random | At the protocol level, storage in TPM/HWID (physical binding) is recommended; **the 1.0.0 official clients do not implement TPM/HWID storage -- planned for a later version**; the official client accepts 64-character hex/Base64 and rejects weak keys and public default values (deprecated) |
+| Device-Specific Key PSK | 32 bytes (256 bits) true random | The official client accepts 64-character hex/Base64 and rejects weak keys and public default values; storage and secrecy are the caller's responsibility |
 | Default Port | 37291 | Reference client default (changeable with `--port`) |
 | Handshake Timeout | 15 seconds | Total time limit for each of Phases 1-3 |
 | Data-Phase Timeout | 60 seconds | Socket timeout after handshake completion (prevents silent disconnection at the 15-second handshake timeout) |
@@ -1323,7 +1317,7 @@ Before releasing your ZT-DSP implementation, confirm the following:
 Before using ZT-DSP, confirm the following:
 
 - [ ] Understanding Out-of-Band Exchange: you have obtained the peer's house number through a secure channel (1.3/3.4)
-- [ ] Understanding PSK protection: the protocol requires your PSK to be stored in the TPM/HWID and to be non-exportable (4.1.4); **the 1.0.0 official clients do not implement this binding -- use `--psk-file` with 0600 permissions as the substitute** (deprecated)
+- [ ] Understanding PSK protection: you keep the PSK yourself; use `--psk-file` with 0600 permissions (4.1.4)
 - [ ] Understanding TCA selection: the TCA you trust is community-recognized, not a mandatory authority (4.1.2)
 - [ ] Understanding parameter matching: your client parameters are consistent with the target server's library declaration (Appendix B)
 - [ ] Understanding risk: you understand your own threat model and the protocol's limitations (Volume 5)
@@ -1519,6 +1513,8 @@ tag_resp = HMAC-SHA3-256(MK, "ZT-DSP-CONFIRM-RESP-v3" ‖ transcript)
 | 6 | Structural length consistency: fixed header + tail (including pad_len ≤ 2048) does not exceed the total payload length | Out-of-bounds/negative-slice attack | Session termination (protocol error) |
 | 7 | Bidirectional token hash verification: dst in the packet == local identity, src == peer identity | Traffic reflection / cross-talk / identity forgery | Session termination (security error) |
 | 8 | Timestamp window: `|now − ts| ≤ time_window` | Authenticated but out-of-window replay/delayed packet | **Special**: does not terminate the session — it still rotates EK and advances seq_recv, discarding only the plaintext (to prevent ratchet desynchronization, see 4.2.4 receive flow step 5) |
+
+> **The meaning of step 1**: this check is replay protection. Loss and reordering within a session are guaranteed by the transport layer not to happen (see 5.6). An implementation MUST NOT turn it into "drop the old packet, keep the session" — that is a protocol change and must ship with a version bump.
 
 **Sender-side state roll-forward ("consume state first, attempt to send after")**: Before encrypted sending, the following are completed in order — generate next_seed → `new_EK = HKDF-SHA3-256(EK ‖ next_seed, info = "ZT-DSP-EK-ROTATE")` → erase the old EK and swap in new_EK → `seq += 1`. Therefore, when sending fails the key has already rolled forward and the session is unrecoverable (reconnection is the only option), but an attacker can never exploit "send failure leaving the state un-rolled-forward" to replay.
 
@@ -1844,6 +1840,7 @@ Format: `<LANGUAGE>_<version>`, for example `ZT-DSP_PY-1.0.0`.
 - The language token is uppercase ASCII; the separator is a single underscore.
 - The version is the Program Version: the program's own version, unrelated to the document version. The document version the program aligns with is declared separately (see 0.1).
 - An implementation MUST report its identifier from its `--version` output, in the form `<identifier> (docs <document version>)`.
+- The document version does not enter the wire format: neither the Phase One parameter JSON nor the Phase Four AAD contains a version field. When the two sides' document versions differ, the symptom is a parameter mismatch, a confirmation-tag failure or a GCM decryption failure, not a "version mismatch" error.
 
 ## J.5 Registry
 

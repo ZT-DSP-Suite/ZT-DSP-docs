@@ -1,7 +1,7 @@
 # ZT-DSP Chinese-English Glossary (translation baseline)
 
 > Purpose: every English document and every code comment in this project must use the English wording given here, so that terminology stays consistent throughout.
-> Status: this file is the **single authoritative clause** of terminology and depends on no other document.
+> Status: this file is the **single authoritative source** of terminology and depends on no other document.
 > Entries: 119. Register new terms here before using them.
 
 | English | Chinese | Note |
@@ -79,7 +79,6 @@
 | HMAC | HMAC | full form: Hash-based Message Authentication Code |
 | HTTP | HTTP | full form: HyperText Transfer Protocol |
 | HTTPS | HTTPS | full form: HyperText Transfer Protocol Secure |
-| HWID | HWID | full form: Hardware Identifier |
 | I/O Multiplexing | I/O 多路复用 | 例如 selector、epoll、kqueue |
 | IP Address | IP 地址 | full form: Internet Protocol Address |
 | Initialization Vector | 初始化向量 | 在 GCM 语境中又称 Nonce |
@@ -103,7 +102,6 @@
 | Token Certification Authority | 令牌认证机构 | 缩写 TCA |
 | TLS 1.3 | TLS 1.3 | full form: Transport Layer Security 1.3 |
 | Token | 令牌 | 身份凭证 |
-| TPM | TPM | full form: Trusted Platform Module |
 | Handshake Transcript | 握手记录 | 变量名 transcript（冻结，不改） |
 | TRNG | TRNG | full form: True Random Number Generator |
 | TTL | TTL | full form: Time To Live |

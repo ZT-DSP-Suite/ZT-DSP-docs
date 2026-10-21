@@ -1834,9 +1834,12 @@ The file is a JSON object carrying `schema`, `note`, `labels` and `vectors`. Eac
 
 ## J.4 Implementation identifiers
 
-Format: `<LANGUAGE>_<version>`, for example `ZT-DSP_PY-1.0.0`.
+Format: `<LANGUAGE>_<version>[-<YYYYMMDD>]`, for example the release `ZT-DSP_PY-1.0.0` or the development build `ZT-DSP_PY-1.0.0-20261024`.
 
 - The language token is uppercase ASCII; the separator is a single underscore.
+- The date segment appears only in builds that have not reached a release candidate. Release candidates and releases drop it and share the same identifier.
+- The date is the commit date, UTC+8.
+- Package metadata keeps a plain numeric version without a date segment.
 - The version is the Program Version: the program's own version, unrelated to the document version. The document version the program aligns with is declared separately (see 0.1).
 - An implementation MUST report its identifier from its `--version` output, in the form `<identifier> (docs <document version>)`.
 - The document version does not enter the wire format: neither the Phase One parameter JSON nor the Phase Four AAD contains a version field. When the two sides' document versions differ, the symptom is a parameter mismatch, a confirmation-tag failure or a GCM decryption failure, not a "version mismatch" error.

@@ -15,7 +15,7 @@ The definitions come from Part 0, section 0.3. This document adds no requirement
 
 ## A.2 Five audit steps
 
-1. Take the program identifier the subject declares, in the form `<language>_<version>`.
+1. Take the program identifier the subject declares, in the form `<language>_<version>[-<YYYYMMDD>]` (see J.4 for the date-segment rule).
 2. Run every self-check item in Appendix C.1.
 3. Run every test vector in Appendix J and compare output byte for byte.
 4. Compare against the Appendix F byte layout. Look at bytes only, not at behaviour.

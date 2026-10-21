@@ -2,7 +2,7 @@
 
 > Purpose: every English document and every code comment in this project must use the English wording given here, so that terminology stays consistent throughout.
 > Status: this file is the **single normative source** of terminology and depends on no other document.
-> Entries: 119. Register new terms here before using them.
+> Entries: 117. Register new terms here before using them.
 
 | English | Chinese | Note |
 |---|---|---|

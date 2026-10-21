@@ -80,7 +80,7 @@ This protocol does not rely on any centralized trust anchor. Every device holds 
 
 ### [About the Version Number]
 
-**1.0.1 is the current document version of this guide.** **The technical content of this document is itself the normative baseline** — for what actually binds, see Part 0, section 0.4.
+**1.0.2 is the current document version of this guide.** **The technical content of this document is itself the normative baseline** — for what actually binds, see Part 0, section 0.4.
 
 ## Table of Contents
 
@@ -503,7 +503,7 @@ PSK (Pre-Shared Key) is the core anchor of the ZT-DSP security system.
 
 > **Privacy Risk** The PSK is key material with "single-point leakage causing global damage": after a leak, an attacker can impersonate your identity, decrypt communications (within the range of the leaked history), and join any session. It is also a primary target of supply-chain attacks (implanting a backdoor before the hardware/software leaves the factory).
 >
-> **Protection Recommendation** (1) Use devices with dedicated key storage, and enable full-disk encryption and screen locking; (2) regularly check the origin of device firmware and be wary of "preinstalled software" of unknown origin; (3) if you suspect the PSK has leaked, immediately revoke the old token, apply for a new token, and change the device; (4) side-channel attacks (power analysis, electromagnetic leakage) are threats in physical-contact scenarios, and high-security scenarios use devices with shielding measures.
+> **Protection Recommendation** (1) Use devices with dedicated key storage, and enable full-disk encryption and screen locking; (2) regularly check the origin of device firmware and be wary of "preinstalled software" of unknown origin; (3) if you suspect the PSK has leaked, rotate the PSK immediately (and update the corresponding hashes or declarations on the server side); tokens are issued by the TCA and never written to disk, so their lifecycle is independent of the PSK; change the device when the device itself is suspected to be compromised; (4) side-channel attacks (power analysis, electromagnetic leakage) are threats in physical-contact scenarios, and high-security scenarios use devices with shielding measures.
 >
 > **Compliance Note** The PSK is "key material"; follow cryptographic management best practices: keys should be managed in layers (root keys / session keys separated), the scope of use should be minimized (the PSK only participates in derivation and does not directly encrypt data), and key rotation and destruction mechanisms should be established.
 
@@ -1049,7 +1049,7 @@ A session's terminal state cannot be recovered: when any check in Volume 4 fails
 - **Transport**: Phase Four packets travel on one reliable, ordered stream (TCP, or a QUIC stream's reliable ordered delivery). Do not use bare UDP, multi-path spreading or per-packet round-robin.
 - **Routing**: Phase Four packets of one session land on the same node. For horizontal scaling, route consistently on the plaintext `session_id`.
 - **Reconnection**: an implementation may reconnect automatically; reconnection performs a new handshake and derives a new EK, never reusing the old session's key material.
-- **Observability**: the receiver records the number of terminated sessions and the triggering step (F.5 steps 1 to 8), so operators can tell attacks from network faults.
+- **Observability**: the receiver records the number of terminated sessions and the triggering step locally (F.5 steps 1 to 8), so operators can tell attacks from network faults; this record stays local and must not feed an externally facing logging system (see F.2 element 4).
 
 This section is deployment guidance and is not a conformance requirement under 0.3; conformance is judged by Appendix F.
 
@@ -1257,7 +1257,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *ZT-DSP Protocol General Guide* (document version 1.0.1) |
+| Governing document | *ZT-DSP Protocol General Guide* (document version 1.0.2; parameters unchanged since 1.0.1) |
 
 ### Advanced Server (moderate customization)
 
@@ -1270,7 +1270,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *ZT-DSP Protocol General Guide* (document version 1.0.1) |
+| Governing document | *ZT-DSP Protocol General Guide* (document version 1.0.2; parameters unchanged since 1.0.1) |
 
 ### High-Anonymity Server (heavy customization)
 
@@ -1283,7 +1283,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *ZT-DSP Protocol General Guide* (document version 1.0.1) |
+| Governing document | *ZT-DSP Protocol General Guide* (document version 1.0.2; parameters unchanged since 1.0.1) |
 
 # Appendix C: Minimal Implementation Checklist
 
@@ -1820,7 +1820,7 @@ Every hard upper bound is stated in **F.6**. An implementation MUST enforce each
 
 ## J.1 Where the vectors live
 
-`test-vectors/vectors.json` in this repository (the public copy is the source of record; the file of the same name in `ZT-DSP-client` is a working copy). Nine vectors: four reproduced from RFC 5869 Appendix A.1 and A.3 and RFC 7748 section 6.1, five generated by `test-vectors/generate_vectors.py`.
+`test-vectors/vectors.json` in this repository (the public copy is the source of record; the file of the same name in `ZT-DSP-client` is a working copy). Ten vectors: four reproduced from RFC 5869 Appendix A.1 and A.3 and RFC 7748 section 6.1, one produced by OpenSSL 3.5.9 for cross-checking, and five generated by `test-vectors/generate_vectors.py`.
 
 ## J.2 Format
 

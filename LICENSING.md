@@ -54,4 +54,4 @@ Any redistribution or derivative of this document must keep
 - **改过的规范必须同样开放**：你可以改，但改完发布的版本必须仍以 CC BY-SA 4.0
   分发，不能变成别人的闭源标准。
 - **不含商标与专利授权**（第 2(b)(2) 条）：不得把修改版或独立实现称为 ZT-DSP 的
-  "参考/参考/标准"版本。
+  "官方/参考/标准"版本。

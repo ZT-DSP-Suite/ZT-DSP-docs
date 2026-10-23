@@ -47,7 +47,7 @@ any behaviour that they deem inappropriate, threatening, offensive, or harmful.
 ## Scope
 
 This Code of Conduct applies within all community spaces, and also applies when an
-individual is publishedly representing the community in public spaces.
+individual is officially representing the community in public spaces.
 
 ## Enforcement
 

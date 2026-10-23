@@ -6,12 +6,48 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note on authority:** this file is a convenience record, not the source of truth. The
-governing change history is `git log`. If the two ever disagree, `git log` wins.
+normative change history is `git log`. If the two ever disagree, `git log` wins.
 
 This repository holds the protocol specification. It ships no test suite — it is a
 normative document. What runs mechanically is `scripts/check.py`: it verifies that the
 two language mirrors have the same structure, that every relative link resolves, and
 that no machine-specific string slipped in.
+
+## [1.0.2] - 2026-10-19
+
+### Removed — part of document version 1.0.2
+
+The deprecated hardware key-storage design is gone. No section of the specification
+describes storing, binding or writing a key in a TPM or an HWID any more.
+
+- Master Guide 4.1 loses its deprecation block, the two explanatory blocks, the storage
+  and property bullets, the nonce true-origin note and the hardware clauses in the
+  advice and checklists. The token and the PSK remain, and their storage rules are
+  stated plainly in the same subsections.
+- The token is **not** affected: the server uses it to identify a device, so every rule
+  about it stays. What was removed is the deprecated hardware storage design, not the
+  token.
+- The glossary entries for the two terms are removed, and the three client READMEs,
+  `version.py`, `version.rs`, the PR template, the repository README and
+  `CONTRIBUTING.md` drop their notices. Removing a claim that no implementation
+  upholds is what makes the remaining claims checkable.
+
+### Added — part of document version 1.0.2
+
+- 5.6 states the deployment conditions that keep a session alive: one reliable ordered
+  transport stream, session-affine routing, a fresh handshake on reconnect, and a
+  termination count that operators can see.
+- The step-1 note under the F.5 pipeline states that the replay check stays exactly as
+  written, and that turning it into a silent drop is a protocol change with a version
+  bump attached.
+- J.4 states that the document version never enters the wire format, and what a version
+  mismatch actually looks like to an operator.
+
+### Changed — part of document version 1.0.2
+
+The wire format is untouched. Both clients now declare document version 1.0.2 and keep
+1.0.0 and 1.0.1 in their declared compatibility list, because the wire format did not
+change between those revisions. The document version carries no date suffix.
 
 ## [1.0.1] - 2026-10-18
 
@@ -37,9 +73,12 @@ what used to be called the implementation identifier is now the program identifi
 which carries the program's own version.
 
 - Token and PSK storage: an implementation **MUST NOT** write the token to disk in
-  plaintext, **MUST NOT** export it, and **MUST NOT** back it up. Storage in the
-  TPM/HWID stays a recommendation, and the reference implementation does not
-  implement it.
+  plaintext, **MUST NOT** export it, and **MUST NOT** back it up. TPM/HWID storage is
+  deprecated and is neither a requirement nor a recommendation; it is kept as a
+  record of an earlier design until the next revision removes it. The PSK and the
+  token are supplied as ordinary configuration values (`--psk-file` / `--psk-env` /
+  `--psk`), keeping them secret is the caller's responsibility, and neither client
+  provides hardware-level protection.
 - Silent drop: the implementation **MUST NOT** write a log entry for a discarded packet.
 - Timing: the silent path **MUST NOT** produce a measurable response-time difference
   from the normal path.
@@ -54,7 +93,7 @@ which carries the program's own version.
 ### Planned — not part of 1.0.1
 
 Recorded so the intent is not lost. **None of this is implemented**, and 1.0.1 remains
-governing until a later revision ships these:
+normative until a later revision ships these:
 
 - Time-slot driven rotation: one key generation per second rather than per packet.
 - Lock packet: the same packet structure, sent on a fixed cadence so the chain keeps

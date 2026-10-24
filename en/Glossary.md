@@ -122,7 +122,7 @@
 | Answer Packet | 应答包 | 阶段二由响应方返还，含其临时公钥；与提议包成对 |
 | Document Version | 文档版本 | 规范文本自身的版本，兼容性的唯一锚点 |
 | Program Version | 程序版本 | 每个程序自身的版本，与文档版本无关 |
-| Program Identifier | 程序标识 | `<语言>_<版本>`，例如 `ZT-DSP_PY-1.0.0` |
+| Program Identifier | 程序标识 | `<语言>_<版本>[-<YYYYMMDD>]`，例如 `ZT-DSP_PY-1.0.0` |
 
 ## 使用规则
 

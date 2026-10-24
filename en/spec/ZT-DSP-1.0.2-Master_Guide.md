@@ -124,7 +124,7 @@ This protocol does not rely on any centralized trust anchor. Every device holds 
 | Numbering gaps | Appendices A, D, E and Volumes 2, 6, 7 were removed in an earlier revision and were not renumbered |
 | Status | The only current revision; the previous public revision is 1.0.1 |
 | Nature | A normative document, but not all of it binds — see 0.4 |
-| Program identifier | ~B~<language>_<version>~B~, for example ~B~ZT-DSP_PY-1.0.0~B~; the version is the program's own and is unrelated to the document version |
+| Program identifier | ~B~<language>_<version>[-<YYYYMMDD>]~B~, for example ~B~ZT-DSP_PY-1.0.0~B~; the version is the program's own and is unrelated to the document version |
 | Compatibility declaration | Every program must declare the document version it aligns with, for example "aligns with document 1.0.2"; no synchronisation is required between two programs |
 | License | The text is CC BY-SA 4.0; see `LICENSE` and `LICENSING.md` at the repository root |
 | Patents | The maintainers do not patent this protocol; see `PUBLICATION-RECORD.md` |
@@ -1834,11 +1834,15 @@ The file is a JSON object carrying `schema`, `note`, `labels` and `vectors`. Eac
 
 ## J.4 Implementation identifiers
 
-Format: `<LANGUAGE>_<version>`, for example `ZT-DSP_PY-1.0.0`.
+Format: `<LANGUAGE>_<version>[-<YYYYMMDD>]`, for example the release `ZT-DSP_PY-1.0.0` or the development build `ZT-DSP_PY-1.0.0-20261024`.
 
 - The language token is uppercase ASCII; the separator is a single underscore.
+- The date segment appears only in builds that have not reached a release candidate. Release candidates and releases drop it and share the same identifier.
+- `<version>` contains digits and dots only (the form `<major>.<minor>.<revision>`) and no hyphen; when the date segment is present, it is the trailing eight digits.
+- The date is the commit date of the source the build is made from, UTC+8. When no git checkout exists, use the source package's release date.
+- Package metadata keeps a plain numeric version without a date segment.
 - The version is the Program Version: the program's own version, unrelated to the document version. The document version the program aligns with is declared separately (see 0.1).
-- An implementation MUST report its identifier from its `--version` output, in the form `<identifier> (docs <document version>)`.
+- An implementation MUST report its identifier from its `--version` output, in the form `<identifier> (docs <document version>)`. Example: `ZT-DSP_PY-1.0.0-20261024 (docs 1.0.2)`.
 - The document version does not enter the wire format: neither the Phase One parameter JSON nor the Phase Four AAD contains a version field. When the two sides' document versions differ, the symptom is a parameter mismatch, a confirmation-tag failure or a GCM decryption failure, not a "version mismatch" error.
 
 ## J.5 Registry

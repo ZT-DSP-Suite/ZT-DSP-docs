@@ -1,14 +1,19 @@
 # Dependabot configuration.
 #
 # Two workflows remain: codeql.yml, which pins GitHub-owned actions by SHA.
-# A pinned SHA does not move by itself, so the only way a security fix reaches
-# this repository is an update proposal.
+# A pinned SHA does not move by itself, so the pins move only when a
+# maintainer applies the change in a signed commit.
+#
+# Version-update proposals are off (open-pull-requests-limit: 0): the weekly
+# proposals kept arriving as pull requests, and robot pull requests are not
+# merged by policy. Alert-driven security fixes stay governed by the
+# repository security settings, not by this file.
 version: 2
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 0
     commit-message:
       prefix: "chore"

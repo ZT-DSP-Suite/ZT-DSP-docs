@@ -29,6 +29,12 @@ git commit -s
 The `Signed-off-by` line in each commit is the record that you have the right to
 submit the work under CC BY-SA 4.0. Nothing else is required.
 
+## When we review and merge
+
+Review and merge usually happen between Friday and Sunday, UTC+8. The window is a
+habit of two maintainers with other work, not a service commitment. A pull request
+that waits over a weekday is waiting for a person, not rejected.
+
 ## What we will not merge
 
 - Any file whose copyright header or `SPDX-License-Identifier` line has been removed or altered.

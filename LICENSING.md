@@ -15,9 +15,14 @@ adaptation of the document, so no share-alike obligation attaches to your
 implementation, and you are not required to license your code in any particular
 way.
 
-**Reusing the text is free with attribution.** You may quote, translate and
-redistribute the specification, provided you give appropriate credit, link to the
-license, and indicate whether changes were made.
+**Quoting the text is free with attribution.** You may quote and redistribute
+the specification, provided you give appropriate credit, link to the license,
+and indicate whether changes were made.
+
+**Translation is an adaptation.** CC BY-SA 4.0's Adapted Material definition
+includes translations, so a published translation of the specification must be
+distributed under CC BY-SA 4.0 as well. Share-alike binds the document only;
+an implementation written from it stays outside this obligation.
 
 **Derivative specifications stay open.** If you modify the specification text and
 publish it, the result must be distributed under CC BY-SA 4.0 (or a compatible

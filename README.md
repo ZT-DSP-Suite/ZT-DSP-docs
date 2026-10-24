@@ -60,4 +60,4 @@
 
 ## 许可
 
-本仓库的规范正文以 **CC BY-SA 4.0**（署名—相同方式共享）授权：照规范写实现不受限制，引用与翻译须署名，改过的规范必须同样开放。详见 [LICENSING.md](LICENSING.md) 与 [LICENSE](LICENSE)。
+本仓库的规范正文以 **CC BY-SA 4.0**（署名—相同方式共享）授权：照规范写实现不受限制，引用须署名；翻译与改写都属改编，译本与改过的规范必须同样开放（仅约束文档本身）。详见 [LICENSING.md](LICENSING.md) 与 [LICENSE](LICENSE)。

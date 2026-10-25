@@ -13,6 +13,27 @@ normative document. What runs mechanically is `scripts/check.py`: it verifies th
 two language mirrors have the same structure, that every relative link resolves, and
 that no machine-specific string slipped in.
 
+## [1.1.0] - 2026-10-25
+
+### Changed — part of document version 1.1.0
+
+A repeated or too-old sequence number no longer terminates the session. The receiver
+silently discards the packet, does not advance `seq_recv` and replies with no bytes; the
+session continues. Previously step 1 of the receive pipeline wiped every key and ended
+the session, which meant one duplicated or reordered packet on a reliable transport cost
+the whole session.
+
+The wire format is untouched. What changes is one receiving branch, plus the state the
+receiver keeps: `seq_recv` now stays where it was instead of the session ending.
+
+### Removed — part of document version 1.1.0
+
+The note under the receive pipeline said an implementation MUST NOT turn the replay check
+into "discard the old packet, keep the session", because that is a protocol change. It is
+now made, so the note states the new rule instead. The replay branch is likewise gone
+from the ZTDSPSecurityError description, since a repeated packet is no longer a security
+error.
+
 ## [1.0.3] - 2026-10-25
 
 ### Changed — part of document version 1.0.3

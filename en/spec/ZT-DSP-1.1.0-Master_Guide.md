@@ -1,4 +1,4 @@
-# ZT-DSP Protocol Master Guide Library (document version 1.0.3)
+# ZT-DSP Protocol Master Guide Library (document version 1.1.0)
 
 > **Generalisation proposal (2026-10-14, draft)**
 > A proposal exists to lift ZT-DSP from a communication protocol to a **general-purpose one**: a core layer doing PSK-based
@@ -9,7 +9,7 @@
 **Zero Trust Dynamic Synchronization Protocol**
 (Zero Trust Dynamic Synchronization Protocol)
 
-- **document version**: 1.0.3 (the revision number of this document itself, not involved in network communication)
+- **document version**: 1.1.0 (the revision number of this document itself, not involved in network communication)
 - **applicable client versions**: `ZT-DSP_PY-1.0.0` (Python), `ZT-DSP_RS-1.0.0` (Rust)
 - **applicable server version**: `ZT-DSP_SV-1.0.0` (no implementation yet)
 - **Release date**: 2026-10-19
@@ -22,7 +22,7 @@
 > - **This document**: the *ZT-DSP Protocol Master Guide*.
 > - **Applies to**: This file specifies the protocol behavior and tunable parameters on the code side — `random_len`, `random_rate`, `window`, `time_window`, `key_len`, `hash`, `aead`, `module_flags`, `padding`, `jitter`, etc.; adjusting these settings is governed by this document.
 > - **Corresponding implementation**: the code side declares at its entry point that "this implementation follows the *ZT-DSP Protocol Master Guide*" (for the Python implementation in this repository, see `FOLLOWS_DOC` in `zt_dsp_py/version.py`).
-> - **About version numbers**: this project has two kinds of version number — the **document version** (the revision number of this document itself, 1.0.3), and the **client versions** / **server versions** (the full identifier of each implementation). The relation between them and this document is **many-to-many**, not one-to-one: several implementations of the same kind whose protocol behaviour has not changed share one applicability declaration, and the same guide may apply to several client and server versions at once. **Identical version numbers do not mean the same implementation and do not constitute a compatibility claim.** **The handshake frames carry no version string whatsoever**: neither the Phase One parameter JSON nor the Phase Four AAD contains a version or protocol identifier field. Whether the peer is compatible is reflected by the Phase Three confirmation tag check.
+> - **About version numbers**: this project has two kinds of version number — the **document version** (the revision number of this document itself, 1.1.0), and the **client versions** / **server versions** (the full identifier of each implementation). The relation between them and this document is **many-to-many**, not one-to-one: several implementations of the same kind whose protocol behaviour has not changed share one applicability declaration, and the same guide may apply to several client and server versions at once. **Identical version numbers do not mean the same implementation and do not constitute a compatibility claim.** **The handshake frames carry no version string whatsoever**: neither the Phase One parameter JSON nor the Phase Four AAD contains a version or protocol identifier field. Whether the peer is compatible is reflected by the Phase Three confirmation tag check.
 
 ## Overview
 
@@ -80,7 +80,7 @@ This protocol does not rely on any centralized trust anchor. Every device holds 
 
 ### [About the Version Number]
 
-**1.0.3 is the current document version of this guide.** **The technical content of this document is itself the normative baseline** — for what actually binds, see Part 0, section 0.4.
+**1.1.0 is the current document version of this guide.** **The technical content of this document is itself the normative baseline** — for what actually binds, see Part 0, section 0.4.
 
 ## Table of Contents
 
@@ -205,14 +205,14 @@ This protocol does not rely on any centralized trust anchor. Every device holds 
 
 | Item | Value |
 |---|---|
-| Document identifier | `ZT-DSP-1.0.3` |
-| Document version | `1.0.3` (2026-10-25), a semantics revision: the timestamp window is measured against the session's first authenticated packet instead of the receiver's current clock, so the two ends no longer need synchronised clocks. The 1.0.2 history is in `CHANGELOG.md` |
-| Wire format | unchanged between 1.0.0 and 1.0.3 |
+| Document identifier | `ZT-DSP-1.1.0` |
+| Document version | `1.1.0` (2026-10-25), a behaviour revision: a repeated or too-old sequence number no longer terminates the session; it is silently discarded and the session is kept. The wire format is unchanged; the 1.0.x history is in `CHANGELOG.md` |
+| Wire format | unchanged between 1.0.0 and 1.1.0 |
 | Numbering gaps | Appendices A, D, E and Volumes 2, 6, 7 were removed in an earlier revision and were not renumbered |
 | Status | The only current revision; the previous public revision is 1.0.1 |
 | Nature | A normative document, but not all of it binds — see 0.4 |
 | Program identifier | ~B~<language>_<version>[-<YYYYMMDD>]~B~, for example ~B~ZT-DSP_PY-1.0.0~B~; the version is the program's own and is unrelated to the document version |
-| Compatibility declaration | Every program must declare the document version it aligns with, for example "aligns with document 1.0.3"; no synchronisation is required between two programs |
+| Compatibility declaration | Every program must declare the document version it aligns with, for example "aligns with document 1.1.0"; no synchronisation is required between two programs |
 | License | The text is CC BY-SA 4.0; see `LICENSE` and `LICENSING.md` at the repository root |
 | Patents | The maintainers do not patent this protocol; see `PUBLICATION-RECORD.md` |
 
@@ -941,7 +941,7 @@ AAD (Additional Authenticated Data)
 
 **[Receiving Flow]:**
 
-1. After B receives the packet, it first checks whether the **sequence number** is strictly greater than the last received value (`seq > seq_recv`, with `seq_recv` starting at −1); otherwise -> **drop the packet, wipe all keys and terminate the session** (replay attack or a stale out-of-order packet)
+1. After B receives the packet, it first checks whether the **sequence number** is strictly greater than the last received value (`seq > seq_recv`, with `seq_recv` starting at −1); otherwise -> **silently discard the packet and keep the session**: do not advance `seq_recv`, reply with no bytes (replay attack or a stale out-of-order packet)
 2. B then checks whether the **session ID** matches the current session; on mismatch -> **drop the packet and terminate the session** (crosstalk or a leftover packet from an old session)
 3. B verifies the **GCM authentication tag**; on failure -> **drop the packet and terminate the session** (data tampered with or key mismatch)
 4. After decrypting the payload, B performs **three internal checks**: (1) whether the payload structure length is self-consistent (bounds checking); (2) whether the payload format marker is valid (unknown fmt); (3) **bidirectional token hash validation** -- the in-packet destination token hash must equal the local identity and the source token hash must equal the peer identity (preventing traffic reflection/crosstalk/identity forgery). Failure of any of these -> **drop the packet and terminate the session**
@@ -1102,7 +1102,7 @@ Traffic Analysis
 | Attack Method | Defense Mechanism |
 |----------|----------|
 | Information interception | End-to-end X25519+AES-GCM; the interceptor cannot decrypt |
-| Secondary replay | 64-bit incrementing sequence number + timestamp window; a replayed packet's sequence number <= the maximum received value -> drop the packet, wipe all keys and terminate the session |
+| Secondary replay | 64-bit incrementing sequence number + timestamp window; a replayed packet's sequence number <= the maximum received value -> silently discard the packet, the session continues |
 | Environment simulation | PSK verification + Ed25519 signature + silent drop; no PSK = cannot generate the correct randomness/beacon |
 | Traffic reflection | Session ID binding + source/destination token hash validation; a looped-back packet's destination hash does not match the receiver's identity -> drop the packet and terminate the session |
 | Traffic monitoring | Random padding (512~2048B) + timing jitter, eliminating length and timing fingerprints |
@@ -1344,7 +1344,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *ZT-DSP Protocol General Guide* (document version 1.0.3; parameters unchanged since 1.0.1) |
+| Governing document | *ZT-DSP Protocol General Guide* (document version 1.1.0; parameters unchanged since 1.0.1) |
 
 ### Advanced Server (moderate customization)
 
@@ -1357,7 +1357,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *ZT-DSP Protocol General Guide* (document version 1.0.3; parameters unchanged since 1.0.1) |
+| Governing document | *ZT-DSP Protocol General Guide* (document version 1.1.0; parameters unchanged since 1.0.1) |
 
 ### High-Anonymity Server (heavy customization)
 
@@ -1370,7 +1370,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *ZT-DSP Protocol General Guide* (document version 1.0.3; parameters unchanged since 1.0.1) |
+| Governing document | *ZT-DSP Protocol General Guide* (document version 1.1.0; parameters unchanged since 1.0.1) |
 
 # Appendix C: Minimal Implementation Checklist
 
@@ -1589,11 +1589,11 @@ tag_resp = HMAC-SHA3-256(MK, "ZT-DSP-CONFIRM-RESP-v3" ‖ transcript)
 
 **AAD**: `session_id ‖ seq (8B uint64 BE)`, **40 bytes** in total (session_id 32B + seq 8B). The routing fields are "visible but tamper-proof". **The AAD contains no version or protocol identifier**.
 
-**Receive verification pipeline (fixed order; any step that fails terminates processing immediately)**:
+**Receive verification pipeline (fixed order; a step terminates processing unless it is marked "Special")**:
 
 | Step | Verification | Meaning of failure | Consequence of failure |
 |------|------|----------|----------|
-| 1 | `seq > seq_recv` (seq_recv is initially −1) | Replay or out-of-order old packet | Session termination (security error) |
+| 1 | `seq > seq_recv` (seq_recv is initially −1) | Replay or out-of-order old packet | **Special**: silently discard the packet, the session continues; do not advance seq_recv, do not reply |
 | 2 | `session_id == local session ID` | Cross-talk or residual packet from an old session | Session termination (security error) |
 | 3 | GCM decryption and authentication (AAD participates in authentication) | Tampering or key mismatch | Session termination (security error) |
 | 4 | Payload length ≥ 105B | Truncated structure | Session termination (protocol error) |
@@ -1602,7 +1602,7 @@ tag_resp = HMAC-SHA3-256(MK, "ZT-DSP-CONFIRM-RESP-v3" ‖ transcript)
 | 7 | Bidirectional token hash verification: dst in the packet == local identity, src == peer identity | Traffic reflection / cross-talk / identity forgery | Session termination (security error) |
 | 8 | Timestamp window: `|ts − ts_ref| ≤ time_window`, where `ts_ref` is the timestamp of the first authenticated packet in the session | Authenticated but too far from the reference point | **Special**: does not terminate the session — it still rotates EK and advances seq_recv, discarding only the plaintext (to prevent ratchet desynchronization, see 4.2.4 receive flow step 5) |
 
-> **The meaning of step 1**: this check is replay protection. Loss and reordering within a session are guaranteed by the transport layer not to happen (see 5.6). An implementation MUST NOT turn it into "drop the old packet, keep the session" — that is a protocol change and must ship with a version bump.
+> **The meaning of step 1**: this check is replay protection. Loss and reordering within a session are guaranteed by the transport layer not to happen (see 5.6). **From 1.1, a repeated or too-old sequence number no longer terminates the session**: the receiver silently discards the packet, does not advance `seq_recv` and replies with no bytes, and the session continues. This changes only the receiver's handling of a repeated packet; the wire format is untouched.
 
 **Sender-side state roll-forward ("consume state first, attempt to send after")**: Before encrypted sending, the following are completed in order — generate next_seed → `new_EK = HKDF-SHA3-256(EK ‖ next_seed, info = "ZT-DSP-EK-ROTATE")` → erase the old EK and swap in new_EK → `seq += 1`. Therefore, when sending fails the key has already rolled forward and the session is unrecoverable (reconnection is the only option), but an attacker can never exploit "send failure leaving the state un-rolled-forward" to replay.
 
@@ -1815,7 +1815,7 @@ The implementation must build in the following hard upper bounds; **all upper-bo
 | Phase Two | DH failure (low-order point, all-zero output) | Disconnect + erase + cryptographic error (the initiator has already sent its frame) | **Strict silence** (DH is front-loaded before sending) |
 | Phase Three | Peer confirmation frame error / timeout | Disconnect + erase + timeout error | **Strict silence** |
 | Phase Three | Tag content mismatch | Constant-time comparison fails → **erase all keys** + security error, disconnect | Same as the left (both sides compare independently and each fails separately) |
-| Data phase | seq repeated/regressed (replay) | — (an error on the peer side triggered by the sender) | Intercepted before the constant-time path → **session termination + erase**, security error |
+| Data phase | seq repeated/regressed (replay) | — (an error on the peer side triggered by the sender) | **Do not terminate**: silently discard the packet, do not advance seq_recv, do not reply (see F.5 step 1) |
 | Data phase | session_id mismatch / GCM authentication failure / unknown fmt / structural contradiction / bidirectional token hash verification failure | Same as above (all these checks happen on the receiving side) | **Session termination + erase** (security or protocol error) |
 | Data phase | Timestamp out of window (but GCM already passed) | — | **Do not terminate**: rotate EK, advance seq_recv, discard the plaintext (return an empty plaintext) |
 | Data phase | Send failure (disconnect / BrokenPipe / OSError) | **The session is irreversibly desynchronized**: the keys have already rolled forward and cannot be reclaimed → clean up the session and prompt for reconnection | The peer will terminate due to a read failure/timeout |
@@ -1829,7 +1829,7 @@ Implementers should converge local errors into **typed exceptions**, so that the
 ```plain
 ZTDSPError (protocol exception base class)
 ├── ZTDSPSecurityError
-│   └── Meaning: security event — PSK mismatch, anchor confirmation failure, replay/out-of-order, session ID mismatch,
+│   └── Meaning: security event — PSK mismatch, anchor confirmation failure, session ID mismatch,
 │       AEAD decryption failure, unknown payload format, bidirectional token hash verification failure
 │   └── Handling: always terminate the session and erase the keys; no retry, no ignoring
 ├── ZTDSPParamError
@@ -1931,7 +1931,7 @@ Format: `<LANGUAGE>_<version>[-<YYYYMMDD>]`, for example the release `ZT-DSP_PY-
 - The date is the commit date of the source the build is made from, UTC+8. When no git checkout exists, use the source package's release date.
 - Package metadata keeps a plain numeric version without a date segment.
 - The version is the Program Version: the program's own version, unrelated to the document version. The document version the program aligns with is declared separately (see 0.1).
-- An implementation MUST report its identifier from its `--version` output, in the form `<identifier> (docs <document version>)`. Example: `ZT-DSP_PY-1.0.0-20261024 (docs 1.0.3)`.
+- An implementation MUST report its identifier from its `--version` output, in the form `<identifier> (docs <document version>)`. Example: `ZT-DSP_PY-1.0.0-20261024 (docs 1.1.0)`.
 - The document version does not enter the wire format: neither the Phase One parameter JSON nor the Phase Four AAD contains a version field. When the two sides' document versions differ, the symptom is a parameter mismatch, a confirmation-tag failure or a GCM decryption failure, not a "version mismatch" error.
 
 ## J.5 Registry

@@ -2,10 +2,9 @@
 
 ## The marks
 
-ZT-DSP, ZT-DSP-Suite and the ZT-DSP logo are marks claimed by
+ZT-DSP, ZT-DSP-Suite and the ZT-DSP logo are marks claimed by **ZT-DSP Suite maintainers**.
 
 The logo files are `branding/icon-1024.png`, `branding/icon-512.png` and `branding/icon-512-black.png` in the ZT-DSP-docs repository.
-**ZT-DSP Suite maintainers (copyright holder: SCAL-ROAM)**.
 
 Copyright licenses grant no trademark rights:
 
@@ -28,7 +27,7 @@ license and does not limit any right that license grants.
   reference, canonical, or the ZT-DSP implementation.
 - Use the ZT-DSP logo as your product icon, or anywhere it implies endorsement.
 - Publish a fork to PyPI or crates.io under the names zt-dsp-py, zt_dsp_py, zt-dsp-rs
-  or zt_dsp_rs. Those names identify the official distribution.
+  or zt_dsp_rs. Those names identify the ZT-DSP project.
 - Register a domain, package name, organisation name or social account that
   incorporates the marks in a way that implies you are the project.
 
@@ -45,7 +44,7 @@ Open an issue in the ZT-DSP-Suite organisation.
 
 ## 中文摘要
 
-ZT-DSP、ZT-DSP-Suite 与 ZT-DSP 标识归 **ZT-DSP Suite maintainers（权利人：SCAL-ROAM）** 所有。
+ZT-DSP、ZT-DSP-Suite 与 ZT-DSP 标识的商标权由 **ZT-DSP Suite maintainers** 主张。
 
 **版权许可不授予商标权**（AGPL 第 7(e) 条、CC BY-SA 第 2(b)(2) 条均有明文）。本政策是商标权的
 声明，不是版权许可的附加条件，也不削减许可已赋予的任何权利。

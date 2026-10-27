@@ -38,8 +38,14 @@ licensed** under it. Specifically:
 
 ## Attribution requirement
 
-Any redistribution or derivative of this document must keep
-`Copyright (c) 2026 ZT-DSP Suite maintainers (copyright holder: SCAL-ROAM)` intact and link to the license.
+Any redistribution or derivative of this document must keep the copyright notice
+that the copy you received carries intact and link to the license. Later versions
+of this repository use `Copyright (c) 2026 ZT-DSP Suite maintainers`.
+
+## Contact
+
+Questions about this license and about the project marks: open an issue in the
+ZT-DSP-Suite organisation: https://github.com/ZT-DSP-Suite
 
 ---
 
@@ -49,9 +55,10 @@ Any redistribution or derivative of this document must keep
 
 - **照规范写实现是自由的**：实现协议不构成对本文档的改编，不触发"相同方式
   共享"，也不限制你的代码使用何种许可。
-- **引用、翻译、转载需要署名**：保留 `Copyright (c) 2026 ZT-DSP Suite maintainers (copyright holder: SCAL-ROAM)`，
-  并注明许可与是否修改。
+- **引用、翻译、转载需要署名**：保留你所收到的版本所带的版权声明（本仓后续
+  版本使用 `Copyright (c) 2026 ZT-DSP Suite maintainers`），并注明许可与是否修改。
 - **改过的规范必须同样开放**：你可以改，但改完发布的版本必须仍以 CC BY-SA 4.0
   分发，不能变成别人的闭源标准。
 - **不含商标与专利授权**（第 2(b)(2) 条）：不得把修改版或独立实现称为 ZT-DSP 的
   "官方/参考/标准"版本。
+- **许可联系**：在 ZT-DSP-Suite 组织下提 issue：https://github.com/ZT-DSP-Suite

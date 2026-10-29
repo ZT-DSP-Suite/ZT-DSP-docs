@@ -26,7 +26,6 @@ isostress-docs/
 ├─ CONTRIBUTING.md           contributor license agreement
 ├─ SECURITY.md               security policy and vulnerability reporting
 ├─ CITATION.cff              citation metadata
-├─ _config.yml               GitHub Pages configuration
 ├─ cn/                       Chinese side
 │  ├─ spec/isostress-1.0.0-总指导.md      the specification (the only current revision)
 │  ├─ 术语对照表.md                    Chinese-to-English terminology baseline

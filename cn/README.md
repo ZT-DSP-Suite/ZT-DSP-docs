@@ -26,7 +26,6 @@ isostress-docs/
 ├─ CONTRIBUTING.md           贡献者许可协议
 ├─ SECURITY.md               安全策略与漏洞上报
 ├─ CITATION.cff              引用元数据
-├─ _config.yml               GitHub Pages 配置
 ├─ cn/                       中文侧
 │  ├─ spec/isostress-1.0.0-总指导.md      规范正文（唯一现行版）
 │  ├─ 术语对照表.md                     中→英术语基线

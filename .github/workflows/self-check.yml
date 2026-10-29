@@ -20,7 +20,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: self-check-${{ github.ref }}
+  group: self-check-${{ github.ref }}  # gate:rule-carrier
   cancel-in-progress: true
 
 jobs:

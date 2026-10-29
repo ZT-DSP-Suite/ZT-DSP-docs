@@ -62,7 +62,7 @@ for dp, dn, fs in os.walk("."):
     for f in fs:
         if f.endswith(".md"):
             t = read(os.path.join(dp, f))
-            for kw in ("TODO", "TBD", "FIXME", "XXX", "待补"):
+            for kw in ("TODO", "TBD", "FIXME", "XXX", "待补"):  # gate:rule-carrier
                 if kw in t:
                     found.append("%s:%s" % (f, kw))
 record("2 no placeholders", not found, "%d found" % len(found))
@@ -113,7 +113,7 @@ record("6 licence files", not missing, ("missing " + ", ".join(missing)) if miss
 # 7. The publication record carries the patent statement, in one place
 rec_txt = read("PUBLICATION-RECORD.md") if os.path.exists("PUBLICATION-RECORD.md") else ""
 has_patent = "## Patents" in rec_txt
-no_split = not any(os.path.exists(n) for n in ("cn/PRIOR-PUBLICATION.md", "en/PRIOR-PUBLICATION.md"))
+no_split = not any(glob.glob(os.path.join(side, "PRIOR-PUBLICATION*")) for side in ("cn", "en"))
 record("7 publication record", has_patent and no_split,
        "Patents section present" if has_patent and no_split else
        ("missing ## Patents in PUBLICATION-RECORD.md" if not has_patent else "a split statement file is back"))

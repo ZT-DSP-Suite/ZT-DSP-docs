@@ -1,20 +1,20 @@
 {
-  "schema": "zt-dsp-shared-vectors/1",
-  "note": "Shared known-answer vectors for ZT-DSP 1.0.0. Consumed by BOTH zt_dsp_py and zt_dsp_rs. Regenerate with test-vectors/generate_vectors.py and review the diff.",
+  "schema": "isostress-shared-vectors/1",
+  "note": "Shared known-answer vectors for isostress 1.0.0. Consumed by BOTH isostress_py and isostress_rs. Regenerate with test-vectors/generate_vectors.py and review the diff.",
   "labels": {
-    "INFO_MK": "ZT-DSP-MK-v3",
-    "INFO_ANCHOR": "ZT-DSP-ANCHOR-v3",
-    "INFO_EK": "ZT-DSP-EK-v3",
-    "INFO_SID": "ZT-DSP-SID-v3",
-    "INFO_EK_ROTATE": "ZT-DSP-EK-ROTATE",
-    "INFO_CONFIRM_INIT": "ZT-DSP-CONFIRM-INIT-v3",
-    "INFO_CONFIRM_RESP": "ZT-DSP-CONFIRM-RESP-v3"
+    "INFO_MK": "ISOSTRESS-MK-v3",
+    "INFO_ANCHOR": "ISOSTRESS-ANCHOR-v3",
+    "INFO_EK": "ISOSTRESS-EK-v3",
+    "INFO_SID": "ISOSTRESS-SID-v3",
+    "INFO_EK_ROTATE": "ISOSTRESS-EK-ROTATE",
+    "INFO_CONFIRM_INIT": "ISOSTRESS-CONFIRM-INIT-v3",
+    "INFO_CONFIRM_RESP": "ISOSTRESS-CONFIRM-RESP-v3"
   },
   "vectors": [
     {
       "name": "rfc5869-tc1-sha256",
       "kind": "hkdf",
-      "why": "RFC 5869 Appendix A.1 RFC 原文测试向量，两侧必须逐字节命中",
+      "why": "RFC 5869 Appendix A.1 官方测试向量，两侧必须逐字节命中",
       "hash": "SHA-256",
       "ikm": "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
       "salt": "000102030405060708090a0b0c",
@@ -47,7 +47,7 @@
     {
       "name": "rfc7748-x25519-dh",
       "kind": "x25519",
-      "why": "RFC 7748 §6.1 RFC 原文 DH 向量：Alice 私钥 × Bob 公钥",
+      "why": "RFC 7748 §6.1 官方 DH 向量：Alice 私钥 × Bob 公钥",
       "scalar": "77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
       "peer_public": "de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f",
       "shared": "4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742"
@@ -73,15 +73,15 @@
       "sk_b": "5dab087e624a8a4b79e17f8b83800ee66f3bb1292618b6fd1c2f8b27ff88e0eb",
       "pk_b": "de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f",
       "dh": "4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742",
-      "mk": "64bb6844e9c0f5b2903522e15d2bc8a66b0e1239abddb90f0813761561884350",
-      "anchor": "a3756784ed992513ebcf13f0dd95e07b23c5396a09c3e08488e4a58835d810c8",
-      "session_id": "8fea6eb1950afa3d8d28ed87d1bab9454226369d3e625ea7e7d09d093c4f25fe",
-      "initiator_send_ek": "a88cc3a62a777cdd259512ece8d197d2fa5abbe549e749a7a1a0113e6ae6416c",
-      "initiator_recv_ek": "df243e76a4541ed9d5af23b54ee38bbe46faa8857c0f6fc5c902cf72076d8c55",
-      "responder_send_ek": "df243e76a4541ed9d5af23b54ee38bbe46faa8857c0f6fc5c902cf72076d8c55",
-      "responder_recv_ek": "a88cc3a62a777cdd259512ece8d197d2fa5abbe549e749a7a1a0113e6ae6416c",
+      "mk": "a5ac9e5e4e414750bebcf48be4c28feeee7906aebf395fd8854f736b5eb268fb",
+      "anchor": "4b2ceb8e46a180f48ef5cd1544e71b3bfdbb5bc4a75261549336f15e1cf9515e",
+      "session_id": "b1ce0716f25a8c05d959b823640c7092daf3ddf6e9bae91c3c5427edc5c0201e",
+      "initiator_send_ek": "c2ee67b3c599472345c86ba8793647a5ac491825739334dd33c794774260f8f0",
+      "initiator_recv_ek": "5ef8f9d18cff02f575122f3ee51ddf7c9488458092fe189676972c0f83374518",
+      "responder_send_ek": "5ef8f9d18cff02f575122f3ee51ddf7c9488458092fe189676972c0f83374518",
+      "responder_recv_ek": "c2ee67b3c599472345c86ba8793647a5ac491825739334dd33c794774260f8f0",
       "next_seed": "5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c",
-      "rotated_ek": "7b06bbc4fb20bcb0654ee2bd462d19840ad5bae1f6233f0395157235b8df00c9",
+      "rotated_ek": "dcb12c588a18070ffbd13a62b6545b85d21e0d0180896ce7273f0983943369b4",
       "rotated_ek_matches_peer": true
     },
     {
@@ -97,15 +97,15 @@
       "sk_b": "de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f",
       "pk_b": "831de651c31fe1f3e94a8161fdaabad8a7979818acac89534ec304b645d47550",
       "dh": "8da4bcb45f3db50ce92cf72909608d1631eb4c77eb3c43ec7688c7a4c98a0c52",
-      "mk": "f99d908170d8a0ab85d71ee7a9fa3c39e11dd5518a33856e07279c68ab14e3e5",
-      "anchor": "3bbbc20ead69dd197c0275ac29e0b8ccdd9bbf28360de64244101f01071ddeee",
-      "session_id": "b389b7f637b27183b9703c434ffd9589138fb03e2824880e3eb62b012534bd4d",
-      "initiator_send_ek": "e11750d3a1c2abdaf2e2b956b3eb6c96d127be1bf4b863c0860311f58b794a17",
-      "initiator_recv_ek": "950f8899af444669db19ae99883847e236811320d66f515a2e0d874beea22986",
-      "responder_send_ek": "950f8899af444669db19ae99883847e236811320d66f515a2e0d874beea22986",
-      "responder_recv_ek": "e11750d3a1c2abdaf2e2b956b3eb6c96d127be1bf4b863c0860311f58b794a17",
+      "mk": "9dd6df9f3f4a3fac4dae52225bce7e9642b8bc232854846582e022f42e83dc8d",
+      "anchor": "dff7a3924311a6696688e03b1501ca722e168ec1c4d13a91c92642e5f239994b",
+      "session_id": "ff9cf2dd14c7cf8a8a6d79c10f00856eafa7dca5b9daa493867419d055f0dbaa",
+      "initiator_send_ek": "b15caed4beafcde4900b6c38a9a43f70c19794cc409159dd3624a818b913d4c0",
+      "initiator_recv_ek": "5c1a6d9daa03220de9374f6b99abe66a66de11cb2ddb446983f228cc483525a0",
+      "responder_send_ek": "5c1a6d9daa03220de9374f6b99abe66a66de11cb2ddb446983f228cc483525a0",
+      "responder_recv_ek": "b15caed4beafcde4900b6c38a9a43f70c19794cc409159dd3624a818b913d4c0",
       "next_seed": "6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d",
-      "rotated_ek": "ceeb344be0c52e02747cafb087a9748162a6bfc7a4e797e231d36af359e8fa3b",
+      "rotated_ek": "89abb2ba33a4ce0fe268daaaed134b041907d20182922ac2ed8dadccd6d7d36a",
       "rotated_ek_matches_peer": true
     },
     {
@@ -137,9 +137,9 @@
       "why": "附录 F.5：AES-256-GCM 在固定 key/nonce/plaintext/aad 下必须产出同一密文",
       "key": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
       "nonce": "000000000000000000000001",
-      "plaintext": "5a542d4453502064657465726d696e6973746963204145414420636865636b",
+      "plaintext": "69736f7374726573732064657465726d696e6973746963204145414420636865636b",
       "aad": "202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f0000000000000001",
-      "ciphertext": "4f8292b817a4107a6b5a344b81cf549e66eb753744f311c5372060b14353183570c8c3defed38053bba1e10f70fa09"
+      "ciphertext": "7ca5d08f3086556d7d0e355c98c3489a7cf1752710db37a43245429d06531b3b59fda9b53f1f143e338b5f9ee3d0b3a352e0"
     }
   ]
 }

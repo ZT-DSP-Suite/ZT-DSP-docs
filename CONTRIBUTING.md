@@ -1,6 +1,6 @@
-# Contributing to ZT-DSP-docs
+# Contributing to isostress-docs
 
-This repository holds the ZT-DSP protocol specification. It is prose, not code.
+This repository holds the isostress protocol specification. It is prose, not code.
 
 ## What licence a contribution carries
 

@@ -1,4 +1,4 @@
-# ZT-DSP 协议文档
+# isostress 协议文档
 
 ## 这里有什么
 
@@ -8,18 +8,18 @@
 
 完整地图见 [仓库根 README](../README.md)。
 
-> 当前协议的规范文档。以 `cn/spec/ZT-DSP-1.0.2-总指导.md` 为准（docs 版本 1.0.2）。
+> 当前协议的规范文档。以 `cn/spec/isostress-1.0.0-总指导.md` 为准（docs 版本 1.0.2）。
 >
-> **本仓库与代码仓库的对应关系**：规范规定 code 侧的协议行为与可调参数；代码侧在入口处声明"本实现遵循《ZT-DSP 协议总指导》"。双方不靠版本号绑定。
+> **本仓库与代码仓库的对应关系**：规范规定 code 侧的协议行为与可调参数；代码侧在入口处声明"本实现遵循《isostress 协议总指导》"。双方不靠版本号绑定。
 
-本仓库**只承载文档**；参考实现与运行时代码在独立仓库 `ZT-DSP-client`。
+本仓库**只承载文档**；参考实现与运行时代码在独立仓库 `isostress-client`。
 
 > 完整的文档地图（按你要做的事分类）见 [仓库根 README](../README.md)。
 
 ## 目录结构
 
 ```
-ZT-DSP-docs/
+isostress-docs/
 ├─ README.md                 本索引
 ├─ LICENSE                   CC BY-SA 4.0 全文
 ├─ LICENSING.md              许可范围、署名与商标说明
@@ -28,22 +28,22 @@ ZT-DSP-docs/
 ├─ CITATION.cff              引用元数据
 ├─ _config.yml               GitHub Pages 配置
 ├─ cn/                       中文侧
-│  ├─ spec/ZT-DSP-1.0.2-总指导.md      规范正文（唯一现行版）
+│  ├─ spec/isostress-1.0.0-总指导.md      规范正文（唯一现行版）
 │  ├─ 术语对照表.md                     中→英术语基线
 ├─ en/                       英文侧（与 cn/ 逐份对应）
-│  ├─ spec/ZT-DSP-1.0.2-Master_Guide.md
+│  ├─ spec/isostress-1.0.0-Master_Guide.md
 │  ├─ Glossary.md
 └─ .github/                  议题表单与 Pages 工作流
 ```
 
 ## spec/ — 规范主干
 
-现行版为 **docs 1.0.2**，也是本仓库**唯一**的规范文件。
+现行版为 **docs 1.0.0**，也是本仓库**唯一**的规范文件。
 
 | 文件 | 内容 |
 |------|------|
-| `cn/spec/ZT-DSP-1.0.2-总指导.md` | **协议总规范**（中文侧）。含第四册核心协议、附录 B 参数参考、附录 C 实现校验清单、附录 F 线上逐字节规范、附录 G 流量防御细节、附录 H 状态机与超时矩阵。 |
-| `en/spec/ZT-DSP-1.0.2-Master_Guide.md` | 同上，英文侧。 |
+| `cn/spec/isostress-1.0.0-总指导.md` | **协议总规范**（中文侧）。含第四册核心协议、附录 B 参数参考、附录 C 实现校验清单、附录 F 线上逐字节规范、附录 G 流量防御细节、附录 H 状态机与超时矩阵。 |
+| `en/spec/isostress-1.0.0-Master_Guide.md` | 同上，英文侧。 |
 
 ## 双语镜像
 
@@ -63,9 +63,9 @@ ZT-DSP-docs/
 本项目有**三类版本号**，以及一套**双向声明**：
 
 - **总指导版本（1.0.2）**：本文档仓库自身的修订号，写作 `docs 1.0.2`。不参与网络通信。
-- **客户端版本**：各客户端实现的完整标识，形如 `ZT-DSP_<语言前缀>-<主.次.修订>`——Python 实现为 `ZT-DSP_PY-1.0.0`，Rust 实现为 `ZT-DSP_RS-1.0.0`。不同语言的实现可共用同一版本号，靠前缀区分。
-- **服务器版本**：服务端实现的完整标识，形如 `ZT-DSP_SV-1.0.0`（暂无实现）。`SV` 是角色前缀，不是语言前缀。
-- **双向声明**：文档侧（`spec/` 头部）列出**适用本版本的客户端与服务器版本**，并声明"本文档管哪些设置"；实现侧（`zt_dsp_py/version.py` 的 `FOLLOWS_DOC` 与 `APPLIES_TO_DOC_VERSIONS`）声明"本实现适用哪份文档"。**双方不靠版本号绑定。**
+- **客户端版本**：各客户端实现的完整标识，形如 `isostress_<语言前缀>-<主.次.修订>`——Python 实现为 `ISOSTRESS_PY-1.0.0`，Rust 实现为 `ISOSTRESS_RS-1.0.0`。不同语言的实现可共用同一版本号，靠前缀区分。
+- **服务器版本**：服务端实现的完整标识，形如 `ISOSTRESS_SV-1.0.0`。`SV` 是角色前缀，不是语言前缀。Rust 实现见 `isostress-server/src/`；Python 参考实现 `ISOSTRESS_SV-1.0.0-20261030` 见 `isostress-client/isostress_sv_py/`。
+- **双向声明**：文档侧（`spec/` 头部）列出**适用本版本的客户端与服务器版本**，并声明"本文档管哪些设置"；实现侧（`isostress_py/version.py` 的 `FOLLOWS_DOC` 与 `APPLIES_TO_DOC_VERSIONS`）声明"本实现适用哪份文档"。**双方不靠版本号绑定。**
 
 **适用关系是多对多的，不是一一对应**：同品类、协议行为未改变的多个实现共用同一份适用声明；同一份总指导也可同时适用多个客户端与服务器版本。**版本号相同不代表同一实现，也不构成兼容声明。**
 
@@ -75,10 +75,10 @@ ZT-DSP-docs/
 
 ## 仓库边界
 
-- **本仓库（ZT-DSP-docs）**：协议规范、术语基线、设计资产、仓库自身配置。
-- **代码仓库（ZT-DSP-client）**：参考实现 `zt_dsp_py/`（Python）与 `zt_dsp_rs/`（Rust），以及运行脚本与工程文件。
-- **服务端实现**：暂无。版本标识形式保留，供日后有实现时使用。
-- 文档正文里出现的 `zt_dsp_py/`、`zt_dsp_rs/` 路径**指代码仓库内的参考实现目录**，不在本仓库。
+- **本仓库（isostress-docs）**：协议规范、术语基线、设计资产、仓库自身配置。
+- **代码仓库（isostress-client）**：参考实现 `isostress_py/`（Python）与 `isostress_rs/`（Rust），以及运行脚本与工程文件。
+- **服务端实现**：`isostress-server/`（Rust，`ISOSTRESS_SV-1.0.0`）与 `isostress-client/isostress_sv_py/`（Python 参考实现，`ISOSTRESS_SV-1.0.0-20261030`）。版本标识形式 `ISOSTRESS_SV-<主.次.修订>` 已在使用。
+- 文档正文里出现的 `isostress_py/`、`isostress_rs/` 路径**指代码仓库内的参考实现目录**，不在本仓库。
 - 三个仓库不互相搬运：文档改动进本仓库，代码改动进代码仓库，服务端改动进服务端仓库。
 
 ## 许可

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: CC-BY-SA-4.0
-# Copyright (c) 2026 ZT-DSP Suite maintainers (copyright holder: SCAL-ROAM)
-"""Structural self-check for the ZT-DSP specification repository.
+# Copyright (c) 2026 isostress Suite maintainers
+"""Structural self-check for the isostress specification repository.
 
 Nine checks. Exit code 0 only when all pass. Run from the repository root:
 
@@ -14,8 +14,8 @@ import re
 import glob
 import sys
 
-CN = "cn/spec/ZT-DSP-1.0.2-总指导.md"
-EN = "en/spec/ZT-DSP-1.0.2-Master_Guide.md"
+CN = "cn/spec/isostress-1.0.0-总指导.md"
+EN = "en/spec/isostress-1.0.0-Master_Guide.md"
 
 results = []
 
@@ -170,7 +170,7 @@ try:
                 break
             try:
                 req = urllib.request.Request(u, method="HEAD",
-                                             headers={"User-Agent": "zt-dsp-check"})
+                                             headers={"User-Agent": "isostress-check"})
                 code = urllib.request.urlopen(req, timeout=6).status
                 if code >= 400:
                     ext_warn.append((u, code))

@@ -1,13 +1,13 @@
 cff-version: 1.2.0
 message: "If you use or implement this protocol, please cite the documentation set as below."
-title: "ZT-DSP Protocol Master Guide (docs 1.0.2)"
+title: "isostress Protocol Master Guide (docs 1.0.2)"
 abstract: >-
-  Normative specification of the ZT-DSP communication protocol: a four-phase handshake,
+  Normative specification of the isostress communication protocol: a four-phase handshake,
   AEAD transport with per-packet key ratcheting, and traffic-shape defenses. Published as a
   bilingual (Chinese and English) documentation set.
 type: report
 authors:
-  - name: "ZT-DSP Suite maintainers"
+  - name: "isostress Suite maintainers"
 version: "1.0.2"
 date-released: "2026-10-19"
 license: CC-BY-SA-4.0

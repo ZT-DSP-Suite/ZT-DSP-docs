@@ -1,0 +1,33 @@
+# 功能请求登记 PENDING，由用户裁定
+name: 功能请求
+description: 求新能力，无现存错误
+labels: [enhancement]
+body:
+  - type: textarea
+    id: audience
+    attributes:
+      label: 需要者：
+      description: 谁会读这条单，例如维护者、评审人
+    validations:
+      required: true
+  - type: textarea
+    id: if-skipped
+    attributes:
+      label: 不读会错什么：
+      description: 不读会漏掉什么，例如复现条件、版本
+    validations:
+      required: true
+  - type: textarea
+    id: wanted-change
+    attributes:
+      label: 想要的改动
+      description: 写清要加的能力，以及它改变哪条规则或哪个行为
+    validations:
+      required: true
+  - type: textarea
+    id: blocked-now
+    attributes:
+      label: 为什么现在做不了
+      description: 缺什么才能做，例如缺规范条目、缺依赖、缺评审人
+    validations:
+      required: true

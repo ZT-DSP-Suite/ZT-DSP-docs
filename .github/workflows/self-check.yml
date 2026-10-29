@@ -1,0 +1,39 @@
+# Repository content gates.
+#
+# Why this file exists: the docs repo had exactly one workflow (CodeQL), so
+# nothing ever ran `scripts/check.py` (the nine content gates). A one-sided edit
+# could therefore merge while CI stayed green.
+#
+# Scope note: this runs `scripts/check.py` only. The structural CN/EN mirror
+# check lives in the repository guard script, which the repositories no longer
+# track; it is part of the maintainer-local pre-commit guard by decision.
+# Nothing here depends on an untracked file.
+name: self-check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: self-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  content-gates:
+    name: scripts/check.py
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: "3.12"
+      - name: Content gates
+        run: python scripts/check.py

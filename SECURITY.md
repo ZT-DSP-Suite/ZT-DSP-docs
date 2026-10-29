@@ -1,6 +1,6 @@
 # Security Policy
 
-This repository holds the ZT-DSP protocol specification.
+This repository holds the isostress protocol specification.
 Reports about the protocol text itself are as welcome as reports about an implementation.
 
 ## Supported versions

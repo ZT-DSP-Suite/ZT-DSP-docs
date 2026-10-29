@@ -6,12 +6,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note on authority:** this file is a convenience record, not the source of truth. The
-normative change history is `git log`. If the two ever disagree, `git log` wins.
+authoritative change history is `git log`. If the two ever disagree, `git log` wins.
 
 This repository holds the protocol specification. It ships no test suite — it is a
 normative document. What runs mechanically is `scripts/check.py`: it verifies that the
 two language mirrors have the same structure, that every relative link resolves, and
 that no machine-specific string slipped in.
+
+## [1.0.0] - 2026-10-30
+
+### Changed — numbering reset
+
+- **The protocol is named isostress (ISTS).** The cover, the running text and the
+  appendices drop the retired name; the subtitle no longer doubles the word "Protocol".
+- **Version numbering restarts at 1.0.0.** Development revisions advance only the
+  `-YYYYMMDD` segment; a numeric bump happens only on a wire-format change or a
+  release. Sections below keep the numbering they were published under.
+- **KDF context strings carry the `ISOSTRESS-` prefix.** Derived keys change, and the
+  shared vectors were regenerated.
 
 ## [1.0.2] - 2026-10-19
 
@@ -42,6 +54,11 @@ describes storing, binding or writing a key in a TPM or an HWID any more.
   bump attached.
 - J.4 states that the document version never enters the wire format, and what a version
   mismatch actually looks like to an operator.
+- H.3 adds a normative resource bound for the silent hold: three declarations per held
+  connection (hold duration, concurrent held-connection count, buffered-byte bound), with
+  the hold duration range `(0, 15s]` and a 15 s ceiling that cannot be relaxed.
+- C.1 gains three checklist items that record those bound values, and its sequence-number
+  line now matches §4.2.3: drop the packet **and** terminate the session.
 
 ### Changed — part of document version 1.0.2
 
@@ -55,7 +72,7 @@ change between those revisions. The document version carries no date suffix.
 
 TPM and HWID support is deprecated and will be removed in the next revision.
 
-- Neither reference client, `zt_dsp_py` or `zt_dsp_rs`, contains any code that reads,
+- Neither reference client, `isostress_py` or `isostress_rs`, contains any code that reads,
   writes or modifies a TPM or an HWID. The earlier wording promised the feature for
   "a later version"; it now says the design is deprecated and will be removed.
 - The declaration in Master Guide 4.1.4, the storage and property bullets, the two

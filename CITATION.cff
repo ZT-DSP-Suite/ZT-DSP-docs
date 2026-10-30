@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use or implement this protocol, please cite the documentation set as below."
-title: "isostress Protocol Master Guide (docs 1.0.2)"
+title: "isostress Protocol Master Guide (docs 1.0.0)"
 abstract: >-
   Normative specification of the isostress communication protocol: a four-phase handshake,
   AEAD transport with per-packet key ratcheting, and traffic-shape defenses. Published as a
@@ -8,8 +8,8 @@ abstract: >-
 type: report
 authors:
   - name: "isostress Suite maintainers"
-version: "1.0.2"
-date-released: "2026-10-19"
+version: "1.0.0"
+date-released: "2026-10-30"
 license: CC-BY-SA-4.0
 keywords:
   - protocol

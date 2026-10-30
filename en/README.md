@@ -8,7 +8,7 @@ The English specification and the glossary.
 
 The full map is in the [repository README](../README.md).
 
-> The specification for the current protocol. The normative text is `en/spec/isostress-1.0.0-Master_Guide.md` (docs version 1.0.2).
+> The specification for the current protocol. The normative text is `en/spec/isostress-1.0.0-Master_Guide.md` (docs version 1.0.0).
 >
 > **How this repository relates to the implementations**: the specification defines the protocol behaviour and tunable parameters; each implementation declares at its entry point which guide it applies to, and each guide lists the client and server versions it applies to. The relation is **many-to-many**, not bound by version numbers.
 
@@ -61,7 +61,7 @@ These two files are the single normative source of terminology.
 
 The project has **three kinds of version number** and one **two-way declaration** between documents and implementations:
 
-- **total-guide version (1.0.2)** — the revision number of this documentation repository, written `docs 1.0.2`. It never appears on the wire.
+- **total-guide version (1.0.0)** — the revision number of this documentation repository, written `docs 1.0.0`. It never appears on the wire.
 - **client version** — the full identifier of a client implementation, `isostress_<language prefix>-<major.minor.patch>` — `ISOSTRESS_PY-1.0.0` for Python, `ISOSTRESS_RS-1.0.0` for Rust. Implementations in different languages may share a version number and are distinguished by the prefix.
 - **server version** — the full identifier of a server implementation, `ISOSTRESS_SV-1.0.0`. `SV` is a role prefix, not a language prefix. Rust implementation in `isostress-server/src/`; Python reference implementation `ISOSTRESS_SV-1.0.0-20261030` in `isostress-client/isostress_sv_py/`.
 - **Two-way declaration** — the document side (the head of `spec/`) lists **the client and server versions to which it applies** and declares which settings it governs; the implementation side (`FOLLOWS_DOC` and `APPLIES_TO_DOC_VERSIONS` in `isostress_py/version.py`) declares which document it applies to. **The two are not bound by version numbers.**

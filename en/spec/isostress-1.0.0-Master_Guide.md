@@ -21,7 +21,7 @@
 > - **This document**: the *isostress Protocol Master Guide*.
 > - **Applies to**: This file specifies the protocol behavior and tunable parameters on the code side — `random_len`, `random_rate`, `window`, `time_window`, `key_len`, `hash`, `aead`, `module_flags`, `padding`, `jitter`, etc.; adjusting these settings is governed by this document.
 > - **Corresponding implementation**: the code side declares at its entry point that "this implementation follows the *isostress Protocol Master Guide*" (for the Python implementation in this repository, see `FOLLOWS_DOC` in `isostress_py/version.py`).
-> - **About version numbers**: this project has two kinds of version number — the **document version** (the revision number of this document itself, 1.0.2), and the **client versions** / **server versions** (the full identifier of each implementation). The relation between them and this document is **many-to-many**, not one-to-one: several implementations of the same kind whose protocol behaviour has not changed share one applicability declaration, and the same guide may apply to several client and server versions at once. **Identical version numbers do not mean the same implementation and do not constitute a compatibility claim.** **The handshake frames carry no version string whatsoever**: neither the Phase One parameter JSON nor the Phase Four AAD contains a version or protocol identifier field. Whether the peer is compatible is reflected by the Phase Three confirmation tag check.
+> - **About version numbers**: this project has two kinds of version number — the **document version** (the revision number of this document itself, 1.0.0), and the **client versions** / **server versions** (the full identifier of each implementation). The relation between them and this document is **many-to-many**, not one-to-one: several implementations of the same kind whose protocol behaviour has not changed share one applicability declaration, and the same guide may apply to several client and server versions at once. **Identical version numbers do not mean the same implementation and do not constitute a compatibility claim.** **The handshake frames carry no version string whatsoever**: neither the Phase One parameter JSON nor the Phase Four AAD contains a version or protocol identifier field. Whether the peer is compatible is reflected by the Phase Three confirmation tag check.
 
 ## Overview
 
@@ -79,7 +79,7 @@ This protocol does not rely on any centralized trust anchor. Every device holds 
 
 ### [About the Version Number]
 
-**1.0.2 is the current document version of this guide.** **The technical content of this document is itself the normative baseline** — for what actually binds, see Part 0, section 0.4.
+**1.0.0 is the current document version of this guide.** **The technical content of this document is itself the normative baseline** — for what actually binds, see Part 0, section 0.4.
 
 ## Table of Contents
 
@@ -204,14 +204,14 @@ This protocol does not rely on any centralized trust anchor. Every device holds 
 
 | Item | Value |
 |---|---|
-| Document identifier | `isostress-1.0.2` |
-| Document version | `1.0.2` (2026-10-19), a text revision: it adds 5.6 deployment constraints, an F.5 step-1 note and a J.4 version-string note, and removes the deprecated hardware key-storage design description; the history is in `CHANGELOG.md` |
-| Wire format | unchanged between 1.0.0 and 1.0.2 |
+| Document identifier | `isostress-1.0.0` |
+| Document version | `1.0.0` (2026-10-30) |
+| Wire format | 1.0.0 |
 | Numbering gaps | Appendices A, D, E and Volumes 2, 6, 7 were removed in an earlier revision and were not renumbered |
-| Status | The only current revision; the previous public revision is 1.0.1 |
+| Status | The only current revision |
 | Nature | A normative document, but not all of it binds — see 0.4 |
 | Program identifier | `<language>-<version>[-<YYYYMMDD>]`, for example `ISOSTRESS_PY-1.0.0`; the version is the program's own and is unrelated to the document version |
-| Compatibility declaration | Every program must declare the document version it aligns with, for example "aligns with document 1.0.2"; no synchronisation is required between two programs |
+| Compatibility declaration | Every program must declare the document version it aligns with, for example "aligns with document 1.0.0"; no synchronisation is required between two programs |
 | License | The text is CC BY-SA 4.0; see `LICENSE` and `LICENSING.md` at the repository root |
 | Patents | The maintainers do not patent this protocol; see `PUBLICATION-RECORD.md` |
 
@@ -333,7 +333,7 @@ out-of-band exchange (Out-of-Band Exchange)
 └── Rationale: any encrypted communication needs an "initial trust" — the two sides must first confirm "the other party really is that person". Out-of-band exchange provides this initial trust and depends on no centralized authority
 ```
 
-> **Common misconception**: Out-of-band exchange ≠ having to meet offline. QR code scanning, encrypted email, or another chat tool whose trust you have already established all count as out of band. The core criterion is: **this channel does not pass through a isostress server, and you have already confirmed that it is trustworthy**.
+> **Common misconception**: Out-of-band exchange ≠ having to meet offline. QR code scanning, encrypted email, or another chat tool whose trust you have already established all count as out of band. The core criterion is: **this channel does not pass through an isostress server, and you have already confirmed that it is trustworthy**.
 
 ### Principle Four: Layered isolation, least privilege
 
@@ -992,7 +992,7 @@ If the server returned a different error code for each kind of error (e.g., "len
 
 **"Logs" in this section** means logs sent over the network, logs written to persistent storage, and logs fed into any externally facing logging system. **Excluded** are diagnostic output written only to the local stderr and neither persisted nor forwarded, and termination counters that live only in local memory (see 5.6 and F.2 element 4).
 
-> **Practical Tip (implementation pitfalls)**: The "silence" of silent drop must be carried through to the end -- (1) return no network response; (2) write no externally facing logs (logs themselves are feedback for the attacker and also make the server a forensic target; local stderr diagnostics and local counters are excepted, see 5.6); (3) perform no expensive operation before dropping (drop at the outermost parameter check, preventing DoS amplification); (4) keep the timing of the drop path as consistent as possible with the normal path (so that attackers cannot infer "this really is a isostress server" from "response time differences").
+> **Practical Tip (implementation pitfalls)**: The "silence" of silent drop must be carried through to the end -- (1) return no network response; (2) write no externally facing logs (logs themselves are feedback for the attacker and also make the server a forensic target; local stderr diagnostics and local counters are excepted, see 5.6); (3) perform no expensive operation before dropping (drop at the outermost parameter check, preventing DoS amplification); (4) keep the timing of the drop path as consistent as possible with the normal path (so that attackers cannot infer "this really is an isostress server" from "response time differences").
 
 > **Common Misconception**: Silent drop ≠ "no defenses." It is an "anti-probing" layer, not an "anti-attack" layer -- a legitimate packet that passes the parameter check must still go through the full line of defenses: signature verification, CRL lookup, GCM validation, and so on. A server that relies only on silent drop without implementing validation logic will be easily breached by a malicious client holding a legitimate token.
 
@@ -1232,7 +1232,7 @@ This is sustained lock: an attacker holding only ciphertext, even after intercep
 
 **A:** A common design adds a "collision mechanism" to Phase Two: both parties generate 1024 random numbers and exchange 32KB of hash values for comparison. This design is cryptographically redundant — both parties already hold the same PSK, and a deterministic derivation function necessarily yields the same output; exchanging hashes to verify adds neither security nor authentication.
 
-More importantly, the 32KB exchange brings problems such as traffic correlation (a strong fingerprint, which can be used to identify a isostress handshake), DoS amplification (a forged handshake request forces the server to forward a huge amount of hash data), and excessive latency (close to the performance limit on a 200ms-latency network). The protocol therefore omits any redundant collision phase and derives keys directly (X25519 + HKDF).
+More importantly, the 32KB exchange brings problems such as traffic correlation (a strong fingerprint, which can be used to identify an isostress handshake), DoS amplification (a forged handshake request forces the server to forward a huge amount of hash data), and excessive latency (close to the performance limit on a 200ms-latency network). The protocol therefore omits any redundant collision phase and derives keys directly (X25519 + HKDF).
 
 > **Common Misconception**: "exchanging hashes for verification" sounds more secure (one extra check), but is in fact **redundant and harmful**: what both parties derive is the result of the same deterministic function, so verifying it amounts to "verifying yourself with yourself"; and the 32KB traffic signature instead gives attackers a chance to identify the protocol. Security design is not "the more checks the better", but "every step has independent value".
 
@@ -1346,7 +1346,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *isostress Protocol General Guide* (document version 1.0.2; parameters unchanged since 1.0.1) |
+| Governing document | *isostress Protocol General Guide* (document version 1.0.0) |
 
 ### Advanced Server (moderate customization)
 
@@ -1359,7 +1359,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *isostress Protocol General Guide* (document version 1.0.2; parameters unchanged since 1.0.1) |
+| Governing document | *isostress Protocol General Guide* (document version 1.0.0) |
 
 ### High-Anonymity Server (heavy customization)
 
@@ -1372,7 +1372,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *isostress Protocol General Guide* (document version 1.0.2; parameters unchanged since 1.0.1) |
+| Governing document | *isostress Protocol General Guide* (document version 1.0.0) |
 
 # Appendix C: Minimal Implementation Checklist
 
@@ -1489,7 +1489,7 @@ Section 4.3 explained the **idea** of Silent Drop; this section gives its **beha
 2. **Do not actively close the connection (see H.3 for the silent hold duration)**. Closing a connection (FIN/RST) is itself an observable signal — an attacker can use it to distinguish "rejected because of a parameter mismatch" from "nobody is listening on the port at all".
 3. **Hang, read, and discard subsequent data**: continuously `recv` in 8192-byte blocks and discard them until the peer closes or the hold duration is exhausted. The hold duration defaults to the handshake timeout (**15 seconds, configurable**; for server-embedded scenarios it is advisable to reduce it and combine it with per-IP rate limiting, to prevent malicious connections from occupying connection slots for a long time).
 4. **Diagnostics go only to the local stderr**: the discard reason (such as "Phase 1 parse failed" or "parameter mismatch: random_len") is printed for the local operator to see, **never enters the network side**, and **MUST NOT** be connected to an externally facing logging system.
-5. **Network appearance is indistinguishable from a "closed port"**: from the attacker's perspective, a scan against a nonexistent service and a isostress server with wrong parameters should look like the same kind of "silence".
+5. **Network appearance is indistinguishable from a "closed port"**: from the attacker's perspective, a scan against a nonexistent service and an isostress server with wrong parameters should look like the same kind of "silence".
 
 **Complete trigger-point table** (responder's perspective; any single trigger immediately enters strict silence):
 

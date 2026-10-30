@@ -5,15 +5,15 @@ body:
   - type: textarea
     id: audience
     attributes:
-      label: 需要者：
-      description: 谁会读这条单，例如维护者、评审人
+      label: 谁受影响？
+      description: 谁会遇到这个问题，例如使用者、维护者、评审人
     validations:
       required: true
   - type: textarea
     id: if-skipped
     attributes:
-      label: 不读会错什么：
-      description: 不读会漏掉什么，例如复现条件、版本
+      label: 不读会错过什么？
+      description: 漏掉哪条信息会导致什么后果，例如复现条件、版本、影响面
     validations:
       required: true
   - type: markdown

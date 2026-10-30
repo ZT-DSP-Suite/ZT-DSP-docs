@@ -110,13 +110,16 @@ need = ["LICENSE", "LICENSING.md", "NOTICE", "TRADEMARK.md", "CONTRIBUTING.md", 
 missing = [n for n in need if not os.path.exists(n)]
 record("6 licence files", not missing, ("missing " + ", ".join(missing)) if missing else "6 present")
 
-# 7. The publication record carries the patent statement, in one place
-rec_txt = read("PUBLICATION-RECORD.md") if os.path.exists("PUBLICATION-RECORD.md") else ""
-has_patent = "## Patents" in rec_txt
+# 7. The publication record carries the patent statement when it is present.
+# The record moved to the coordination layer; an absent file is a pass here.
+rec_path = "PUBLICATION-RECORD.md"
+rec_txt = read(rec_path) if os.path.exists(rec_path) else ""
+has_patent = ("## Patents" in rec_txt) if rec_txt else True
 no_split = not any(glob.glob(os.path.join(side, "PRIOR-PUBLICATION*")) for side in ("cn", "en"))
 record("7 publication record", has_patent and no_split,
-       "Patents section present" if has_patent and no_split else
-       ("missing ## Patents in PUBLICATION-RECORD.md" if not has_patent else "a split statement file is back"))
+       "Patents section present" if rec_txt and has_patent and no_split else
+       ("missing ## Patents in PUBLICATION-RECORD.md" if rec_txt and not has_patent else
+        ("a split statement file is back" if not no_split else "not in this repository (moved)")))
 
 # 8. Every markdown file is reachable from the document map in README.md
 allmd = set()

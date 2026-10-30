@@ -4,7 +4,7 @@
 
 isostress, isostress-suite and the isostress logo are marks claimed by **isostress Suite maintainers**.
 
-The logo files are `branding/icon-1024.png`, `branding/icon-512.png` and `branding/icon-512-black.png` in the isostress-docs repository.
+The logo files are available from the maintainers on request.
 
 Copyright licenses grant no trademark rights:
 

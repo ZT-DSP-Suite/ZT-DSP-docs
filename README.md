@@ -27,7 +27,6 @@
 |---|---|
 | `cn/README.md` | `en/README.md` |
 | `cn/术语对照表.md` | `en/Glossary.md` |
-| `PUBLICATION-RECORD.md` | `PUBLICATION-RECORD.md` |
 | `cn/spec/isostress-1.0.0-总指导.md` | `en/spec/isostress-1.0.0-Master_Guide.md` |
 
 新增或修改文档时，两侧必须同步；**只改一侧视为缺陷，不视为贡献**。
@@ -41,15 +40,14 @@
 | [术语对照表](cn/术语对照表.md) · [Glossary](en/Glossary.md) | 术语的唯一出处 |
 | [符合性判定指南](cn/CONFORMANCE-GUIDE.md) · [Conformance guide](en/CONFORMANCE-GUIDE.md) | 一次实现是否合规的判定方法 |
 | [开发与验证指南](cn/DEV-GUIDE.md) · [Dev guide](en/DEV-GUIDE.md) | 构建与验证命令 |
-| [先行公开记录](PUBLICATION-RECORD.md) · [Prior publication](PUBLICATION-RECORD.md) | 推送时间与内容哈希 |
 | [LICENSING.md](LICENSING.md) · [LICENSE](LICENSE) | 许可条款 |
 | [TRADEMARK.md](TRADEMARK.md) | 标识 |
 | [CONTRIBUTING.md](CONTRIBUTING.md) · [CONTRIBUTORS.md](CONTRIBUTORS.md) | 贡献方式与署名 |
 | [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | 行为准则 |
 | [SECURITY.md](SECURITY.md) | 漏洞上报 |
 | [CHANGELOG.md](CHANGELOG.md) | 变更记录 |
-| [PUBLICATION-RECORD.md](PUBLICATION-RECORD.md) | 发布记录 |
-| [branding/README.md](branding/README.md) | 标识文件与用法 |
+
+发布记录与标识源文件由维护者保存，不在本仓。
 
 ## 相关仓库
 

@@ -13,9 +13,9 @@
 
 ## B.2 构建
 
-1. 装 Python 包：在 `ZT-DSP-client/zt_dsp_py/` 下跑 `python -m pip install -e .`。
-2. 构建 Rust 可执行文件：在 `ZT-DSP-client/zt_dsp_rs/` 下跑 `cargo build --release`。
-3. 打发布包：在 `ZT-DSP-client/zt_dsp_py/` 下跑 `python -m build`。
+1. 装 Python 包：在 `isostress-client/isostress_py/` 下跑 `python -m pip install -e .`。
+2. 构建 Rust 可执行文件：在 `isostress-client/isostress_rs/` 下跑 `cargo build --release`。
+3. 打发布包：在 `isostress-client/isostress_py/` 下跑 `python -m build`。
 
 ## B.3 四道门
 
@@ -23,10 +23,10 @@
 
 | 门 | 命令与工作目录 | 通过标准 |
 |---|---|---|
-| 单元测试 | `ZT-DSP-client/zt_dsp_py/` 下 `python -m pytest -q` | 无 failed |
-| 测试向量 | 同目录 `python -m pytest -q tests/test_vectors.py` | 全通过 |
-| 跨实现互通 | `ZT-DSP-client/zt_dsp_rs/` 下 `python interop_test.py` | 末行 `[[ok]] interop suite passed` |
-| 结构自检 | `ZT-DSP-docs/` 下 `python scripts/check.py` | 九项全 PASS |
+| 单元测试 | `isostress-client/isostress_py/` 下 `python -m pytest -q` | 无 failed |
+| 测试向量 | `isostress-client/` 下 `python -m pytest -q isostress_py/tests/test_vectors.py` | 全通过 |
+| 跨实现互通 | `isostress-client/isostress_rs/` 下 `python interop_test.py` | 末行 `[[ok]] interop suite passed` |
+| 结构自检 | `isostress-docs/` 下 `python scripts/check.py` | 九项全 PASS |
 
 互通那一道门依赖 B.2 第 2 步的二进制。没构建就没有互通。
 
@@ -36,7 +36,7 @@
 |---|---|
 | 线上字段名（`random_len`、`next_seed`、`session_salt` 等） | 已冻结，改名等于改协议 |
 | 附录 F 的字节布局 | 互操作依赖它，逐字节 |
-| 程序标识格式 `<语言>_<版本>[-<YYYYMMDD>]` | 符合性判定依赖它 |
+| 程序标识格式 `<语言>-<版本>[-<YYYYMMDD>]` | 符合性判定依赖它 |
 
 ## B.5 提交前
 

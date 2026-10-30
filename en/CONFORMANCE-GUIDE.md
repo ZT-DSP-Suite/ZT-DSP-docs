@@ -1,7 +1,7 @@
 # Conformance Determination Guide
 
 > Readers: auditors, regulators and compliance assessors.
-> This document answers one question: does an implementation conform to ZT-DSP 1.0.0.
+> This document answers one question: does an implementation conform to isostress 1.0.0.
 
 ## A.1 Three levels
 
@@ -15,7 +15,7 @@ The definitions come from Part 0, section 0.3. This document adds no requirement
 
 ## A.2 Five audit steps
 
-1. Take the program identifier the subject declares, in the form `<language>_<version>[-<YYYYMMDD>]` (see J.4 for the date-segment rule).
+1. Take the program identifier the subject declares, in the form `<language>-<version>[-<YYYYMMDD>]` (see J.4 for the date-segment rule).
 2. Run every self-check item in Appendix C.1.
 3. Run every test vector in Appendix J and compare output byte for byte.
 4. Compare against the Appendix F byte layout. Look at bytes only, not at behaviour.
@@ -44,10 +44,10 @@ The definitions come from Part 0, section 0.3. This document adds no requirement
 
 An auditor needs a runnable binary, so the build is mandatory rather than optional.
 
-1. Build the reference implementation: run `cargo build --release` in `ZT-DSP-client/zt_dsp_rs/`.
-2. Run the test vectors: run `python -m pytest -q tests/test_vectors.py` in `ZT-DSP-client/zt_dsp_py/`.
-3. Run the cross-implementation interop test: run `python interop_test.py` in `ZT-DSP-client/zt_dsp_rs/` and check that the last line reads `[[ok]] interop suite passed`.
-4. Run this repository's structural self-check: run `python scripts/check.py` in `ZT-DSP-docs/` and check that all nine checks report PASS.
+1. Build the reference implementation: run `cargo build --release` in `isostress-client/isostress_rs/`.
+2. Run the test vectors: run `python -m pytest -q isostress_py/tests/test_vectors.py` in `isostress-client/`.
+3. Run the cross-implementation interop test: run `python interop_test.py` in `isostress-client/isostress_rs/` and check that the last line reads `[[ok]] interop suite passed`.
+4. Run this repository's structural self-check: run `python scripts/check.py` in `isostress-docs/` and check that all nine checks report PASS.
 
 Every command names its working directory. Drop one and the step 4 conclusion cannot be reproduced.
 

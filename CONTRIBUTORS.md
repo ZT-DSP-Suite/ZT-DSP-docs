@@ -5,9 +5,9 @@ is the record. No Contributor License Agreement is used in this repository.
 
 ## Authors
 
-Format: `- <name> <email> - <YYYY-MM-DD>`
+Format: `- <name> [<email>] - <YYYY-MM-DD>`
 
-- ZT-DSP Suite maintainers <SCAL-ROAM> - original author
+- isostress Suite maintainers - original author
 
 ## Reviewers
 

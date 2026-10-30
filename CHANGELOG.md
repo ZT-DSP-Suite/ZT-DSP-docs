@@ -6,53 +6,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note on authority:** this file is a convenience record, not the source of truth. The
-normative change history is `git log`. If the two ever disagree, `git log` wins.
+authoritative change history is `git log`. If the two ever disagree, `git log` wins.
 
 This repository holds the protocol specification. It ships no test suite — it is a
 normative document. What runs mechanically is `scripts/check.py`: it verifies that the
 two language mirrors have the same structure, that every relative link resolves, and
 that no machine-specific string slipped in.
 
-## [1.1.0] - 2026-10-25
+## [1.0.0] - 2026-10-30
 
-### Changed — part of document version 1.1.0
+### Changed — numbering reset
 
-A repeated or too-old sequence number no longer terminates the session. The receiver
-silently discards the packet, does not advance `seq_recv` and replies with no bytes; the
-session continues. Previously step 1 of the receive pipeline wiped every key and ended
-the session, which meant one duplicated or reordered packet on a reliable transport cost
-the whole session.
-
-The wire format is untouched. What changes is one receiving branch, plus the state the
-receiver keeps: `seq_recv` now stays where it was instead of the session ending.
-
-### Removed — part of document version 1.1.0
-
-The note under the receive pipeline said an implementation MUST NOT turn the replay check
-into "discard the old packet, keep the session", because that is a protocol change. It is
-now made, so the note states the new rule instead. The replay branch is likewise gone
-from the ZTDSPSecurityError description, since a repeated packet is no longer a security
-error.
-
-## [1.0.3] - 2026-10-25
-
-### Changed — part of document version 1.0.3
-
-The timestamp window no longer compares the in-packet timestamp with the receiver's own
-clock. The receiver records the timestamp of the session's **first GCM-authenticated
-packet** as the reference point and measures every later packet against it, so the window
-bounds drift rather than absolute offset and the two ends **no longer need synchronised
-clocks**. An out-of-window packet is still authenticated and still rotates the EK and
-advances the sequence number; only the plaintext is discarded.
-
-This changes behaviour, not the wire format. The receiver needs one piece of state it did
-not need before (the reference timestamp, cleared when the session ends), and 5.6 already
-carries no clock requirement, so no deployment condition changes.
-
-### Not changed — part of document version 1.0.3
-
-The wire format, the parameter set, the seven derivation tags and the test vectors are
-untouched.
+- **The protocol is named isostress (ISTS).** The cover, the running text and the
+  appendices drop the retired name; the subtitle no longer doubles the word "Protocol".
+- **Version numbering restarts at 1.0.0.** Development revisions advance only the
+  `-YYYYMMDD` segment; a numeric bump happens only on a wire-format change or a
+  release. Sections below keep the numbering they were published under.
+- **KDF context strings carry the `ISOSTRESS-` prefix.** Derived keys change, and the
+  shared vectors were regenerated.
 
 ## [1.0.2] - 2026-10-19
 
@@ -83,6 +54,11 @@ describes storing, binding or writing a key in a TPM or an HWID any more.
   bump attached.
 - J.4 states that the document version never enters the wire format, and what a version
   mismatch actually looks like to an operator.
+- H.3 adds a normative resource bound for the silent hold: three declarations per held
+  connection (hold duration, concurrent held-connection count, buffered-byte bound), with
+  the hold duration range `(0, 15s]` and a 15 s ceiling that cannot be relaxed.
+- C.1 gains three checklist items that record those bound values, and its sequence-number
+  line now matches §4.2.3: drop the packet **and** terminate the session.
 - F.1 states the response ordering on one connection: the responder's Phase 1 frame
   precedes the next request on that connection, and different connections are not
   ordered against each other.
@@ -105,7 +81,7 @@ document is allowed to assert, not what it requires.
 
 TPM and HWID support is deprecated and will be removed in the next revision.
 
-- Neither reference client, `zt_dsp_py` or `zt_dsp_rs`, contains any code that reads,
+- Neither reference client, `isostress_py` or `isostress_rs`, contains any code that reads,
   writes or modifies a TPM or an HWID. The earlier wording promised the feature for
   "a later version"; it now says the design is deprecated and will be removed.
 - The declaration in Master Guide 4.1.4, the storage and property bullets, the two

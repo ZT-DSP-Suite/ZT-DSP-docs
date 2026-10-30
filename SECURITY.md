@@ -1,14 +1,13 @@
 # Security Policy
 
-This repository holds the ZT-DSP protocol specification.
+This repository holds the isostress protocol specification.
 Reports about the protocol text itself are as welcome as reports about an implementation.
 
 ## Supported versions
 
 | Version | Supported |
 |---|---|
-| docs 1.1.0 | yes |
-| docs 1.0.3, docs 1.0.2, docs 1.0.1, docs 1.0.0 | yes, but there a repeated sequence number terminates the session |
+| docs 1.0.0 | yes |
 | earlier revisions | no |
 
 ## Reporting a vulnerability

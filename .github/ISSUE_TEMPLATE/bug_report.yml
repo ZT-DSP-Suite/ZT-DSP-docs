@@ -2,6 +2,20 @@ name: Documentation defect
 description: The Master Guide or one of its appendices is wrong or inconsistent
 labels: [bug]
 body:
+  - type: textarea
+    id: audience
+    attributes:
+      label: 需要者：
+      description: 谁会读这条单，例如维护者、评审人
+    validations:
+      required: true
+  - type: textarea
+    id: if-skipped
+    attributes:
+      label: 不读会错什么：
+      description: 不读会漏掉什么，例如复现条件、版本
+    validations:
+      required: true
   - type: markdown
     attributes:
       value: |
@@ -24,7 +38,7 @@ body:
     id: location
     attributes:
       label: Location
-      description: File path and section or line, for example en/spec/ZT-DSP_1.1.0_Master_Guide.md section 4.2.4
+      description: File path and section or line, for example the specification section 4.2.4
     validations:
       required: true
   - type: textarea

@@ -20,7 +20,7 @@
 ## Content hashes
 
 These are the hashes of the text that tag `pub-2026-10-18` fixes. The working tree has
-moved to document version 1.0.3, whose hashes are listed below; the published text stays
+moved to document version 1.1.0, whose hashes are listed below; the published text stays
 retrievable from the tag.
 
 | File | SHA-256 |
@@ -57,11 +57,20 @@ The specification became available to the public at the time recorded above. Thi
 
 以上时间与提交用于核对本文件所列内容。
 
-## Document version 1.0.3
+## Document version 1.1.0
 
 | Item | Value |
 |---|---|
 | Status | Local working tree. Not pushed; awaiting review and a push order. |
+| Document version | 1.1.0 |
+| Wire format | Unchanged from 1.0.0 |
+| Content | `cn/spec/ZT-DSP-1.1.0-总指导.md` `66722e6359800bdd80370d3bdec6a5f34d48d23d204a1df61f63f4e6173d38b0`<br>`en/spec/ZT-DSP-1.1.0-Master_Guide.md` `9c72ee22d63f30f90fdd40e7b07185d0eec293da14648a339f12ad5c52dcbf8c` |
+
+## Document version 1.0.3
+
+| Item | Value |
+|---|---|
+| Status | Superseded in the working tree by 1.1.0; never published on its own. |
 | Document version | 1.0.3 |
 | Wire format | Unchanged from 1.0.0 |
 | Content | `cn/spec/ZT-DSP-1.0.3-总指导.md` `925bffdf7a2fb367ad01a847fb7454e2a4544437172e3cce475d7ff5697dfdab`<br>`en/spec/ZT-DSP-1.0.3-Master_Guide.md` `5b8ea4fe5dfdcac772e7eb689c2abbb052da531d5648397b13b1c9ac02df5a0d` |

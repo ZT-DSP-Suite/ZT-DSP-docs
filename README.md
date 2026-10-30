@@ -46,8 +46,9 @@
 | [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | 行为准则 |
 | [SECURITY.md](SECURITY.md) | 漏洞上报 |
 | [CHANGELOG.md](CHANGELOG.md) | 变更记录 |
+| [PUBLICATION-RECORD.md](PUBLICATION-RECORD.md) | 公开指针与专利不主张声明 |
 
-发布记录与标识源文件由维护者保存，不在本仓。
+完整发布记录与标识源文件由维护者保存；本仓保留公开指针与专利声明。
 
 ## 相关仓库
 

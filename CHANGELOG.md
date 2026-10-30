@@ -13,6 +13,26 @@ normative document. What runs mechanically is `scripts/check.py`: it verifies th
 two language mirrors have the same structure, that every relative link resolves, and
 that no machine-specific string slipped in.
 
+## [1.0.3] - 2026-10-25
+
+### Changed — part of document version 1.0.3
+
+The timestamp window no longer compares the in-packet timestamp with the receiver's own
+clock. The receiver records the timestamp of the session's **first GCM-authenticated
+packet** as the reference point and measures every later packet against it, so the window
+bounds drift rather than absolute offset and the two ends **no longer need synchronised
+clocks**. An out-of-window packet is still authenticated and still rotates the EK and
+advances the sequence number; only the plaintext is discarded.
+
+This changes behaviour, not the wire format. The receiver needs one piece of state it did
+not need before (the reference timestamp, cleared when the session ends), and 5.6 already
+carries no clock requirement, so no deployment condition changes.
+
+### Not changed — part of document version 1.0.3
+
+The wire format, the parameter set, the seven derivation tags and the test vectors are
+untouched.
+
 ## [1.0.2] - 2026-10-19
 
 ### Removed — part of document version 1.0.2

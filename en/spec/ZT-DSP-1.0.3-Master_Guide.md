@@ -1,4 +1,4 @@
-# ZT-DSP Protocol Master Guide Library (document version 1.0.2)
+# ZT-DSP Protocol Master Guide Library (document version 1.0.3)
 
 > **Generalisation proposal (2026-10-14, draft)**
 > A proposal exists to lift ZT-DSP from a communication protocol to a **general-purpose one**: a core layer doing PSK-based
@@ -9,7 +9,7 @@
 **Zero Trust Dynamic Synchronization Protocol**
 (Zero Trust Dynamic Synchronization Protocol)
 
-- **document version**: 1.0.2 (the revision number of this document itself, not involved in network communication)
+- **document version**: 1.0.3 (the revision number of this document itself, not involved in network communication)
 - **applicable client versions**: `ZT-DSP_PY-1.0.0` (Python), `ZT-DSP_RS-1.0.0` (Rust)
 - **applicable server version**: `ZT-DSP_SV-1.0.0` (no implementation yet)
 - **Release date**: 2026-10-19
@@ -22,7 +22,7 @@
 > - **This document**: the *ZT-DSP Protocol Master Guide*.
 > - **Applies to**: This file specifies the protocol behavior and tunable parameters on the code side — `random_len`, `random_rate`, `window`, `time_window`, `key_len`, `hash`, `aead`, `module_flags`, `padding`, `jitter`, etc.; adjusting these settings is governed by this document.
 > - **Corresponding implementation**: the code side declares at its entry point that "this implementation follows the *ZT-DSP Protocol Master Guide*" (for the Python implementation in this repository, see `FOLLOWS_DOC` in `zt_dsp_py/version.py`).
-> - **About version numbers**: this project has two kinds of version number — the **document version** (the revision number of this document itself, 1.0.2), and the **client versions** / **server versions** (the full identifier of each implementation). The relation between them and this document is **many-to-many**, not one-to-one: several implementations of the same kind whose protocol behaviour has not changed share one applicability declaration, and the same guide may apply to several client and server versions at once. **Identical version numbers do not mean the same implementation and do not constitute a compatibility claim.** **The handshake frames carry no version string whatsoever**: neither the Phase One parameter JSON nor the Phase Four AAD contains a version or protocol identifier field. Whether the peer is compatible is reflected by the Phase Three confirmation tag check.
+> - **About version numbers**: this project has two kinds of version number — the **document version** (the revision number of this document itself, 1.0.3), and the **client versions** / **server versions** (the full identifier of each implementation). The relation between them and this document is **many-to-many**, not one-to-one: several implementations of the same kind whose protocol behaviour has not changed share one applicability declaration, and the same guide may apply to several client and server versions at once. **Identical version numbers do not mean the same implementation and do not constitute a compatibility claim.** **The handshake frames carry no version string whatsoever**: neither the Phase One parameter JSON nor the Phase Four AAD contains a version or protocol identifier field. Whether the peer is compatible is reflected by the Phase Three confirmation tag check.
 
 ## Overview
 
@@ -80,7 +80,7 @@ This protocol does not rely on any centralized trust anchor. Every device holds 
 
 ### [About the Version Number]
 
-**1.0.2 is the current document version of this guide.** **The technical content of this document is itself the normative baseline** — for what actually binds, see Part 0, section 0.4.
+**1.0.3 is the current document version of this guide.** **The technical content of this document is itself the normative baseline** — for what actually binds, see Part 0, section 0.4.
 
 ## Table of Contents
 
@@ -205,14 +205,14 @@ This protocol does not rely on any centralized trust anchor. Every device holds 
 
 | Item | Value |
 |---|---|
-| Document identifier | `ZT-DSP-1.0.2` |
-| Document version | `1.0.2` (2026-10-19), a text revision: it adds 5.6 deployment constraints, an F.5 step-1 note and a J.4 version-string note, and removes the deprecated hardware key-storage design description; the history is in `CHANGELOG.md` |
-| Wire format | unchanged between 1.0.0 and 1.0.2 |
+| Document identifier | `ZT-DSP-1.0.3` |
+| Document version | `1.0.3` (2026-10-25), a semantics revision: the timestamp window is measured against the session's first authenticated packet instead of the receiver's current clock, so the two ends no longer need synchronised clocks. The 1.0.2 history is in `CHANGELOG.md` |
+| Wire format | unchanged between 1.0.0 and 1.0.3 |
 | Numbering gaps | Appendices A, D, E and Volumes 2, 6, 7 were removed in an earlier revision and were not renumbered |
 | Status | The only current revision; the previous public revision is 1.0.1 |
 | Nature | A normative document, but not all of it binds — see 0.4 |
 | Program identifier | ~B~<language>_<version>[-<YYYYMMDD>]~B~, for example ~B~ZT-DSP_PY-1.0.0~B~; the version is the program's own and is unrelated to the document version |
-| Compatibility declaration | Every program must declare the document version it aligns with, for example "aligns with document 1.0.2"; no synchronisation is required between two programs |
+| Compatibility declaration | Every program must declare the document version it aligns with, for example "aligns with document 1.0.3"; no synchronisation is required between two programs |
 | License | The text is CC BY-SA 4.0; see `LICENSE` and `LICENSING.md` at the repository root |
 | Patents | The maintainers do not patent this protocol; see `PUBLICATION-RECORD.md` |
 
@@ -886,7 +886,7 @@ Plaintext payload (before encryption, i.e. the content of the GCM ciphertext):
 |----------|------|------|------|
 | Destination token hash | 32B | Yes | Encrypted with the session key EK, preventing plaintext identity linkage. The server sees the encrypted destination hash and cannot know whom the message is sent to |
 | Source token hash | 32B | Yes | Same as above. Encryption prevents traffic analysts from building a social graph through source-destination linkage |
-| Timestamp | 8B | Yes | Millisecond Unix timestamp (uint64 big-endian). The receiver checks `|current time − timestamp| <= timestamp window` (default 30 seconds), preventing replay and delayed interception |
+| Timestamp | 8B | Yes | Millisecond Unix timestamp (uint64 big-endian). The receiver records the timestamp of the first authenticated packet in the session as the reference point and then checks `|timestamp − reference| <= timestamp window` (default 30 seconds) — the window measures drift, not absolute offset, so the two ends do not need synchronised clocks |
 | Payload format marker fmt | 1B | Yes | `0x00` = no random padding (default), `0x01` = with random padding. The receiver strips padding per this marker; the reference client can enable padding unilaterally without negotiation between the two parties |
 | Random padding | 0~2048B | Yes | Reference recommendation 512~2048B. Padding removes the length fingerprint so that all packets are similar in size. Off by default in the reference client (enabled via `--padding-min/max`) |
 | Pre-key seed next_seed | 32B | Yes | Ratchet seed for the next packet: `new_EK = HKDF-SHA3-256(IKM = current EK ‖ next_seed, info = "ZT-DSP-EK-ROTATE", output 256 bits)` (sustained lock, see 4.2.5) |
@@ -945,7 +945,7 @@ AAD (Additional Authenticated Data)
 2. B then checks whether the **session ID** matches the current session; on mismatch -> **drop the packet and terminate the session** (crosstalk or a leftover packet from an old session)
 3. B verifies the **GCM authentication tag**; on failure -> **drop the packet and terminate the session** (data tampered with or key mismatch)
 4. After decrypting the payload, B performs **three internal checks**: (1) whether the payload structure length is self-consistent (bounds checking); (2) whether the payload format marker is valid (unknown fmt); (3) **bidirectional token hash validation** -- the in-packet destination token hash must equal the local identity and the source token hash must equal the peer identity (preventing traffic reflection/crosstalk/identity forgery). Failure of any of these -> **drop the packet and terminate the session**
-5. B checks the timestamp: `|current time − timestamp| > timestamp window` (default 30 seconds) -> the packet **has passed GCM authentication but is outside the window**; in this case **only the plaintext is discarded, while the EK is still rotated and the sequence number advanced** (preventing a permanent session desynchronization when the sender has rotated but the receiver has not) -- **this is the only failure branch that does not terminate the session**
+5. B checks the timestamp: the timestamp of the **first GCM-authenticated packet** in the session becomes the reference point `ts_ref` (that packet only sets the reference; it is not itself window-checked); every later packet is judged by `|timestamp − ts_ref| > timestamp window` (default 30 seconds) -> a packet **has passed GCM authentication but lies too far from the reference point**; in this case **only the plaintext is discarded, while the EK is still rotated and the sequence number advanced** (preventing a permanent session desynchronization when the sender has rotated but the receiver has not) -- **this is the only failure branch that does not terminate the session**
 6. B obtains the plaintext message normally. A packet with plaintext length 0 is a **heartbeat packet**, which the receiver silently skips (the reference client sends one every 30 seconds to detect half-open connections)
 
 > **Practical Tip (both the receive order and the failure policy matter)**: Always process in the order "sequence number -> session ID -> authentication tag -> decryption and internal validation -> timestamp." This order is itself a security design: cheap filtering first (sequence number/session ID), then expensive cryptographic verification (GCM), and only then decryption -- preventing both DoS (junk packets do not trigger decryption) and information leakage (not exposing "why it was dropped"). **Except for the timestamp-window case in step 5, every validation failure must "terminate silently"**: drop the packet, wipe all keys, end the session, and return no error code to the peer -- consistent with the termination policy of Appendix F.5 and with the reference implementation's `session.py` behavior.
@@ -1344,7 +1344,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *ZT-DSP Protocol General Guide* (document version 1.0.2; parameters unchanged since 1.0.1) |
+| Governing document | *ZT-DSP Protocol General Guide* (document version 1.0.3; parameters unchanged since 1.0.1) |
 
 ### Advanced Server (moderate customization)
 
@@ -1357,7 +1357,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *ZT-DSP Protocol General Guide* (document version 1.0.2; parameters unchanged since 1.0.1) |
+| Governing document | *ZT-DSP Protocol General Guide* (document version 1.0.3; parameters unchanged since 1.0.1) |
 
 ### High-Anonymity Server (heavy customization)
 
@@ -1370,7 +1370,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *ZT-DSP Protocol General Guide* (document version 1.0.2; parameters unchanged since 1.0.1) |
+| Governing document | *ZT-DSP Protocol General Guide* (document version 1.0.3; parameters unchanged since 1.0.1) |
 
 # Appendix C: Minimal Implementation Checklist
 
@@ -1600,7 +1600,7 @@ tag_resp = HMAC-SHA3-256(MK, "ZT-DSP-CONFIRM-RESP-v3" ‖ transcript)
 | 5 | `fmt ∈ {0x00, 0x01}` | Unknown payload format | Session termination (security error) |
 | 6 | Structural length consistency: fixed header + tail (including pad_len ≤ 2048) does not exceed the total payload length | Out-of-bounds/negative-slice attack | Session termination (protocol error) |
 | 7 | Bidirectional token hash verification: dst in the packet == local identity, src == peer identity | Traffic reflection / cross-talk / identity forgery | Session termination (security error) |
-| 8 | Timestamp window: `|now − ts| ≤ time_window` | Authenticated but out-of-window replay/delayed packet | **Special**: does not terminate the session — it still rotates EK and advances seq_recv, discarding only the plaintext (to prevent ratchet desynchronization, see 4.2.4 receive flow step 5) |
+| 8 | Timestamp window: `|ts − ts_ref| ≤ time_window`, where `ts_ref` is the timestamp of the first authenticated packet in the session | Authenticated but too far from the reference point | **Special**: does not terminate the session — it still rotates EK and advances seq_recv, discarding only the plaintext (to prevent ratchet desynchronization, see 4.2.4 receive flow step 5) |
 
 > **The meaning of step 1**: this check is replay protection. Loss and reordering within a session are guaranteed by the transport layer not to happen (see 5.6). An implementation MUST NOT turn it into "drop the old packet, keep the session" — that is a protocol change and must ship with a version bump.
 
@@ -1659,8 +1659,8 @@ The implementation must build in the following hard upper bounds; **all upper-bo
 ## G.4 Timestamp Window
 
 - **Configuration**: `time_window > 0` (seconds), published CLI `--time-window`, default 30; **configurable per peer** (the same client can use different windows for different peers).
-- **Semantics**: the receiver verifies `|current time − in-packet timestamp| ≤ time_window × 1000` (comparison in milliseconds). Delivery is normal within the window; **a packet that is out of window but has already passed GCM authentication still performs the ratchet rotation and the sequence-number advance, and only the plaintext is discarded** (see F.5 pipeline step 8) — this "availability completion" is the key to preventing permanent desynchronization when "the sender has rotated but the receiver has not", and **implementers must not omit it**.
-- **Trade-off**: a narrow window (e.g. 10s) → rejects delayed replay packets faster, but requires small clock skew between the two sides and low network latency; a wide window (e.g. 60s) → tolerates slow networks and clock drift, at the cost that replay packets have a longer "validity period". The core line of replay defense is always the sequence number (F.5 step 1); the timestamp window is the second line.
+- **Semantics**: the receiver records the timestamp of the **first GCM-authenticated packet** in the session as the reference point `ts_ref` (that packet only sets the reference and is not itself judged); every later packet is checked with `|in-packet timestamp − ts_ref| ≤ time_window × 1000` (comparison in milliseconds). The window measures **drift**, not absolute offset, so the two ends **do not need synchronised clocks**. Delivery is normal within the window; **a packet that is out of window but has already passed GCM authentication still performs the ratchet rotation and the sequence-number advance, and only the plaintext is discarded** (see F.5 pipeline step 8) — this "availability completion" is the key to preventing permanent desynchronization when "the sender has rotated but the receiver has not", and **implementers must not omit it**.
+- **Trade-off**: a narrow window (e.g. 10s) → rejects delayed replay packets faster, but requires low network jitter (the baseline is the session's first packet, so clock skew between the two sides no longer enters this trade-off); a wide window (e.g. 60s) → tolerates slow networks and jitter, at the cost that replay packets have a longer "validity period". The core line of replay defense is always the sequence number (F.5 step 1); the timestamp window is the second line.
 
 ## G.5 Heartbeat as Baseline Traffic
 
@@ -1931,7 +1931,7 @@ Format: `<LANGUAGE>_<version>[-<YYYYMMDD>]`, for example the release `ZT-DSP_PY-
 - The date is the commit date of the source the build is made from, UTC+8. When no git checkout exists, use the source package's release date.
 - Package metadata keeps a plain numeric version without a date segment.
 - The version is the Program Version: the program's own version, unrelated to the document version. The document version the program aligns with is declared separately (see 0.1).
-- An implementation MUST report its identifier from its `--version` output, in the form `<identifier> (docs <document version>)`. Example: `ZT-DSP_PY-1.0.0-20261024 (docs 1.0.2)`.
+- An implementation MUST report its identifier from its `--version` output, in the form `<identifier> (docs <document version>)`. Example: `ZT-DSP_PY-1.0.0-20261024 (docs 1.0.3)`.
 - The document version does not enter the wire format: neither the Phase One parameter JSON nor the Phase Four AAD contains a version field. When the two sides' document versions differ, the symptom is a parameter mismatch, a confirmation-tag failure or a GCM decryption failure, not a "version mismatch" error.
 
 ## J.5 Registry

@@ -14,8 +14,8 @@ import re
 import glob
 import sys
 
-CN = "cn/spec/ZT-DSP-1.0.2-总指导.md"
-EN = "en/spec/ZT-DSP-1.0.2-Master_Guide.md"
+CN = "cn/spec/ZT-DSP-1.0.3-总指导.md"
+EN = "en/spec/ZT-DSP-1.0.3-Master_Guide.md"
 
 results = []
 

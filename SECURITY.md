@@ -7,8 +7,8 @@ Reports about the protocol text itself are as welcome as reports about an implem
 
 | Version | Supported |
 |---|---|
-| docs 1.0.2 | yes |
-| docs 1.0.1, docs 1.0.0 | yes, the wire format did not change |
+| docs 1.0.3 | yes |
+| docs 1.0.2, docs 1.0.1, docs 1.0.0 | yes, the wire format did not change |
 | earlier revisions | no |
 
 ## Reporting a vulnerability

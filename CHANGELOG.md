@@ -42,12 +42,21 @@ describes storing, binding or writing a key in a TPM or an HWID any more.
   bump attached.
 - J.4 states that the document version never enters the wire format, and what a version
   mismatch actually looks like to an operator.
+- F.1 states the response ordering on one connection: the responder's Phase 1 frame
+  precedes the next request on that connection, and different connections are not
+  ordered against each other.
 
 ### Changed — part of document version 1.0.2
 
 The wire format is untouched. Both clients now declare document version 1.0.2 and keep
 1.0.0 and 1.0.1 in their declared compatibility list, because the wire format did not
 change between those revisions. The document version carries no date suffix.
+
+Statements that the text "has been checked line by line against the reference
+implementation" are removed from both mirrors. No baseline commit and no check date were
+ever recorded for them, so a reader could not verify what they asserted. The appendices
+remain the binding text; dropping an unverifiable claim about that text changes what the
+document is allowed to assert, not what it requires.
 
 ## [1.0.1] - 2026-10-18
 

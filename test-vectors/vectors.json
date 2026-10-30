@@ -36,13 +36,13 @@
     {
       "name": "openssl-sha3-256-hkdf-crosscheck",
       "kind": "hkdf",
-      "why": "OpenSSL 3.5.9 openssl kdf 与标准库手写 HKDF 产出的同一 OKM，覆盖协议自己的 info 标签",
+      "why": "OpenSSL 3.5.9 openssl kdf 与标准库手写 HKDF 产出的同一 OKM，覆盖协议自己的 info 标签（ISOSTRESS-EK-v3）",
       "hash": "SHA3-256",
       "ikm": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
       "salt": "0000000000000000000000000000000000000000000000000000000000000000",
-      "info": "5a542d4453502d454b2d7633",
+      "info": "49534f5354524553532d454b2d7633",
       "length_bits": 256,
-      "okm": "31d7a5ad0d9cec1994d4762371dcd4446a1d2a1ed70dff1435ca98afd9b077d1"
+      "okm": "f5d78c4dfb3f2e271c9924af26a35dada7a9d0746cd5095e14283da766fa5000"
     },
     {
       "name": "rfc7748-x25519-dh",

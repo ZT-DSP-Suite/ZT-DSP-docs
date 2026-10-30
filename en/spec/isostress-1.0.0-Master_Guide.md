@@ -21,7 +21,7 @@
 > - **This document**: the *isostress Protocol Master Guide*.
 > - **Applies to**: This file specifies the protocol behavior and tunable parameters on the code side — `random_len`, `random_rate`, `window`, `time_window`, `key_len`, `hash`, `aead`, `module_flags`, `padding`, `jitter`, etc.; adjusting these settings is governed by this document.
 > - **Corresponding implementation**: the code side declares at its entry point that "this implementation follows the *isostress Protocol Master Guide*" (for the Python implementation in this repository, see `FOLLOWS_DOC` in `isostress_py/version.py`).
-> - **About version numbers**: this project has two kinds of version number — the **document version** (the revision number of this document itself, 1.0.2), and the **client versions** / **server versions** (the full identifier of each implementation). The relation between them and this document is **many-to-many**, not one-to-one: several implementations of the same kind whose protocol behaviour has not changed share one applicability declaration, and the same guide may apply to several client and server versions at once. **Identical version numbers do not mean the same implementation and do not constitute a compatibility claim.** **The handshake frames carry no version string whatsoever**: neither the Phase One parameter JSON nor the Phase Four AAD contains a version or protocol identifier field. Whether the peer is compatible is reflected by the Phase Three confirmation tag check.
+> - **About version numbers**: this project has two kinds of version number — the **document version** (the revision number of this document itself, 1.0.0), and the **client versions** / **server versions** (the full identifier of each implementation). The relation between them and this document is **many-to-many**, not one-to-one: several implementations of the same kind whose protocol behaviour has not changed share one applicability declaration, and the same guide may apply to several client and server versions at once. **Identical version numbers do not mean the same implementation and do not constitute a compatibility claim.** **The handshake frames carry no version string whatsoever**: neither the Phase One parameter JSON nor the Phase Four AAD contains a version or protocol identifier field. Whether the peer is compatible is reflected by the Phase Three confirmation tag check.
 
 ## Overview
 
@@ -79,7 +79,7 @@ This protocol does not rely on any centralized trust anchor. Every device holds 
 
 ### [About the Version Number]
 
-**1.0.2 is the current document version of this guide.** **The technical content of this document is itself the normative baseline** — for what actually binds, see Part 0, section 0.4.
+**1.0.0 is the current document version of this guide.** **The technical content of this document is itself the normative baseline** — for what actually binds, see Part 0, section 0.4.
 
 ## Table of Contents
 
@@ -204,14 +204,14 @@ This protocol does not rely on any centralized trust anchor. Every device holds 
 
 | Item | Value |
 |---|---|
-| Document identifier | `isostress-1.0.2` |
-| Document version | `1.0.2` (2026-10-19), a text revision: it adds 5.6 deployment constraints, an F.5 step-1 note and a J.4 version-string note, and removes the deprecated hardware key-storage design description; the history is in `CHANGELOG.md` |
-| Wire format | unchanged between 1.0.0 and 1.0.2 |
+| Document identifier | `isostress-1.0.0` |
+| Document version | `1.0.0` (2026-10-30) |
+| Wire format | 1.0.0 |
 | Numbering gaps | Appendices A, D, E and Volumes 2, 6, 7 were removed in an earlier revision and were not renumbered |
-| Status | The only current revision; the previous public revision is 1.0.1 |
+| Status | The only current revision |
 | Nature | A normative document, but not all of it binds — see 0.4 |
 | Program identifier | `<language>-<version>[-<YYYYMMDD>]`, for example `ISOSTRESS_PY-1.0.0`; the version is the program's own and is unrelated to the document version |
-| Compatibility declaration | Every program must declare the document version it aligns with, for example "aligns with document 1.0.2"; no synchronisation is required between two programs |
+| Compatibility declaration | Every program must declare the document version it aligns with, for example "aligns with document 1.0.0"; no synchronisation is required between two programs |
 | License | The text is CC BY-SA 4.0; see `LICENSE` and `LICENSING.md` at the repository root |
 | Patents | The maintainers do not patent this protocol; see `PUBLICATION-RECORD.md` |
 
@@ -333,7 +333,7 @@ out-of-band exchange (Out-of-Band Exchange)
 └── Rationale: any encrypted communication needs an "initial trust" — the two sides must first confirm "the other party really is that person". Out-of-band exchange provides this initial trust and depends on no centralized authority
 ```
 
-> **Common misconception**: Out-of-band exchange ≠ having to meet offline. QR code scanning, encrypted email, or another chat tool whose trust you have already established all count as out of band. The core criterion is: **this channel does not pass through a isostress server, and you have already confirmed that it is trustworthy**.
+> **Common misconception**: Out-of-band exchange ≠ having to meet offline. QR code scanning, encrypted email, or another chat tool whose trust you have already established all count as out of band. The core criterion is: **this channel does not pass through an isostress server, and you have already confirmed that it is trustworthy**.
 
 ### Principle Four: Layered isolation, least privilege
 
@@ -885,7 +885,7 @@ Plaintext payload (before encryption, i.e. the content of the GCM ciphertext):
 |----------|------|------|------|
 | Destination token hash | 32B | Yes | Encrypted with the session key EK, preventing plaintext identity linkage. The server sees the encrypted destination hash and cannot know whom the message is sent to |
 | Source token hash | 32B | Yes | Same as above. Encryption prevents traffic analysts from building a social graph through source-destination linkage |
-| Timestamp | 8B | Yes | Millisecond Unix timestamp (uint64 big-endian). The receiver checks `|current time − timestamp| <= timestamp window` (default 30 seconds), preventing replay and delayed interception |
+| Timestamp | 8B | Yes | Millisecond Unix timestamp (uint64 big-endian). The receiver records the timestamp of the first authenticated packet in the session as the reference point, then checks `|timestamp − reference| <= timestamp window` (default 30 seconds) — the window measures drift, not absolute offset; the two ends do not need clock synchronization |
 | Payload format marker fmt | 1B | Yes | `0x00` = no random padding (default), `0x01` = with random padding. The receiver strips padding per this marker; the reference client can enable padding unilaterally without negotiation between the two parties |
 | Random padding | 0~2048B | Yes | Reference recommendation 512~2048B. Padding removes the length fingerprint so that all packets are similar in size. Off by default in the reference client (enabled via `--padding-min/max`) |
 | Pre-key seed next_seed | 32B | Yes | Ratchet seed for the next packet: `new_EK = HKDF-SHA3-256(IKM = current EK ‖ next_seed, info = "ISOSTRESS-EK-ROTATE", output 256 bits)` (sustained lock, see 4.2.5) |
@@ -940,11 +940,11 @@ AAD (Additional Authenticated Data)
 
 **[Receiving Flow]:**
 
-1. After B receives the packet, it first checks whether the **sequence number** is strictly greater than the last received value (`seq > seq_recv`, with `seq_recv` starting at −1); otherwise -> **drop the packet, wipe all keys and terminate the session** (replay attack or a stale out-of-order packet)
+1. After B receives the packet, it first checks whether the **sequence number** is strictly greater than the last received value (`seq > seq_recv`, with `seq_recv` starting at −1); otherwise -> **silently drop the packet and keep the session**: do not advance `seq_recv`, do not reply with any byte (replay attack or a stale out-of-order packet)
 2. B then checks whether the **session ID** matches the current session; on mismatch -> **drop the packet and terminate the session** (crosstalk or a leftover packet from an old session)
 3. B verifies the **GCM authentication tag**; on failure -> **drop the packet and terminate the session** (data tampered with or key mismatch)
 4. After decrypting the payload, B performs **three internal checks**: (1) whether the payload structure length is self-consistent (bounds checking); (2) whether the payload format marker is valid (unknown fmt); (3) **bidirectional token hash validation** -- the in-packet destination token hash must equal the local identity and the source token hash must equal the peer identity (preventing traffic reflection/crosstalk/identity forgery). Failure of any of these -> **drop the packet and terminate the session**
-5. B checks the timestamp: `|current time − timestamp| > timestamp window` (default 30 seconds) -> the packet **has passed GCM authentication but is outside the window**; in this case **only the plaintext is discarded, while the EK is still rotated and the sequence number advanced** (preventing a permanent session desynchronization when the sender has rotated but the receiver has not) -- **this is the only failure branch that does not terminate the session**
+5. B checks the timestamp: it records the timestamp of the **first GCM-authenticated packet** in the session as the reference point `ts_ref` (that packet only sets the reference and is not itself subject to the window check); every later packet is judged by `|timestamp − ts_ref| > timestamp window` (default 30 seconds) -> a packet outside the window **has passed GCM authentication but drifted too far from the reference**; in this case **only the plaintext is discarded, while the EK is still rotated and the sequence number advanced** (preventing a permanent session desynchronization when the sender has rotated but the receiver has not) -- **this is the only failure branch that does not terminate the session**
 6. B obtains the plaintext message normally. A packet with plaintext length 0 is a **heartbeat packet**, which the receiver silently skips (the reference client sends one every 30 seconds to detect half-open connections)
 
 > **Practical Tip (both the receive order and the failure policy matter)**: Always process in the order "sequence number -> session ID -> authentication tag -> decryption and internal validation -> timestamp." This order is itself a security design: cheap filtering first (sequence number/session ID), then expensive cryptographic verification (GCM), and only then decryption -- preventing both DoS (junk packets do not trigger decryption) and information leakage (not exposing "why it was dropped"). **Except for the timestamp-window case in step 5, every validation failure must "terminate silently"**: drop the packet, wipe all keys, end the session, and return no error code to the peer -- consistent with the termination policy of Appendix F.5 and with the reference implementation's `session.py` behavior.
@@ -992,7 +992,7 @@ If the server returned a different error code for each kind of error (e.g., "len
 
 **"Logs" in this section** means logs sent over the network, logs written to persistent storage, and logs fed into any externally facing logging system. **Excluded** are diagnostic output written only to the local stderr and neither persisted nor forwarded, and termination counters that live only in local memory (see 5.6 and F.2 element 4).
 
-> **Practical Tip (implementation pitfalls)**: The "silence" of silent drop must be carried through to the end -- (1) return no network response; (2) write no externally facing logs (logs themselves are feedback for the attacker and also make the server a forensic target; local stderr diagnostics and local counters are excepted, see 5.6); (3) perform no expensive operation before dropping (drop at the outermost parameter check, preventing DoS amplification); (4) keep the timing of the drop path as consistent as possible with the normal path (so that attackers cannot infer "this really is a isostress server" from "response time differences").
+> **Practical Tip (implementation pitfalls)**: The "silence" of silent drop must be carried through to the end -- (1) return no network response; (2) write no externally facing logs (logs themselves are feedback for the attacker and also make the server a forensic target; local stderr diagnostics and local counters are excepted, see 5.6); (3) perform no expensive operation before dropping (drop at the outermost parameter check, preventing DoS amplification); (4) keep the timing of the drop path as consistent as possible with the normal path (so that attackers cannot infer "this really is an isostress server" from "response time differences").
 
 > **Common Misconception**: Silent drop ≠ "no defenses." It is an "anti-probing" layer, not an "anti-attack" layer -- a legitimate packet that passes the parameter check must still go through the full line of defenses: signature verification, CRL lookup, GCM validation, and so on. A server that relies only on silent drop without implementing validation logic will be easily breached by a malicious client holding a legitimate token.
 
@@ -1232,7 +1232,7 @@ This is sustained lock: an attacker holding only ciphertext, even after intercep
 
 **A:** A common design adds a "collision mechanism" to Phase Two: both parties generate 1024 random numbers and exchange 32KB of hash values for comparison. This design is cryptographically redundant — both parties already hold the same PSK, and a deterministic derivation function necessarily yields the same output; exchanging hashes to verify adds neither security nor authentication.
 
-More importantly, the 32KB exchange brings problems such as traffic correlation (a strong fingerprint, which can be used to identify a isostress handshake), DoS amplification (a forged handshake request forces the server to forward a huge amount of hash data), and excessive latency (close to the performance limit on a 200ms-latency network). The protocol therefore omits any redundant collision phase and derives keys directly (X25519 + HKDF).
+More importantly, the 32KB exchange brings problems such as traffic correlation (a strong fingerprint, which can be used to identify an isostress handshake), DoS amplification (a forged handshake request forces the server to forward a huge amount of hash data), and excessive latency (close to the performance limit on a 200ms-latency network). The protocol therefore omits any redundant collision phase and derives keys directly (X25519 + HKDF).
 
 > **Common Misconception**: "exchanging hashes for verification" sounds more secure (one extra check), but is in fact **redundant and harmful**: what both parties derive is the result of the same deterministic function, so verifying it amounts to "verifying yourself with yourself"; and the 32KB traffic signature instead gives attackers a chance to identify the protocol. Security design is not "the more checks the better", but "every step has independent value".
 
@@ -1346,7 +1346,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *isostress Protocol General Guide* (document version 1.0.2; parameters unchanged since 1.0.1) |
+| Governing document | *isostress Protocol General Guide* (document version 1.0.0) |
 
 ### Advanced Server (moderate customization)
 
@@ -1359,7 +1359,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *isostress Protocol General Guide* (document version 1.0.2; parameters unchanged since 1.0.1) |
+| Governing document | *isostress Protocol General Guide* (document version 1.0.0) |
 
 ### High-Anonymity Server (heavy customization)
 
@@ -1372,7 +1372,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *isostress Protocol General Guide* (document version 1.0.2; parameters unchanged since 1.0.1) |
+| Governing document | *isostress Protocol General Guide* (document version 1.0.0) |
 
 # Appendix C: Minimal Implementation Checklist
 
@@ -1491,7 +1491,7 @@ Section 4.3 explained the **idea** of Silent Drop; this section gives its **beha
 2. **Do not actively close the connection (see H.3 for the silent hold duration)**. Closing a connection (FIN/RST) is itself an observable signal — an attacker can use it to distinguish "rejected because of a parameter mismatch" from "nobody is listening on the port at all".
 3. **Hang, read, and discard subsequent data**: continuously `recv` in 8192-byte blocks and discard them until the peer closes or the hold duration is exhausted. The hold duration defaults to the handshake timeout (**15 seconds, configurable**; for server-embedded scenarios it is advisable to reduce it and combine it with per-IP rate limiting, to prevent malicious connections from occupying connection slots for a long time).
 4. **Diagnostics go only to the local stderr**: the discard reason (such as "Phase 1 parse failed" or "parameter mismatch: random_len") is printed for the local operator to see, **never enters the network side**, and **MUST NOT** be connected to an externally facing logging system.
-5. **Network appearance is indistinguishable from a "closed port"**: from the attacker's perspective, a scan against a nonexistent service and a isostress server with wrong parameters should look like the same kind of "silence".
+5. **Network appearance is indistinguishable from a "closed port"**: from the attacker's perspective, a scan against a nonexistent service and an isostress server with wrong parameters should look like the same kind of "silence".
 
 **Complete trigger-point table** (responder's perspective; any single trigger immediately enters strict silence):
 

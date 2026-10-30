@@ -8,7 +8,7 @@
 
 完整地图见 [仓库根 README](../README.md)。
 
-> 当前协议的规范文档。以 `cn/spec/isostress-1.0.0-总指导.md` 为准（docs 版本 1.0.2）。
+> 当前协议的规范文档。以 `cn/spec/isostress-1.0.0-总指导.md` 为准（docs 版本 1.0.0）。
 >
 > **本仓库与代码仓库的对应关系**：规范规定 code 侧的协议行为与可调参数；代码侧在入口处声明"本实现遵循《isostress 协议总指导》"。双方不靠版本号绑定。
 
@@ -61,7 +61,7 @@ isostress-docs/
 
 本项目有**三类版本号**，以及一套**双向声明**：
 
-- **总指导版本（1.0.2）**：本文档仓库自身的修订号，写作 `docs 1.0.2`。不参与网络通信。
+- **总指导版本（1.0.0）**：本文档仓库自身的修订号，写作 `docs 1.0.0`。不参与网络通信。
 - **客户端版本**：各客户端实现的完整标识，形如 `isostress_<语言前缀>-<主.次.修订>`——Python 实现为 `ISOSTRESS_PY-1.0.0`，Rust 实现为 `ISOSTRESS_RS-1.0.0`。不同语言的实现可共用同一版本号，靠前缀区分。
 - **服务器版本**：服务端实现的完整标识，形如 `ISOSTRESS_SV-1.0.0`。`SV` 是角色前缀，不是语言前缀。Rust 实现见 `isostress-server/src/`；Python 参考实现 `ISOSTRESS_SV-1.0.0-20261030` 见 `isostress-client/isostress_sv_py/`。
 - **双向声明**：文档侧（`spec/` 头部）列出**适用本版本的客户端与服务器版本**，并声明"本文档管哪些设置"；实现侧（`isostress_py/version.py` 的 `FOLLOWS_DOC` 与 `APPLIES_TO_DOC_VERSIONS`）声明"本实现适用哪份文档"。**双方不靠版本号绑定。**

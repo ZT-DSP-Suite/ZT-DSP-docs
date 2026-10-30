@@ -37,3 +37,14 @@ Thumbs.db
 desktop.ini
 .DS_Store
 
+# -- Local agent runtime and scratch data (must never be published) --
+.reasonix/
+.zcode/
+.claude/
+.gemini/
+memory/
+_scratch/
+github-mcp-server_Windows_x86_64/
+AGENTS.md
+# Shell guards run from the local working tree; the local gate blocks shell uploads.
+*.sh

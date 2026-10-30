@@ -54,7 +54,7 @@ Imagine a scenario: you want to send a letter to a friend, but the postal worker
 
 > **Reading tip**: When you hit a term you do not understand, look it up in the Glossary, then come back and keep reading. Every term has a [Terminology Note] pointer and a one-sentence explanation the first time it appears in the main text.
 >
-> **Note for new readers**: appendices F/G/H are at the "protocol engineering blueprint" level — when writing an implementation, take Appendix F/H as the binding text (every sentence of them has been checked line by line against the reference implementations), while Volume 4 is better suited to understanding and remembering; for byte-level self-checks, compare against Appendix F.
+> **Note for new readers**: appendices F/G/H are at the "protocol engineering blueprint" level — when writing an implementation, take Appendix F/H as the binding text, while Volume 4 is better suited to understanding and remembering; for byte-level self-checks, compare against Appendix F.
 
 ### Terminology Annotation Rules (learn these rules first, and reading will be much easier)
 
@@ -443,7 +443,7 @@ Hash (Hash, Hash Function)
 
 > **Reading Guide to This Volume** This volume is the **core protocol** of isostress-py -- any implementation claiming compatibility with isostress must support the contents of this volume (the extension modules in Volume 3 are all optional). This volume answers: where identity comes from (4.1), how two parties establish an encrypted session (4.2), and how the server stays hidden (4.3).
 >
-> **Focus for Beginners** First understand the identity system in 4.1 (the difference between a token and a room number), then walk through the four-phase flow in 4.2. Every formula block has line-by-line comments; read them by matching "Input → Compute → Output". The descriptions in this volume have been checked item by item against the implementation of the reference client `isostress_py`  (client version `ISOSTRESS_PY-1.0.0`), and you can verify them by running the `isostress-client` implementation as its README describes.
+> **Focus for Beginners** First understand the identity system in 4.1 (the difference between a token and a room number), then walk through the four-phase flow in 4.2. Every formula block has line-by-line comments; read them by matching "Input → Compute → Output". The examples in this volume can be verified by running the `isostress-client` implementation (client `isostress_py`) as its README describes.
 >
 > **Prerequisites** the hotel model of Volume 3 (this volume is its technical implementation); the explanations of the four concepts "hash, encryption, key exchange, digital signature" in the Glossary.
 >
@@ -636,7 +636,7 @@ In isostress, the handshake is divided into four phases:
 5. **Capability flags**: declares the modules and cryptographic parameters that A supports (such as the list of supported encryption algorithms and parameters)
 6. **Access nonce**: conforms to the parameters declared by the server library (length, rate, format); it serves as an identity heartbeat, proving that A is "alive" and holds the correct key material
 
-> **On-the-wire frame format (checked byte by byte against the reference client)**: On the network, the above 6 items of information are not "6 independent fields"; they are packed into one phase-one frame (**for the complete byte-by-byte layout, the on-the-wire structure and validation rules of the parameter JSON, and the upper-limit constants, see Appendix F.1; under the default parameters this frame is about 228 bytes minimum**):
+> **On-the-wire frame format (normative)**: On the network, the above 6 items of information are not "6 independent fields"; they are packed into one phase-one frame (**for the complete byte-by-byte layout, the on-the-wire structure and validation rules of the parameter JSON, and the upper-limit constants, see Appendix F.1; under the default parameters this frame is about 228 bytes minimum**):
 
 ```plain
 Phase-one frame (on-the-wire format):
@@ -716,7 +716,7 @@ Forward Secrecy (FS)
 
 A and B exchange public keys pk_A and pk_B through the server. Public keys can be transmitted openly, and it does no harm even if they are intercepted; the server is only responsible for forwarding the public keys and cannot derive the shared secret.
 
-> **On-the-wire flow (checked against the reference client)**:
+> **On-the-wire flow (normative)**:
 >
 > 1. Initiator A sends: `[pub_len(4B)] [pk_A(32B)] [session_salt(32B)]` -- the session salt is sent together with A's public-key packet
 > 2. After receiving it, responder B **computes DH first**, and only then decides whether to respond: if the public-key length is abnormal or it is a low-order point (such as all zeros, u=1, or other invalid values), B will **strictly silently drop** it -- sending no bytes at all and not actively closing the connection (security hardening: prevents "the response frame from being leaked before verification fails")
@@ -870,7 +870,7 @@ After the confirmation tag is verified and the handshake announcement is complet
 
 **[Packet Structure (complete fields)]:**
 
-> **Wire Layout (verified byte-by-byte against the reference client)**: A Phase 4 packet consists of two parts, a "plaintext header + GCM ciphertext," and inside the ciphertext are 7 more fields (**the byte-by-byte layout table with offsets, the fixed order of the receive-validation pipeline, and the measured 165-byte heartbeat packet size are in Appendix F.5; the precise encoding of random padding and the fmt marker is in Appendix G**):
+> **Wire Layout (normative)**: A Phase 4 packet consists of two parts, a "plaintext header + GCM ciphertext," and inside the ciphertext are 7 more fields (**the byte-by-byte layout table with offsets, the fixed order of the receive-validation pipeline, and the measured 165-byte heartbeat packet size are in Appendix F.5; the precise encoding of random padding and the fmt marker is in Appendix G**):
 
 ```plain
 Wire packet (after encryption):
@@ -1415,7 +1415,7 @@ Before using isostress, confirm the following:
 
 # Appendix F: Byte-by-Byte On-Wire Protocol Specification
 
-> **[Appendix Guide]** Volume 4 explains "what the protocol does"; this appendix explains "what it actually looks like on the wire". This appendix describes the precise byte layout of **all four on-wire frame types** of isostress, the common encoding conventions, the limit constants, and the Silent Drop behavior contract; every sentence has been checked line by line against the implementation of the reference client (`isostress_py`). **Any two implementations claiming isostress compatibility must produce network traffic identical to this appendix at the byte level** — otherwise the Phase 3 confirmation tag verification will fail immediately.
+> **[Appendix Guide]** Volume 4 explains "what the protocol does"; this appendix explains "what it actually looks like on the wire". This appendix describes the precise byte layout of **all four on-wire frame types** of isostress, the common encoding conventions, the limit constants, and the Silent Drop behavior contract. **Any two implementations claiming isostress compatibility must produce network traffic identical to this appendix at the byte level** — otherwise the Phase 3 confirmation tag verification will fail immediately.
 >
 > **[Points of Interest for Beginners]** This appendix is an "engineering blueprint"; absolute beginners do not need to read it through. It is suggested to first read the four common conventions in F.0 to build intuition, and then consult each section as needed.
 >
@@ -1480,6 +1480,8 @@ The following conventions apply to **all four frame types**:
 - Each side sends its own nonce, and the two nonces are mutually independent.
 
 **Exchange order**: the initiator sends the complete frame first → the responder reads the whole frame, verifies the parameters, and checks the nonce length (plus extension-layer verification, if any) → **only after everything passes** does the responder send back its own frame. Under the default parameters (JSON 120B + identity announcement 64B + nonce 32B), the Phase 1 frame = 4+120+4+64+4+32 = **228 bytes**.
+
+**Response ordering on one connection**: the responder's Phase 1 frame **precedes the next request** on that same connection — the initiator must not send another Phase 1 frame on the connection before receiving the responder's frame, and the responder does not process another request on that connection before sending its own frame. **Different connections are not ordered against each other**: each connection stands alone, and a wait on one does not affect another.
 
 ## F.2 Strict Silent Drop Behavior Specification (Responder-side behavior contract)
 

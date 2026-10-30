@@ -1,97 +1,7 @@
 # Publication Record
 
-> Readers: anyone who needs the push time, and anyone who needs to reproduce the content.
-> Status: current.
-
-## What was published
-
-| Item | Value |
-|---|---|
-| Repository | `https://github.com/ZT-DSP-Suite/ZT-DSP-docs` |
-| Visibility | PUBLIC |
-| Created (UTC) | 2026-10-17T17:43:46Z |
-| Last pushed (UTC) | 2026-10-17T19:04:50Z (this record's own commit) |
-| Default branch | `main` |
-| First public commit | `3642082ee5e805428e8aa11200555c09f04f3198` |
-| Release tag | `pub-2026-10-18` → `3642082` (annotated) |
-| Earlier tag | `docs-v1.0.0` → `837bfb8` (annotated) |
-| Branches at publication | `main` only |
-
-## Content hashes
-
-These are the hashes of the text that tag `pub-2026-10-18` fixes. The working tree has
-moved to document version 1.1.0, whose hashes are listed below; the published text stays
-retrievable from the tag.
-
-| File | SHA-256 |
-|---|---|
-| `cn/spec/ZT-DSP-1.0.1-总指导.md` | `0847e4046c6bf9e0b9b799d58709d20d4c063cf97f026f6f9e874f6eddfb26d3` |
-| `en/spec/ZT-DSP-1.0.1-Master_Guide.md` | `7824bd19ccbcf29185aa1331b4c87db8a3b8ed477e38bc9cc9504d5dca1c8fd0` |
-
-## How to reproduce
-
-1. Read the timestamps: `gh api repos/ZT-DSP-Suite/ZT-DSP-docs --jq '{createdAt,pushedAt,visibility}'`.
-2. Read the published commit: `gh api repos/ZT-DSP-Suite/ZT-DSP-docs/commits/main --jq .sha`.
-3. Read the tags: `git ls-remote --tags https://github.com/ZT-DSP-Suite/ZT-DSP-docs.git`.
-4. Recompute a hash: `sha256sum 'cn/spec/ZT-DSP-1.0.2-总指导.md'`.
-5. Check out the published text: `git checkout pub-2026-10-18 -- cn/spec/ZT-DSP-1.0.1-总指导.md`.
-
-## What this record states
-
-The specification became available to the public at the time recorded above. This file records the facts; it does not argue for any legal effect.
-
-| Question | Answer |
-|---|---|
-| Was a patent applied for? | No |
-| What is given up? | The right to obtain a patent over the published subject matter in any jurisdiction |
-| What is retained? | Copyright, and the licence terms in `LICENSING.md` |
-
-## 中文摘要
-
-| 项 | 值 |
-|---|---|
-| 首次推送（UTC） | 2026-10-17T17:44:19Z |
-| 首次公开提交 | `3642082ee5e805428e8aa11200555c09f04f3198` |
-| 首次推送时分支 | 仅 `main` |
-| 是否申请专利 | 否 |
-
-以上时间与提交用于核对本文件所列内容。
-
-## Document version 1.1.0
-
-| Item | Value |
-|---|---|
-| Status | Local working tree. Not pushed; awaiting review and a push order. |
-| Document version | 1.1.0 |
-| Wire format | Unchanged from 1.0.0 |
-| Content | `cn/spec/ZT-DSP-1.1.0-总指导.md` `66722e6359800bdd80370d3bdec6a5f34d48d23d204a1df61f63f4e6173d38b0`<br>`en/spec/ZT-DSP-1.1.0-Master_Guide.md` `9c72ee22d63f30f90fdd40e7b07185d0eec293da14648a339f12ad5c52dcbf8c` |
-
-## Document version 1.0.3
-
-| Item | Value |
-|---|---|
-| Status | Superseded in the working tree by 1.1.0; never published on its own. |
-| Document version | 1.0.3 |
-| Wire format | Unchanged from 1.0.0 |
-| Content | `cn/spec/ZT-DSP-1.0.3-总指导.md` `925bffdf7a2fb367ad01a847fb7454e2a4544437172e3cce475d7ff5697dfdab`<br>`en/spec/ZT-DSP-1.0.3-Master_Guide.md` `5b8ea4fe5dfdcac772e7eb689c2abbb052da531d5648397b13b1c9ac02df5a0d` |
-
-## Document version 1.0.2
-
-| Item | Value |
-|---|---|
-| Status | Superseded in the working tree by 1.0.3; never published on its own. |
-| Document version | 1.0.2 |
-| Wire format | Unchanged from 1.0.0 |
-| Content | `cn/spec/ZT-DSP-1.0.2-总指导.md` `177a976d606d3b3e9dea3a347bcb51645e89a1444161fae0cd112b2c64c458b9`<br>`en/spec/ZT-DSP-1.0.2-Master_Guide.md` `5c48ed7ea38b7fda843f253e801c800c3529135b0be7a16f031b49a7bd4502af` |
-
-## Document version 1.0.1
-
-| Item | Value |
-|---|---|
-| Status | The published text, superseded in the working tree by 1.0.2 |
-| Document version | 1.0.1, replacing the text that tag pub-2026-10-18 fixes |
-| Wire format | Unchanged from 1.0.0 |
-| Content | Fixed by tag spec-1.0.1 |
+> 本仓保留公开指针。发布时刻、提交、标签与内容哈希由维护者保存；完整记录可按需索取。
+> 本文件同时保留专利不主张声明，供规范与符合性指南引用。
 
 ## Patents
 
@@ -111,5 +21,8 @@ Two limits are worth stating plainly:
 - whether a given disclosure defeats a given claim is a legal question. The
   maintainers record the facts; a lawyer decides what they achieve.
 
-The evidence that makes the record usable is the same evidence listed at the top of
-this file: the push timestamp, the commit, the tag, and the content hashes.
+## Full record
+
+The evidence that makes the record usable is the push timestamp, the commit, the
+tag, and the content hashes. The full record is held by the maintainers; request
+it through the repository issue tracker.

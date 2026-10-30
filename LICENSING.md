@@ -1,6 +1,6 @@
 # Licensing
 
-This repository contains the ZT-DSP protocol specification.
+This repository contains the isostress protocol specification.
 
 ## License — CC BY-SA 4.0
 
@@ -15,9 +15,14 @@ adaptation of the document, so no share-alike obligation attaches to your
 implementation, and you are not required to license your code in any particular
 way.
 
-**Reusing the text is free with attribution.** You may quote, translate and
-redistribute the specification, provided you give appropriate credit, link to the
-license, and indicate whether changes were made.
+**Quoting the text is free with attribution.** You may quote and redistribute
+the specification, provided you give appropriate credit, link to the license,
+and indicate whether changes were made.
+
+**Translation is an adaptation.** CC BY-SA 4.0's Adapted Material definition
+includes translations, so a published translation of the specification must be
+distributed under CC BY-SA 4.0 as well. Share-alike binds the document only;
+an implementation written from it stays outside this obligation.
 
 **Derivative specifications stay open.** If you modify the specification text and
 publish it, the result must be distributed under CC BY-SA 4.0 (or a compatible
@@ -29,8 +34,8 @@ proprietary license.
 Section 2(b)(2) of CC BY-SA 4.0 states that **patent and trademark rights are not
 licensed** under it. Specifically:
 
-- **Trademarks.** "ZT-DSP", "ZT-DSP-Suite" and the ZT-DSP logo are marks of the
-  ZT-DSP Suite maintainers. A derivative document or an independent implementation
+- **Trademarks.** "isostress", "isostress-suite" and the isostress logo are marks of the
+  isostress Suite maintainers. A derivative document or an independent implementation
   must not be presented as the "official", "reference" or "canonical" version
   unless it is published by the maintainers.
 - **Patents.** This document is a technical specification and grants no patent
@@ -38,20 +43,29 @@ licensed** under it. Specifically:
 
 ## Attribution requirement
 
-Any redistribution or derivative of this document must keep
-`Copyright (c) 2026 ZT-DSP Suite maintainers (copyright holder: SCAL-ROAM)` intact and link to the license.
+Any redistribution or derivative of this document must keep the copyright notice
+that the copy you received carries intact and link to the license. Later versions
+of this repository use `Copyright (c) 2026 isostress Suite maintainers`.
+
+## Contact
+
+Questions about this license and about the project marks: open an issue in the
+isostress-suite organisation: https://github.com/isostress-suite
 
 ---
 
 ## 中文摘要
 
-本仓是 ZT-DSP 协议规范，采用 **CC BY-SA 4.0（署名—相同方式共享）**：
+本仓是 isostress 协议规范，采用 **CC BY-SA 4.0（署名—相同方式共享）**：
 
 - **照规范写实现是自由的**：实现协议不构成对本文档的改编，不触发"相同方式
   共享"，也不限制你的代码使用何种许可。
-- **引用、翻译、转载需要署名**：保留 `Copyright (c) 2026 ZT-DSP Suite maintainers (copyright holder: SCAL-ROAM)`，
-  并注明许可与是否修改。
+- **引用、转载需要署名**：保留你所收到的版本所带的版权声明（本仓后续
+  版本使用 `Copyright (c) 2026 isostress Suite maintainers`），并注明许可与是否修改。
+- **翻译属改编**：CC BY-SA 4.0 的 Adapted Material 定义包含翻译，发布的译本同样须以
+  CC BY-SA 4.0 分发。相同方式共享只约束文档本身，照规范写出的实现不受此义务约束。
 - **改过的规范必须同样开放**：你可以改，但改完发布的版本必须仍以 CC BY-SA 4.0
   分发，不能变成别人的闭源标准。
-- **不含商标与专利授权**（第 2(b)(2) 条）：不得把修改版或独立实现称为 ZT-DSP 的
+- **不含商标与专利授权**（第 2(b)(2) 条）：不得把修改版或独立实现称为 isostress 的
   "官方/参考/标准"版本。
+- **许可联系**：在 isostress-suite 组织下提 issue：https://github.com/isostress-suite

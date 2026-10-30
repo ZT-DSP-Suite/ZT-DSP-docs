@@ -1,4 +1,4 @@
-# ZT-DSP Chinese-English Glossary (translation baseline)
+# isostress Chinese-English Glossary (translation baseline)
 
 > Purpose: every English document and every code comment in this project must use the English wording given here, so that terminology stays consistent throughout.
 > Status: this file is the **single normative source** of terminology and depends on no other document.
@@ -122,11 +122,11 @@
 | Answer Packet | 应答包 | 阶段二由响应方返还，含其临时公钥；与提议包成对 |
 | Document Version | 文档版本 | 规范文本自身的版本，兼容性的唯一锚点 |
 | Program Version | 程序版本 | 每个程序自身的版本，与文档版本无关 |
-| Program Identifier | 程序标识 | `<语言>_<版本>[-<YYYYMMDD>]`，例如 `ZT-DSP_PY-1.0.0` |
+| Program Identifier | 程序标识 | `<语言>-<版本>[-<YYYYMMDD>]`，例如 `ISOSTRESS_PY-1.0.0` |
 
 ## 使用规则
 
 1. 首次出现写「中文（English）」，之后只用其一；英文版一律使用 English 列。
 2. 缩写词（TLS、AEAD、HKDF…）不翻译，保持原形。
-3. 代码标识符（`session_salt`、`ZTDSPSecurityError`）不翻译，注释中保留原拼写。
-4. 协议常量串（`ZT-DSP-PHASE1-NONCE-v3` 等）**永不翻译**。
+3. 代码标识符（`session_salt`、`ISOSTRESSSecurityError`）不翻译，注释中保留原拼写。
+4. 协议常量串（`ISOSTRESS-PHASE1-NONCE-v3` 等）**永不翻译**。

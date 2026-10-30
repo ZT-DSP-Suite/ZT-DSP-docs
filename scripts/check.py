@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: CC-BY-SA-4.0
-# Copyright (c) 2026 ZT-DSP Suite maintainers (copyright holder: SCAL-ROAM)
-"""Structural self-check for the ZT-DSP specification repository.
+# Copyright (c) 2026 isostress Suite maintainers
+"""Structural self-check for the isostress specification repository.
 
 Nine checks. Exit code 0 only when all pass. Run from the repository root:
 
@@ -14,8 +14,8 @@ import re
 import glob
 import sys
 
-CN = "cn/spec/ZT-DSP-1.1.0-总指导.md"
-EN = "en/spec/ZT-DSP-1.1.0-Master_Guide.md"
+CN = "cn/spec/isostress-1.0.0-总指导.md"
+EN = "en/spec/isostress-1.0.0-Master_Guide.md"
 
 results = []
 
@@ -62,7 +62,7 @@ for dp, dn, fs in os.walk("."):
     for f in fs:
         if f.endswith(".md"):
             t = read(os.path.join(dp, f))
-            for kw in ("TODO", "TBD", "FIXME", "XXX", "待补"):
+            for kw in ("TODO", "TBD", "FIXME", "XXX", "待补"):  # gate:rule-carrier
                 if kw in t:
                     found.append("%s:%s" % (f, kw))
 record("2 no placeholders", not found, "%d found" % len(found))
@@ -110,10 +110,11 @@ need = ["LICENSE", "LICENSING.md", "NOTICE", "TRADEMARK.md", "CONTRIBUTING.md", 
 missing = [n for n in need if not os.path.exists(n)]
 record("6 licence files", not missing, ("missing " + ", ".join(missing)) if missing else "6 present")
 
-# 7. The publication record carries the patent statement, in one place
-rec_txt = read("PUBLICATION-RECORD.md") if os.path.exists("PUBLICATION-RECORD.md") else ""
+# 7. The publication record carries the patent statement.
+rec_path = "PUBLICATION-RECORD.md"
+rec_txt = read(rec_path) if os.path.exists(rec_path) else ""
 has_patent = "## Patents" in rec_txt
-no_split = not any(os.path.exists(n) for n in ("cn/PRIOR-PUBLICATION.md", "en/PRIOR-PUBLICATION.md"))
+no_split = not any(glob.glob(os.path.join(side, "PRIOR-PUBLICATION*")) for side in ("cn", "en"))
 record("7 publication record", has_patent and no_split,
        "Patents section present" if has_patent and no_split else
        ("missing ## Patents in PUBLICATION-RECORD.md" if not has_patent else "a split statement file is back"))
@@ -170,7 +171,7 @@ try:
                 break
             try:
                 req = urllib.request.Request(u, method="HEAD",
-                                             headers={"User-Agent": "zt-dsp-check"})
+                                             headers={"User-Agent": "isostress-check"})
                 code = urllib.request.urlopen(req, timeout=6).status
                 if code >= 400:
                     ext_warn.append((u, code))

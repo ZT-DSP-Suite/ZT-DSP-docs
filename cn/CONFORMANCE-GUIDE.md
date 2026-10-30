@@ -1,7 +1,7 @@
 # 符合性判定指南
 
 > 读者：审计方、监管与合规评估方。
-> 本文件只回答一件事：一份实现算不算符合 ZT-DSP 1.0.0。
+> 本文件只回答一件事：一份实现算不算符合 isostress 1.0.0。
 
 ## A.1 三档判定
 
@@ -15,7 +15,7 @@
 
 ## A.2 审计五步
 
-1. 取被审实现声明的程序标识，格式 `<语言>_<版本>[-<YYYYMMDD>]`（日期段规则见 J.4）。
+1. 取被审实现声明的程序标识，格式 `<语言>-<版本>[-<YYYYMMDD>]`（日期段规则见 J.4）。
 2. 跑附录 C.1 全部自检条目。
 3. 跑附录 J 全部测试向量，逐字节比对输出。
 4. 比对附录 F 的字节布局，不看功能、只看字节。
@@ -44,10 +44,10 @@
 
 审计方需要能跑的二进制，因此构建算必做项，不属可选项。
 
-1. 构建参考实现：在 `ZT-DSP-client/zt_dsp_rs/` 下跑 `cargo build --release`。
-2. 跑测试向量：在 `ZT-DSP-client/zt_dsp_py/` 下跑 `python -m pytest -q tests/test_vectors.py`。
-3. 跑跨实现互通：在 `ZT-DSP-client/zt_dsp_rs/` 下跑 `python interop_test.py`，看末行是否为 `[[ok]] interop suite passed`。
-4. 跑本仓结构自检：在 `ZT-DSP-docs/` 下跑 `python scripts/check.py`，看是否九项全 PASS。
+1. 构建参考实现：在 `isostress-client/isostress_rs/` 下跑 `cargo build --release`。
+2. 跑测试向量：在 `isostress-client/` 下跑 `python -m pytest -q isostress_py/tests/test_vectors.py`。
+3. 跑跨实现互通：在 `isostress-client/isostress_rs/` 下跑 `python interop_test.py`，看末行是否为 `[[ok]] interop suite passed`。
+4. 跑本仓结构自检：在 `isostress-docs/` 下跑 `python scripts/check.py`，看是否九项全 PASS。
 
 四条命令都带工作目录。缺一条，第四步的结论不可复现。
 

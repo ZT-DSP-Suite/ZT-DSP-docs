@@ -1,34 +1,33 @@
-# ZT-DSP Protocol Master Guide Library (document version 1.1.0)
+# isostress Protocol Master Guide Library (document version 1.0.0)
 
 > **Generalisation proposal (2026-10-14, draft)**
-> A proposal exists to lift ZT-DSP from a communication protocol to a **general-purpose one**: a core layer doing PSK-based
+> A proposal exists to lift isostress from a communication protocol to a **general-purpose one**: a core layer doing PSK-based
 > mutual authentication and key agreement, independent of transport and application, with communication and
 > authentication as profiles. The proposal text (a Chinese draft, pending review) is not included in this repository.
 > **This file remains in force**; the proposal is unreviewed and does not replace it.
 
-**Zero Trust Dynamic Synchronization Protocol**
-(Zero Trust Dynamic Synchronization Protocol)
+**isostress** (ISTS)
 
-- **document version**: 1.1.0 (the revision number of this document itself, not involved in network communication)
-- **applicable client versions**: `ZT-DSP_PY-1.0.0` (Python), `ZT-DSP_RS-1.0.0` (Rust)
-- **applicable server version**: `ZT-DSP_SV-1.0.0` (no implementation yet)
-- **Release date**: 2026-10-19
+- **document version**: 1.0.0 (the revision number of this document itself, not involved in network communication)
+- **applicable client versions**: `ISOSTRESS_PY-1.0.0` (Python), `ISOSTRESS_RS-1.0.0` (Rust)
+- **applicable server version**: `ISOSTRESS_SV-1.0.0` (Rust implementation in `isostress-server/src/`; Python reference implementation `ISOSTRESS_SV-1.0.0-20261030` in `isostress-client/isostress_sv_py/`)
+- **Release date**: 2026-10-30
 - **Document status**: **Public Test Release**
 - **Content classification**: The main body of this specification is an implementation specification; sections marked [Theory] [Experimental] are ideas and do not mean they have been implemented or verified.
 - **Maintaining team**: Protocol Founding Team
 
 > **What this document is and what it governs** (two-way declaration · document side):
 >
-> - **This document**: the *ZT-DSP Protocol Master Guide*.
+> - **This document**: the *isostress Protocol Master Guide*.
 > - **Applies to**: This file specifies the protocol behavior and tunable parameters on the code side — `random_len`, `random_rate`, `window`, `time_window`, `key_len`, `hash`, `aead`, `module_flags`, `padding`, `jitter`, etc.; adjusting these settings is governed by this document.
-> - **Corresponding implementation**: the code side declares at its entry point that "this implementation follows the *ZT-DSP Protocol Master Guide*" (for the Python implementation in this repository, see `FOLLOWS_DOC` in `zt_dsp_py/version.py`).
-> - **About version numbers**: this project has two kinds of version number — the **document version** (the revision number of this document itself, 1.1.0), and the **client versions** / **server versions** (the full identifier of each implementation). The relation between them and this document is **many-to-many**, not one-to-one: several implementations of the same kind whose protocol behaviour has not changed share one applicability declaration, and the same guide may apply to several client and server versions at once. **Identical version numbers do not mean the same implementation and do not constitute a compatibility claim.** **The handshake frames carry no version string whatsoever**: neither the Phase One parameter JSON nor the Phase Four AAD contains a version or protocol identifier field. Whether the peer is compatible is reflected by the Phase Three confirmation tag check.
+> - **Corresponding implementation**: the code side declares at its entry point that "this implementation follows the *isostress Protocol Master Guide*" (for the Python implementation in this repository, see `FOLLOWS_DOC` in `isostress_py/version.py`).
+> - **About version numbers**: this project has two kinds of version number — the **document version** (the revision number of this document itself, 1.0.0), and the **client versions** / **server versions** (the full identifier of each implementation). The relation between them and this document is **many-to-many**, not one-to-one: several implementations of the same kind whose protocol behaviour has not changed share one applicability declaration, and the same guide may apply to several client and server versions at once. **Identical version numbers do not mean the same implementation and do not constitute a compatibility claim.** **The handshake frames carry no version string whatsoever**: neither the Phase One parameter JSON nor the Phase Four AAD contains a version or protocol identifier field. Whether the peer is compatible is reflected by the Phase Three confirmation tag check.
 
 ## Overview
 
 ### What is this file for?
 
-This document is the **master guide** to the ZT-DSP communication protocol, and it serves three purposes at once: specification definition, usage instructions, and teaching material. It defines five core things:
+This document is the **master guide** to the isostress communication protocol, and it serves three purposes at once: specification definition, usage instructions, and teaching material. It defines five core things:
 
 1. How two devices **find each other** (door-number mechanism, Volume 3, Section 4.1)
 2. How two devices **confirm each other's identity** (token mechanism, Section 4.1)
@@ -37,9 +36,9 @@ This document is the **master guide** to the ZT-DSP communication protocol, and 
 
 ### Why does it exist (what problem does it solve)?
 
-When communicating on the Internet, by default anyone may snoop on or tamper with your messages. The problem ZT-DSP solves is: **letting two people who already know each other communicate securely under the premise of "trusting no one"**.
+When communicating on the Internet, by default anyone may snoop on or tamper with your messages. The problem isostress solves is: **letting two people who already know each other communicate securely under the premise of "trusting no one"**.
 
-Imagine a scenario: you want to send a letter to a friend, but the postal workers may peek at the contents or forge the letter. ZT-DSP provides a set of methods that let the post office only help deliver the letter, while it can never know what is written in the letter, and can never forge a letter that "looks like you wrote it". (The above is a scenario, not a technical description.)
+Imagine a scenario: you want to send a letter to a friend, but the postal workers may peek at the contents or forge the letter. isostress provides a set of methods that let the post office only help deliver the letter, while it can never know what is written in the letter, and can never forge a letter that "looks like you wrote it". (The above is a scenario, not a technical description.)
 
 ### Which parts should beginners focus on?
 
@@ -49,7 +48,7 @@ Imagine a scenario: you want to send a letter to a friend, but the postal worker
 | Want to understand the principles | Volume 1 → Volume 4 (Core Protocol) → Volume 5 (Threat Model) |
 | Want to set up a server | Appendix B (Parameter Configuration Reference) |
 | Want to develop an implementation | Volume 4 + Appendix F (Byte-by-Byte On-Wire Specification) + Appendix H (State Machine and Timeout Matrix) + Appendix C (Minimal Implementation Checklist) |
-| Want to get it up and running right away | `ZT-DSP-client` repository README (installation, commands and troubleshooting for `zt_dsp_py` / `zt-dsp-rs`) |
+| Want to get it up and running right away | `isostress-client` repository README (installation, commands and troubleshooting for `isostress_py` / `isostress-rs`) |
 
 > **Note on volume numbering**: volume numbers are fixed — each number maps to one volume of the body text, and numbers not listed have no corresponding volume.
 
@@ -74,13 +73,13 @@ term (full name / original English wording)
 
 ## [Important Statement]
 
-This document is the **master guide** to the ZT-DSP protocol, maintained with full authority by the Protocol Founding Team. ZT-DSP is an open communication protocol, not a fixed device or mandatory software. All parameters — including but not limited to random number length, generation rate, time window, hash algorithm, and encryption mode — may be freely declared by the server operator in its Library, and a client must match the parameters before it can connect.
+This document is the **master guide** to the isostress protocol, maintained with full authority by the Protocol Founding Team. isostress is an open communication protocol, not a fixed device or mandatory software. All parameters — including but not limited to random number length, generation rate, time window, hash algorithm, and encryption mode — may be freely declared by the server operator in its Library, and a client must match the parameters before it can connect.
 
 This protocol does not rely on any centralized trust anchor. Every device holds a unique identity credential (token), issued by a third-party certification authority (TCA), but the TCA does not take part in the communication process, nor does it hold any key material. The two communicating parties exchange token hashes in advance out of band, then look for each other on the network and establish a connection.
 
 ### [About the Version Number]
 
-**1.1.0 is the current document version of this guide.** **The technical content of this document is itself the normative baseline** — for what actually binds, see Part 0, section 0.4.
+**1.0.0 is the current document version of this guide.** **The technical content of this document is itself the normative baseline** — for what actually binds, see Part 0, section 0.4.
 
 ## Table of Contents
 
@@ -97,7 +96,7 @@ This protocol does not rely on any centralized trust anchor. Every device holds 
 - 1.2 What is "dynamic synchronization"?
 - 1.3 The Four Core Principles
 
-**Volume 3**: The Hotel Model — an intuitive metaphor for understanding ZT-DSP
+**Volume 3**: The Hotel Model — an intuitive metaphor for understanding isostress
 
 - 3.1 Why use a hotel as the metaphor?
 - 3.2 Scenario setup
@@ -124,7 +123,7 @@ This protocol does not rely on any centralized trust anchor. Every device holds 
 - Q1: I don't have a door number, so how do I enter the hotel to find someone? Isn't this an infinite loop?
 - Q2: Then where does my door number come from? What exactly does the TCA do?
 - Q3: Why must there be a TCA? Isn't this centralization?
-- Q4: If my friend and I have never met and cannot exchange door numbers out-of-band, can we still use ZT-DSP?
+- Q4: If my friend and I have never met and cannot exchange door numbers out-of-band, can we still use isostress?
 - Q5: Can the server see which sub-channel I am speaking in?
 - Q6: Wanting both anonymity and a TCA to "manage" -- are these two contradictory?
 - Q7: What is a virtual room?
@@ -134,7 +133,7 @@ This protocol does not rely on any centralized trust anchor. Every device holds 
 - Q11: Is emergency mode still there?
 - Q12: Can I modify the protocol's parameters?
 - Q13: What is "silent drop"? Why does it not return an error when parameters do not match?
-- Q14: Can I use ZT-DSP to do illegal things? Will the protocol assist me?
+- Q14: Can I use isostress to do illegal things? Will the protocol assist me?
 - Q15: Why can't single-digit comparison confirm whether the peer is trustworthy?
 - Q16: Why can't packet keys be generated by deriving a world from a seed?
 
@@ -205,14 +204,14 @@ This protocol does not rely on any centralized trust anchor. Every device holds 
 
 | Item | Value |
 |---|---|
-| Document identifier | `ZT-DSP-1.1.0` |
-| Document version | `1.1.0` (2026-10-25), a behaviour revision: a repeated or too-old sequence number no longer terminates the session; it is silently discarded and the session is kept. The wire format is unchanged; the 1.0.x history is in `CHANGELOG.md` |
-| Wire format | unchanged between 1.0.0 and 1.1.0 |
+| Document identifier | `isostress-1.0.0` |
+| Document version | `1.0.0` (2026-10-30) |
+| Wire format | 1.0.0 |
 | Numbering gaps | Appendices A, D, E and Volumes 2, 6, 7 were removed in an earlier revision and were not renumbered |
-| Status | The only current revision; the previous public revision is 1.0.1 |
+| Status | The only current revision |
 | Nature | A normative document, but not all of it binds — see 0.4 |
-| Program identifier | ~B~<language>_<version>[-<YYYYMMDD>]~B~, for example ~B~ZT-DSP_PY-1.0.0~B~; the version is the program's own and is unrelated to the document version |
-| Compatibility declaration | Every program must declare the document version it aligns with, for example "aligns with document 1.1.0"; no synchronisation is required between two programs |
+| Program identifier | `<language>-<version>[-<YYYYMMDD>]`, for example `ISOSTRESS_PY-1.0.0`; the version is the program's own and is unrelated to the document version |
+| Compatibility declaration | Every program must declare the document version it aligns with, for example "aligns with document 1.0.0"; no synchronisation is required between two programs |
 | License | The text is CC BY-SA 4.0; see `LICENSE` and `LICENSING.md` at the repository root |
 | Patents | The maintainers do not patent this protocol; see `PUBLICATION-RECORD.md` |
 
@@ -276,7 +275,7 @@ zero trust (Zero Trust)
 └── Rationale: traditional security models assume "the internal network is trustworthy and the external network is not", but in reality internal attacks (insiders, compromised servers) are the main source of threats, hence the "never trust, always verify" model was born
 ```
 
-In traditional network communication, we usually assume that certain links are trustworthy. For example, we assume that the chat software's server will not peek at chat records, and that the telecom operator will not tamper with SMS contents. But the design principle of ZT-DSP is: **assume that no one is trustworthy**.
+In traditional network communication, we usually assume that certain links are trustworthy. For example, we assume that the chat software's server will not peek at chat records, and that the telecom operator will not tamper with SMS contents. But the design principle of isostress is: **assume that no one is trustworthy**.
 
 > **Everyday analogy**: Imagine a scenario: traditional security is like a residential compound gate — once you are through the main gate you are by default "one of us". Zero trust is like airport security — even after you have passed the first check, you are checked again before the boarding gate, and no link can "skip inspection by face recognition".
 > (The above is a scenario, not a technical description.)
@@ -294,7 +293,7 @@ In traditional network communication, we usually assume that certain links are t
 
 "Dynamic" means the protocol's state is not static. Every round of communication updates the keys, and every session generates a new encryption context. "Synchronization" means the two communicating parties reach a state of agreement by mathematical means — both sides independently compute the same key, without any third party taking part.
 
-> **Everyday analogy**: Imagine a scenario: dynamic synchronization is like "setting your watches" — two people each look at their own watch, but a shared set of rules (say, both listening to the same hourly chime) keeps their time consistent. In ZT-DSP, both sides each hold the same material (PSK, DH result, session salt) and independently compute exactly the same key with the same set of formulas — no third party is needed to "agree on it for them".
+> **Everyday analogy**: Imagine a scenario: dynamic synchronization is like "setting your watches" — two people each look at their own watch, but a shared set of rules (say, both listening to the same hourly chime) keeps their time consistent. In isostress, both sides each hold the same material (PSK, DH result, session salt) and independently compute exactly the same key with the same set of formulas — no third party is needed to "agree on it for them".
 > (The above is a scenario, not a technical description.)
 >
 > **Key term preview**: the "key" (Key) mentioned in this paragraph is explained in the Glossary. In plain terms: a key is the key to a "digital lock"; a message encrypted with it can only be unlocked by someone holding the same key.
@@ -303,7 +302,7 @@ In traditional network communication, we usually assume that certain links are t
 
 ### Principle One: Open protocol, free implementation
 
-All ZT-DSP specifications are public. Anyone may read, modify, and implement their own version. There is no *mandatory* reference client, no forced update, no centralized control. This openness is both the protocol's advantage and the source of its security — an attacker cannot control the whole network by breaking a single reference client.
+All isostress specifications are public. Anyone may read, modify, and implement their own version. There is no *mandatory* reference client, no forced update, no centralized control. This openness is both the protocol's advantage and the source of its security — an attacker cannot control the whole network by breaking a single reference client.
 
 > **Related knowledge**: This resembles the idea of Open Source software — public code does not mean insecure; "security rests on public review" (Kerckhoffs's principle: even if an attacker knows the entire design of the system, the system remains secure as long as the key is kept secret). Kerckhoffs's principle is explained in the Glossary.
 
@@ -315,7 +314,7 @@ Every server operator may define its own "dialect" — a specific combination of
 
 ```plain
 silent drop (Silent Drop)
-├── Meaning: when the server receives a packet that does not match the declared parameters, it returns no response, logs nothing, and consumes no computing resources, behaving as if the port did not exist at all
+├── Meaning: when the server receives a packet that does not match the declared parameters, it returns no response, writes no externally facing logs (diagnostics are limited to the local stderr, see 5.6), and consumes no computing resources, behaving as if the port did not exist at all
 ├── Principle: error messages are an attacker's "source of intelligence". If the server returns a different error code for each kind of error, an attacker can infer the protocol's parameter details by trial and error; no response = no intelligence
 └── Rationale: traditional protocols (such as HTTP) return error codes like 400/404, which are convenient for debugging but also for probing. Anonymous network protocols need to "stay invisible", hence the silent drop was born
 ```
@@ -325,16 +324,16 @@ silent drop (Silent Drop)
 
 ### Principle Three: Out-of-band exchange, door number first
 
-In ZT-DSP you cannot "search for a username" and add someone the way you add a WeChat friend. Before entering the network you must already have obtained the other party's "door number" through some secure channel (face to face, encrypted email, a QR code, etc.). This is not a design flaw but the fundamental guarantee of anonymity.
+In isostress you cannot "search for a username" and add someone the way you add a WeChat friend. Before entering the network you must already have obtained the other party's "door number" through some secure channel (face to face, encrypted email, a QR code, etc.). This is not a design flaw but the fundamental guarantee of anonymity.
 
 ```plain
 out-of-band exchange (Out-of-Band Exchange)
-├── Meaning: exchanging information through channels "outside the communication network" (face to face, a letter, another channel already confirmed secure), rather than inside the ZT-DSP network
+├── Meaning: exchanging information through channels "outside the communication network" (face to face, a letter, another channel already confirmed secure), rather than inside the isostress network
 ├── Principle: exchanges inside the network may be monitored or tampered with; an out-of-band channel does not pass through the network, and a man in the middle cannot control both channels at once, so it can serve as the "starting point of trust"
 └── Rationale: any encrypted communication needs an "initial trust" — the two sides must first confirm "the other party really is that person". Out-of-band exchange provides this initial trust and depends on no centralized authority
 ```
 
-> **Common misconception**: Out-of-band exchange ≠ having to meet offline. QR code scanning, encrypted email, or another chat tool whose trust you have already established all count as out of band. The core criterion is: **this channel does not pass through a ZT-DSP server, and you have already confirmed that it is trustworthy**.
+> **Common misconception**: Out-of-band exchange ≠ having to meet offline. QR code scanning, encrypted email, or another chat tool whose trust you have already established all count as out of band. The core criterion is: **this channel does not pass through an isostress server, and you have already confirmed that it is trustworthy**.
 
 ### Principle Four: Layered isolation, least privilege
 
@@ -349,7 +348,7 @@ principle of least privilege (Principle of Least Privilege)
 
 > **Related knowledge**: The principle of least privilege is also widely applied in operating systems (e.g. running services as a non-root user on Linux), databases (read-only accounts), and cloud services (RAM roles). Once you have learned this principle, you can apply it in any technical field.
 
-# Volume 3: The Hotel Model — an intuitive metaphor for understanding ZT-DSP
+# Volume 3: The Hotel Model — an intuitive metaphor for understanding isostress
 
 > **[Introduction to this volume]** This volume uses the metaphor of a "special hotel" to translate abstract cryptographic concepts into everyday life scenarios. It is **the fastest entry point for understanding the whole protocol** — readers with no background are strongly advised to read this volume first.
 >
@@ -378,7 +377,7 @@ Imagine a scenario: a special hotel —
 
 ## 3.3 Role mapping
 
-| Role in the hotel | Entity in ZT-DSP | Function |
+| Role in the hotel | Entity in isostress | Function |
 |--------------|------------------|----------|
 | Hotel | Server | Provides a place to connect and forwards data packets |
 | Front desk | Server software | Registers, matches, and forwards, without decrypting |
@@ -393,7 +392,7 @@ Imagine a scenario: a special hotel —
 
 ### Rule One: The door number is not collected at the hotel
 
-When you go to a hotel to find a friend, you do not ask at the front desk "which room is my friend in"; your friend told you the room number before you set off (via WeChat, a phone call, or a note). In ZT-DSP, this "telling in advance" is out-of-band exchange — through QR code scanning, encrypted email, an offline meeting, a direct P2P connection, or other means, both sides know each other's door number (token hash) before entering any server.
+When you go to a hotel to find a friend, you do not ask at the front desk "which room is my friend in"; your friend told you the room number before you set off (via WeChat, a phone call, or a note). In isostress, this "telling in advance" is out-of-band exchange — through QR code scanning, encrypted email, an offline meeting, a direct P2P connection, or other means, both sides know each other's door number (token hash) before entering any server.
 
 **If you do not bring the door number, the hotel front desk will not tell you anyone's room number. This is not a bug; it is the bottom line of anonymity.**
 
@@ -442,9 +441,9 @@ Hash (Hash, Hash Function)
 
 # Volume 4: Core Protocol Specification (the Minimum Set That Must Be Implemented)
 
-> **Reading Guide to This Volume** This volume is the **core protocol** of zt-dsp-py -- any implementation claiming compatibility with ZT-DSP must support the contents of this volume (the extension modules in Volume 3 are all optional). This volume answers: where identity comes from (4.1), how two parties establish an encrypted session (4.2), and how the server stays hidden (4.3).
+> **Reading Guide to This Volume** This volume is the **core protocol** of isostress-py -- any implementation claiming compatibility with isostress must support the contents of this volume (the extension modules in Volume 3 are all optional). This volume answers: where identity comes from (4.1), how two parties establish an encrypted session (4.2), and how the server stays hidden (4.3).
 >
-> **Focus for Beginners** First understand the identity system in 4.1 (the difference between a token and a room number), then walk through the four-phase flow in 4.2. Every formula block has line-by-line comments; read them by matching "Input → Compute → Output". The examples in this volume can be verified by running the `ZT-DSP-client` implementation (client `zt_dsp_py`) as its README describes.
+> **Focus for Beginners** First understand the identity system in 4.1 (the difference between a token and a room number), then walk through the four-phase flow in 4.2. Every formula block has line-by-line comments; read them by matching "Input → Compute → Output". The examples in this volume can be verified by running the `isostress-client` implementation (client `isostress_py`) as its README describes.
 >
 > **Prerequisites** the hotel model of Volume 3 (this volume is its technical implementation); the explanations of the four concepts "hash, encryption, key exchange, digital signature" in the Glossary.
 >
@@ -452,7 +451,7 @@ Hash (Hash, Hash Function)
 
 ## 4.1 Identity and Credential System
 
-In ZT-DSP, your identity consists of two parts:
+In isostress, your identity consists of two parts:
 
 1. **Token** -- your "identity card", issued by a TCA; the server identifies you by it. The client does not write it to disk, does not export it and does not back it up (see the **Mandatory** clause below)
 2. **Token Hash (H(Token))** -- your "room number", used to find the other party on the server
@@ -511,11 +510,11 @@ CRC-16 (Cyclic Redundancy Check)
 
 ```plain
 placeholder token hash = first 32 bytes of HMAC-SHA3-256(PSK, role label)
-role label = "ZT-DSP-TOKEN-INITIATOR-v3" (when oneself is the initiator)
-        or "ZT-DSP-TOKEN-RESPONDER-v3" (when oneself is the responder)
+role label = "ISOSTRESS-TOKEN-INITIATOR-v3" (when oneself is the initiator)
+        or "ISOSTRESS-TOKEN-RESPONDER-v3" (when oneself is the responder)
 ```
 
-- The initiator's own room number = HMAC(PSK, "ZT-DSP-TOKEN-INITIATOR-v3"), and the peer's room number = HMAC(PSK, "ZT-DSP-TOKEN-RESPONDER-v3"); **the responder swaps the two labels** (it uses the RESPONDER label for itself and the INITIATOR label for the peer). In this way A's src is exactly equal to B's dst, ensuring that the phase-four bidirectional token-hash verification is self-consistent
+- The initiator's own room number = HMAC(PSK, "ISOSTRESS-TOKEN-INITIATOR-v3"), and the peer's room number = HMAC(PSK, "ISOSTRESS-TOKEN-RESPONDER-v3"); **the responder swaps the two labels** (it uses the RESPONDER label for itself and the INITIATOR label for the peer). In this way A's src is exactly equal to B's dst, ensuring that the phase-four bidirectional token-hash verification is self-consistent
 - This path only guarantees **frame structural integrity** and **both parties' identity being bound to the PSK**; it does not have the "third-party notarization" property of a TCA; when a notarized identity is needed, the TCA module should still be mounted to inject a real token hash
 
 ```plain
@@ -555,7 +554,7 @@ CRL (Certificate Revocation List)
 - One server can hold the whitelists of multiple TCAs; the server operator can declare "I recognize tokens issued by TCA-A and TCA-B, but not TCA-C"
 - The authority of a TCA depends on community recognition. There is no mandatory monopoly authority and no "root CA"
 
-> **Related Knowledge**: The TCA federation is similar to the CA (certificate authority) system of HTTPS, but with one key difference: HTTPS has a "root CA" (a trust list preinstalled in browsers), while ZT-DSP does not -- each server decides for itself whom to trust. This is the design of "decentralized trust".
+> **Related Knowledge**: The TCA federation is similar to the CA (certificate authority) system of HTTPS, but with one key difference: HTTPS has a "root CA" (a trust list preinstalled in browsers), while isostress does not -- each server decides for itself whom to trust. This is the design of "decentralized trust".
 
 > **Privacy Risk** When issuing a token, the TCA may learn your device information (depending on its verification process). The TCA does not participate in communication and does not hold communication keys, but the "device-token" mapping it holds is sensitive data; if the TCA is compromised or coerced, it may leak your identity-correlation information.
 >
@@ -575,7 +574,7 @@ Some servers require the client to provide an authorization code in addition to 
 
 ### 4.1.4 Device-Specific Key (PSK)
 
-PSK (Pre-Shared Key) is the core anchor of the ZT-DSP security system.
+PSK (Pre-Shared Key) is the core anchor of the isostress security system.
 
 - **Length**: a 256-bit true random number
 - **Storage location**: the caller keeps the PSK in a configuration file or an environment variable (`--psk-file` / `--psk-env` / `--psk`)
@@ -617,7 +616,7 @@ Handshake
 └── Rationale: if encrypted communication began directly without a handshake, the two parties would have no shared key and could not confirm each other's identity -- the handshake is the "preliminary step" of encrypted communication
 ```
 
-In ZT-DSP, the handshake is divided into four phases:
+In isostress, the handshake is divided into four phases:
 
 1. **Identity Announcement** -- "who I am and whom I want to find"
 2. **Key Synchronization** -- "we jointly compute a secret key"
@@ -654,7 +653,7 @@ Field mapping:
 > **The true origin of the access nonce (common pitfall)**: the access nonce is derived only from the PSK, a fresh random salt and a fixed info string; the token plays no part. The reference client does:
 
 ```plain
-access nonce = HKDF-SHA3-256(IKM = PSK, salt = fresh random salt(32B), info = "ZT-DSP-PHASE1-NONCE-v3", output length = random_len bits)
+access nonce = HKDF-SHA3-256(IKM = PSK, salt = fresh random salt(32B), info = "ISOSTRESS-PHASE1-NONCE-v3", output length = random_len bits)
 ```
 
 | Element | Annotation (input/output/effect) |
@@ -663,7 +662,7 @@ access nonce = HKDF-SHA3-256(IKM = PSK, salt = fresh random salt(32B), info = "Z
 | HKDF-SHA3-256(...) | **Function**: a key derivation function. The same IKM with a different salt → a different output; but only two parties holding the same PSK can compute the same sequence (determinism) |
 | IKM = PSK | **Input**: the device-specific key. Only a client holding the correct PSK can generate a nonce that "looks correct"; this is the secret code that "proves I hold the key" |
 | salt = fresh random salt | **Input**: a random salt newly generated for each handshake, preventing an attacker from precomputing (offline brute-forcing) the PSK derivation result |
-| info = "ZT-DSP-PHASE1-NONCE-v3" | **Context string**: identifies the purpose and prevents producing the same value as other derivations (MK/EK, etc.) |
+| info = "ISOSTRESS-PHASE1-NONCE-v3" | **Context string**: identifies the purpose and prevents producing the same value as other derivations (MK/EK, etc.) |
 
 > **Practical Note**: The access nonce is **not** a purely random number, but a "PSK-driven deterministic random number" -- the peer only verifies that its length equals the declared random_len, and **cannot (and does not attempt to) recompute it**; whether "it was derived from the correct PSK" is indirectly reflected by the phase-three confirmation tag (wrong PSK → wrong MK → the tag must be wrong). This is why it is called an "identity heartbeat": only those holding the same PSK know the rhythm of the heartbeat.
 
@@ -673,11 +672,11 @@ access nonce = HKDF-SHA3-256(IKM = PSK, salt = fresh random salt(32B), info = "Z
 >
 > **Protection Recommendation** (1) The token hash can be changed periodically (change the token); (2) in multi-server scenarios use different tokens to avoid cross-server correlation; (3) from phase four onward the token hash is transmitted encrypted (see 4.2.4), so the server can see only the session ID needed for routing.
 >
-> **Compliance Note** "Who is looking for whom" is communication metadata. Under privacy protection principles, server operators **MUST NOT** record or store the pairing information of phase one (the 30-second automatic clearing of the waiting pool was designed precisely for this) and should state this clearly in the privacy policy.
+> **Compliance Note** "Who is looking for whom" is communication metadata. Under privacy protection principles, server operators **should not** record or store the pairing information of phase one (the 30-second automatic clearing of the waiting pool was designed precisely for this) and should state this clearly in the privacy policy.
 
 **Server Processing Flow:**
 
-1. **Parameter check**: check whether the length, rate, and format of the access nonce conform to the library declaration. If not → **Silent Drop**. No error is returned, no log is written, and no computing resources are consumed. From the attacker's perspective, this port is indistinguishable from a closed port
+1. **Parameter check**: check whether the length, rate, and format of the access nonce conform to the library declaration. If not → **Silent Drop**. No error is returned, no externally facing log is written (diagnostics are limited to the local stderr, see 5.6), and no computing resources are consumed. From the attacker's perspective, this port is indistinguishable from a closed port
 2. **Token verification**: verify whether the TCA signature is valid; query the CRL (revocation list) to confirm that the token has not been revoked; if the server requires an authorization code, verify whether the authorization code is in the whitelist
 3. **Waiting-pool matching**: look in the waiting pool for whether there is a guest holding H(Token_A) (that is, B has already arrived and is waiting for A). If there is → pair A and B and send them into the same room; if there is not → put A into the waiting pool and wait for B to arrive
 4. **Waiting-pool management**: each registration form in the waiting pool is stored independently and is invisible to the others; waiting entries are automatically cleared after 30 seconds (to prevent long-term occupation of memory); the front desk never broadcasts A's registration information to the other people in the lobby
@@ -739,12 +738,12 @@ DH (Diffie-Hellman)
 └── Rationale: the earliest solution to the problem of "transmitting secrets across the air" (1976), and the ancestor of all modern key exchanges. X25519 is its modern elliptic-curve version
 ```
 
-> **Common Misconception**: The DH exchange itself **does not prevent man-in-the-middle** attacks -- an attacker can perform one DH with A and one with B separately (the "two-person circle" attack). ZT-DSP prevents MITM with two barriers: **(1) the PSK participates in derivation** (Step 4) -- the attacker has no PSK, so even after completing DH he derives a wrong key; **(2) the phase-three confirmation tag exchange** (4.2.3) -- the two parties exchange HMAC confirmation tags that bind all handshake material, and if either party's identity announcement is replaced, the tags will not match and the handshake fails immediately. All three layers of protection (PSK + DH + salt) are indispensable.
+> **Common Misconception**: The DH exchange itself **does not prevent man-in-the-middle** attacks -- an attacker can perform one DH with A and one with B separately (the "two-person circle" attack). isostress prevents MITM with two barriers: **(1) the PSK participates in derivation** (Step 4) -- the attacker has no PSK, so even after completing DH he derives a wrong key; **(2) the phase-three confirmation tag exchange** (4.2.3) -- the two parties exchange HMAC confirmation tags that bind all handshake material, and if either party's identity announcement is replaced, the tags will not match and the handshake fails immediately. All three layers of protection (PSK + DH + salt) are indispensable.
 
 **Step 4: Derive the session master key**
 
 ```
-MK = HKDF-SHA3-256(IKM = PSK ‖ DH, salt = session_salt, info = "ZT-DSP-MK-v3", output = 256 bits)
+MK = HKDF-SHA3-256(IKM = PSK ‖ DH, salt = session_salt, info = "ISOSTRESS-MK-v3", output = 256 bits)
 ```
 
 | Line | Code Element | Annotation (input/output/effect) |
@@ -753,7 +752,7 @@ MK = HKDF-SHA3-256(IKM = PSK ‖ DH, salt = session_salt, info = "ZT-DSP-MK-v3",
 | 1 | `HKDF-SHA3-256(...)` | **Function**: the key derivation function (see 4.2.2). Processes the input material into a qualified key |
 | 1 | `IKM = PSK ‖ DH` | **Input 1**: the PSK (the long-term device-specific key shared by both parties, 256 bits) and the DH result (the shared secret produced by the X25519 ephemeral key exchange, 256 bits) are **concatenated** into the IKM (Input Keying Material). The PSK provides "identity anchoring" -- only two parties holding the same PSK can compute the same MK, which is the key to preventing impersonation; DH provides "session uniqueness" -- every session is different, so even if the PSK leaks, historical sessions cannot be decrypted (forward secrecy) |
 | 1 | `salt = session_salt` | **Input 2**: a 256-bit random number generated by the initiator and sent in plaintext together with the public-key packet. **Note: session_salt is the salt parameter of HKDF, not key material concatenated into the IKM**. Effect: it provides "unpredictability" -- preventing an attacker from precomputing (offline brute-forcing the PSK derivation result) |
-| 1 | `info = "ZT-DSP-MK-v3"` | **Context string**: a purpose identifier. Prevents key confusion between different purposes (if two protocols derived from the same input, they would get the same key, which is dangerous) |
+| 1 | `info = "ISOSTRESS-MK-v3"` | **Context string**: a purpose identifier. Prevents key confusion between different purposes (if two protocols derived from the same input, they would get the same key, which is dangerous) |
 | 1 | `output = 256 bits` | **Output length**: requires deriving a 256-bit key |
 
 > **Common Misconception (common pitfall)**: a common way to write the formula is `MK = HKDF(PSK ‖ DH ‖ session_salt)`, which makes the three inputs look "equal and parallel". But the reference implementation (the `HKDF` class of the `cryptography` library) passes `session_salt` as a **separate salt parameter** (the standard usage of RFC 5869), and the IKM is only `PSK ‖ DH`. The two derivation results are **completely different** -- a client implemented with the "three equal inputs" form will inevitably fail the handshake with the reference client (the phase-three confirmation tags will not match). This is also a cautionary tale about "open protocol, free implementation": freedom of implementation does not mean that formula details may be changed at will; the parameters and the formula must be consistent with the library declaration.
@@ -775,7 +774,7 @@ sk_A and sk_B are thoroughly zeroized from memory and are no longer retained. Th
 **1. Compute the anchor**
 
 ```
-anchor = HMAC-SHA3-256(MK, "ZT-DSP-ANCHOR-v3")
+anchor = HMAC-SHA3-256(MK, "ISOSTRESS-ANCHOR-v3")
 ```
 
 | Line | Code element | Comment (input/output/role) |
@@ -783,14 +782,14 @@ anchor = HMAC-SHA3-256(MK, "ZT-DSP-ANCHOR-v3")
 | 1 | `anchor` | **Output**: a 256-bit anchor value, this session's "identity fingerprint," used to bind the session context |
 | 1 | `HMAC-SHA3-256(...)` | **Function**: a keyed hash operation (see 4.2.2). Difference from an ordinary hash: a key participates; without the key the correct result cannot be computed |
 | 1 | `MK` | **Input (1)**: the session master key derived in step 4. Only parties that compute the same MK can compute the same anchor |
-| 1 | `"ZT-DSP-ANCHOR-v3"` | **Input (2)**: context string, preventing confusion with HMAC results for other purposes |
+| 1 | `"ISOSTRESS-ANCHOR-v3"` | **Input (2)**: context string, preventing confusion with HMAC results for other purposes |
 
 The anchor's role is: ensuring both parties are in the same session context; deriving all subsequent encryption keys; preventing replay attacks (the sequence number is bound to the anchor). The anchor is a deterministic derivation result -- both parties using the same MK and the same message string will inevitably compute the same anchor.
 
 **2. Derive the session ID (routing identifier)**
 
 ```
-session ID = the first 32 bytes of HKDF-SHA3-256(IKM = anchor, info = "ZT-DSP-SID-v3", output 256 bits)
+session ID = the first 32 bytes of HKDF-SHA3-256(IKM = anchor, info = "ISOSTRESS-SID-v3", output 256 bits)
 ```
 
 | Line | Code element | Comment (input/output/role) |
@@ -798,7 +797,7 @@ session ID = the first 32 bytes of HKDF-SHA3-256(IKM = anchor, info = "ZT-DSP-SI
 | 1 | `session ID` | **Output**: a 32-byte session routing identifier. The **plaintext** header field of Phase 4 packets; the server delivers the packet to the correct room based on it |
 | 1 | `HKDF-SHA3-256(...)` | **Function**: key derivation function, same as above |
 | 1 | `IKM = anchor` | **Input**: the anchor computed in step 1. Both parties compute the same anchor -> they inevitably obtain the same session ID |
-| 1 | `info = "ZT-DSP-SID-v3"` | **Context string**: marks the purpose as "session ID," preventing confusion with other derivations |
+| 1 | `info = "ISOSTRESS-SID-v3"` | **Context string**: marks the purpose as "session ID," preventing confusion with other derivations |
 | 1 | `the first 32 bytes` | **Truncation**: after deriving 256 bits, take only the first 32 bytes (the session ID field length) |
 
 > **Practical Interpretation**: The session ID is **plaintext** (the server must read it to route), but it is deterministically derived from the anchor -- a session ID forged by an attacker without the correct MK is discarded outright in Phase 4 as a "session ID mismatch." This is the design of "routing information visible but unforgeable."
@@ -807,8 +806,8 @@ session ID = the first 32 bytes of HKDF-SHA3-256(IKM = anchor, info = "ZT-DSP-SI
 
 ```
 (Initiator A's perspective)
-EK_send = HKDF-SHA3-256(IKM = MK ‖ anchor ‖ 0x01, info = "ZT-DSP-EK-v3", output 256 bits)
-EK_recv = HKDF-SHA3-256(IKM = MK ‖ anchor ‖ 0x02, info = "ZT-DSP-EK-v3", output 256 bits)
+EK_send = HKDF-SHA3-256(IKM = MK ‖ anchor ‖ 0x01, info = "ISOSTRESS-EK-v3", output 256 bits)
+EK_recv = HKDF-SHA3-256(IKM = MK ‖ anchor ‖ 0x02, info = "ISOSTRESS-EK-v3", output 256 bits)
 
 (Responder B's perspective: the two role bytes are swapped -- B's EK_send uses 0x02 and EK_recv uses 0x01)
 ```
@@ -820,7 +819,7 @@ EK_recv = HKDF-SHA3-256(IKM = MK ‖ anchor ‖ 0x02, info = "ZT-DSP-EK-v3", out
 | 1 | `HKDF(...)` | **Function**: key derivation function, same as above |
 | 1 | `IKM = MK ‖ anchor` | **Input**: the master key concatenated with the anchor. Including the anchor guarantees that "each session's EK is unique" -- even if the MK is the same (a theoretical scenario), different anchors derive different EKs |
 | 1 | `0x01 / 0x02` | **Role byte**: `0x01` is appended to the end of the IKM for the Initiator direction, and `0x02` for the Responder direction. Role: **distinguish the keys of the send and receive directions** -- A's EK_send exactly equals B's EK_recv, and vice versa; neither side can impersonate the peer using "its own send key" |
-| 1 | `info = "ZT-DSP-EK-v3"` | **Context string**: marks the key's purpose as "encryption," distinguishing it from keys for the anchor, authentication, and other purposes |
+| 1 | `info = "ISOSTRESS-EK-v3"` | **Context string**: marks the key's purpose as "encryption," distinguishing it from keys for the anchor, authentication, and other purposes |
 
 > **Common Misconception (common pitfall)**: a common way to write it is `EK = HKDF(MK ‖ anchor, ...)` -- direction-agnostic, as if both sides shared a single EK. The reference implementation actually derives **two** directional keys, distinguished by the role byte (0x01/0x02) at the end of the IKM. This is both a security design (preventing "reflection attacks": bouncing a packet the peer sent you straight back) and an interoperability detail: a client implemented with the direction-agnostic EK form will fail the handshake due to key mismatch.
 
@@ -831,15 +830,15 @@ After key derivation completes, both parties must still prove to each other that
 ```
 transcript = both parties' Phase 1 raw frames (initiator first) ‖ session_salt ‖ both parties' ephemeral public keys (initiator first)
 
-Initiator sends: confirm_tag_A = HMAC-SHA3-256(MK, "ZT-DSP-CONFIRM-INIT-v3" ‖ transcript)
-Responder sends: confirm_tag_B = HMAC-SHA3-256(MK, "ZT-DSP-CONFIRM-RESP-v3" ‖ transcript)
+Initiator sends: confirm_tag_A = HMAC-SHA3-256(MK, "ISOSTRESS-CONFIRM-INIT-v3" ‖ transcript)
+Responder sends: confirm_tag_B = HMAC-SHA3-256(MK, "ISOSTRESS-CONFIRM-RESP-v3" ‖ transcript)
 ```
 
 | Line | Code element | Comment (input/output/role) |
 |----|----------|------------------------|
 | 1 | `transcript` | **Input (1)**: concatenate all handshake material exchanged by both parties in a fixed order: both parties' Phase 1 raw frames (initiator first) -> session salt -> both parties' ephemeral public keys (initiator first). If either party's identity announcement, parameters, or public key is replaced, the transcript changes |
 | 1 | `HMAC-SHA3-256(MK, ...)` | **Function**: a keyed hash operation. Only parties holding the same MK can compute the same confirmation tag |
-| 1 | `"ZT-DSP-CONFIRM-INIT-v3"` / `"ZT-DSP-CONFIRM-RESP-v3"` | **Context string**: distinguishes the tag purposes of initiator and responder, preventing "reflection attacks" (bouncing the peer's tag straight back to impersonate it) |
+| 1 | `"ISOSTRESS-CONFIRM-INIT-v3"` / `"ISOSTRESS-CONFIRM-RESP-v3"` | **Context string**: distinguishes the tag purposes of initiator and responder, preventing "reflection attacks" (bouncing the peer's tag straight back to impersonate it) |
 | 1 | `confirmation tag` | **Output**: a 32-byte HMAC tag. Each side sends one and verifies one: the initiator verifies B's tag, and the responder verifies A's tag |
 
 Exchange order (per the reference implementation): the initiator sends its own tag first -> the responder reads it (silently discarding only on frame-level errors -- read failure/abnormal length/timeout) -> the responder sends its own tag -> **both parties each** compare the peer's tag in constant time; on mismatch -> erase all keys and report "anchor confirmation failed: PSK mismatch, role mismatch, or reflection/man-in-the-middle attack." Note: validation of the tag **content** happens after both parties have finished exchanging, not "the responder validates before sending" -- this differs from the "validate first, then respond" order of Phases 1/2 (for the precise timing see Appendix F.4 and Appendix H).
@@ -850,7 +849,7 @@ Exchange order (per the reference implementation): the initiator sends its own t
 
 Initial sequence number = 0 (both sides synchronize to zero). The sequence number starts at 0 and increments by 1 for each data packet sent. The receiver accepts only packets whose sequence number is greater than the last received value, preventing replay attacks.
 
-> **Practical tip**: the sequence number is a 64-bit (8-byte) integer; at 1024 packets per second (the default `random_rate`) it takes roughly 570 million years to wrap — but an implementation still must handle the two edge cases of "sequence resets to zero after a session restart" and "an out-of-order packet arrives". **This protocol mandates a strictly monotonic check and forbids a sliding window**: the receiver accepts only `seq > seq_recv` (`seq_recv` starts at −1); any packet with `seq <= seq_recv` is handled as a replay or stale out-of-order packet — drop it, wipe all keys and terminate the session (see 4.2.4 and Appendix F.5). **Why**: the phase-four nonce is built directly as "fixed 4-byte prefix ‖ seq"; tolerating reordering with a sliding window would reuse a nonce under the same key and break both the confidentiality and the integrity guarantees of the AEAD.
+> **Practical tip**: the sequence number is a 64-bit (8-byte) integer; at 1024 packets per second (the default `random_rate`) it takes roughly 570 million years to wrap — but an implementation still must handle the two edge cases of "sequence resets to zero after a session restart" and "an out-of-order packet arrives". **This protocol mandates a strictly monotonic check and forbids a sliding window**: the receiver accepts only `seq > seq_recv` (`seq_recv` starts at −1); any packet with `seq <= seq_recv` is handled as a replay or stale out-of-order packet — silently drop it, keep the session, and do not advance `seq_recv` (see 4.2.4 and Appendix F.5). **Why**: the phase-four nonce is built directly as "fixed 4-byte prefix ‖ seq"; tolerating reordering with a sliding window would reuse a nonce under the same key and break both the confidentiality and the integrity guarantees of the AEAD.
 
 ```plain
 Replay Attack
@@ -886,13 +885,13 @@ Plaintext payload (before encryption, i.e. the content of the GCM ciphertext):
 |----------|------|------|------|
 | Destination token hash | 32B | Yes | Encrypted with the session key EK, preventing plaintext identity linkage. The server sees the encrypted destination hash and cannot know whom the message is sent to |
 | Source token hash | 32B | Yes | Same as above. Encryption prevents traffic analysts from building a social graph through source-destination linkage |
-| Timestamp | 8B | Yes | Millisecond Unix timestamp (uint64 big-endian). The receiver records the timestamp of the first authenticated packet in the session as the reference point and then checks `|timestamp − reference| <= timestamp window` (default 30 seconds) — the window measures drift, not absolute offset, so the two ends do not need synchronised clocks |
+| Timestamp | 8B | Yes | Millisecond Unix timestamp (uint64 big-endian). The receiver records the timestamp of the first authenticated packet in the session as the reference point, then checks `|timestamp − reference| <= timestamp window` (default 30 seconds) — the window measures drift, not absolute offset; the two ends do not need clock synchronization |
 | Payload format marker fmt | 1B | Yes | `0x00` = no random padding (default), `0x01` = with random padding. The receiver strips padding per this marker; the reference client can enable padding unilaterally without negotiation between the two parties |
 | Random padding | 0~2048B | Yes | Reference recommendation 512~2048B. Padding removes the length fingerprint so that all packets are similar in size. Off by default in the reference client (enabled via `--padding-min/max`) |
-| Pre-key seed next_seed | 32B | Yes | Ratchet seed for the next packet: `new_EK = HKDF-SHA3-256(IKM = current EK ‖ next_seed, info = "ZT-DSP-EK-ROTATE", output 256 bits)` (sustained lock, see 4.2.5) |
+| Pre-key seed next_seed | 32B | Yes | Ratchet seed for the next packet: `new_EK = HKDF-SHA3-256(IKM = current EK ‖ next_seed, info = "ISOSTRESS-EK-ROTATE", output 256 bits)` (sustained lock, see 4.2.5) |
 | User plaintext | variable | Yes | The actual message content (including heartbeat empty packets: plaintext length 0) |
 | Session ID | 32B | No | Plaintext routing field, derived from the anchor. The server delivers the packet to the correct room based on the session ID |
-| Sequence number | 8B | No | Plaintext; 64-bit monotonically increasing, preventing replay attacks. The receiver checks that the sequence number is greater than the last received value, otherwise it discards the packet |
+| Sequence number | 8B | No | Plaintext; 64-bit monotonically increasing, preventing replay attacks. The receiver checks that the sequence number is greater than the last received value; otherwise it silently drops the packet, keeps the session, and does not advance `seq_recv` (see F.5 step 1) |
 | Ciphertext length | 4B | No | Plaintext length field; the receiver reads it first, then reads the ciphertext |
 | GCM authentication tag | 16B | No | The authentication tag automatically attached by AES-256-GCM. **Authentication scope = AAD + all ciphertext**; tampering with any field causes validation to fail |
 
@@ -928,7 +927,7 @@ AAD (Additional Authenticated Data)
 >
 > [Protection Recommendations] (1) Use random padding (512~2048B) to flatten the length fingerprint; (2) enable send timing jitter in high-security scenarios (Appendix G.3); (3) the session ID is derived from the fixed MK and stays constant for the whole session; it cannot be rotated in-session -- a new session ID requires a new handshake.
 >
-> [Compliance Note] Under end-to-end encryption (E2EE), the server never touches plaintext, which is itself the strongest privacy protection practice. Operators **MUST NOT** record correlatable data such as session duration or traffic volume.
+> [Compliance Note] Under end-to-end encryption (E2EE), the server never touches plaintext, which is itself the strongest privacy protection practice. Operators **should not** record metadata such as session duration or traffic volume.
 
 **[Sending Flow]:**
 
@@ -937,18 +936,18 @@ AAD (Additional Authenticated Data)
 3. A forwards the entire packet to B through the server
 4. The server is responsible only for delivery; it does not open the box
 
-> **Practical Detail ("consume state first, then attempt to send")**: Before sending, the reference client first completes three things: (1) generates a new next_seed and derives the next packet's key `new_EK = HKDF(current EK ‖ next_seed, "ZT-DSP-EK-ROTATE")`; (2) zeroes the current EK in memory and replaces it with new_EK; (3) increments the sequence number by 1. Only then does it encrypt and send the current packet. This means: even if the send fails (network outage, connection cut), the key has already been rotated -- an attacker cannot exploit "send failure means the key was not rotated" to replay old packets. The price is that the session cannot recover after a send failure and can only reconnect (the reference client prompts "the session has irreversibly desynchronized").
+> **Practical Detail ("consume state first, then attempt to send")**: Before sending, the reference client first completes three things: (1) generates a new next_seed and derives the next packet's key `new_EK = HKDF(current EK ‖ next_seed, "ISOSTRESS-EK-ROTATE")`; (2) zeroes the current EK in memory and replaces it with new_EK; (3) increments the sequence number by 1. Only then does it encrypt and send the current packet. This means: even if the send fails (network outage, connection cut), the key has already been rotated -- an attacker cannot exploit "send failure means the key was not rotated" to replay old packets. The price is that the session cannot recover after a send failure and can only reconnect (the reference client prompts "the session has irreversibly desynchronized").
 
 **[Receiving Flow]:**
 
-1. After B receives the packet, it first checks whether the **sequence number** is strictly greater than the last received value (`seq > seq_recv`, with `seq_recv` starting at −1); otherwise -> **silently discard the packet and keep the session**: do not advance `seq_recv`, reply with no bytes (replay attack or a stale out-of-order packet)
+1. After B receives the packet, it first checks whether the **sequence number** is strictly greater than the last received value (`seq > seq_recv`, with `seq_recv` starting at −1); otherwise -> **silently drop the packet and keep the session**: do not advance `seq_recv`, do not reply with any byte (replay attack or a stale out-of-order packet)
 2. B then checks whether the **session ID** matches the current session; on mismatch -> **drop the packet and terminate the session** (crosstalk or a leftover packet from an old session)
 3. B verifies the **GCM authentication tag**; on failure -> **drop the packet and terminate the session** (data tampered with or key mismatch)
 4. After decrypting the payload, B performs **three internal checks**: (1) whether the payload structure length is self-consistent (bounds checking); (2) whether the payload format marker is valid (unknown fmt); (3) **bidirectional token hash validation** -- the in-packet destination token hash must equal the local identity and the source token hash must equal the peer identity (preventing traffic reflection/crosstalk/identity forgery). Failure of any of these -> **drop the packet and terminate the session**
-5. B checks the timestamp: the timestamp of the **first GCM-authenticated packet** in the session becomes the reference point `ts_ref` (that packet only sets the reference; it is not itself window-checked); every later packet is judged by `|timestamp − ts_ref| > timestamp window` (default 30 seconds) -> a packet **has passed GCM authentication but lies too far from the reference point**; in this case **only the plaintext is discarded, while the EK is still rotated and the sequence number advanced** (preventing a permanent session desynchronization when the sender has rotated but the receiver has not) -- **this is the only failure branch that does not terminate the session**
+5. B checks the timestamp: it records the timestamp of the **first GCM-authenticated packet** in the session as the reference point `ts_ref` (that packet only sets the reference and is not itself subject to the window check); every later packet is judged by `|timestamp − ts_ref| > timestamp window` (default 30 seconds) -> a packet outside the window **has passed GCM authentication but drifted too far from the reference**; in this case **only the plaintext is discarded, while the EK is still rotated and the sequence number advanced** (preventing a permanent session desynchronization when the sender has rotated but the receiver has not) -- **this is the only failure branch that does not terminate the session**
 6. B obtains the plaintext message normally. A packet with plaintext length 0 is a **heartbeat packet**, which the receiver silently skips (the reference client sends one every 30 seconds to detect half-open connections)
 
-> **Practical Tip (both the receive order and the failure policy matter)**: Always process in the order "sequence number -> session ID -> authentication tag -> decryption and internal validation -> timestamp." This order is itself a security design: cheap filtering first (sequence number/session ID), then expensive cryptographic verification (GCM), and only then decryption -- preventing both DoS (junk packets do not trigger decryption) and information leakage (not exposing "why it was dropped"). **Except for the timestamp-window case in step 5, every validation failure must "terminate silently"**: drop the packet, wipe all keys, end the session, and return no error code to the peer -- consistent with the termination policy of Appendix F.5 and with the reference implementation's `session.py` behavior.
+> **Practical Tip (both the receive order and the failure policy matter)**: Always process in the order "sequence number -> session ID -> authentication tag -> decryption and internal validation -> timestamp." This order is itself a security design: cheap filtering first (sequence number/session ID), then expensive cryptographic verification (GCM), and only then decryption -- preventing both DoS (junk packets do not trigger decryption) and information leakage (not exposing "why it was dropped"). **The sequence-number mismatch and the timestamp-window case in step 5 are the only two branches that do not terminate the session; every other validation failure must "terminate silently"**: drop the packet, wipe all keys, end the session, and return no error code to the peer -- consistent with the termination policy of Appendix F.5 and with the reference implementation's `session.py` behavior.
 
 ### 4.2.5 Sustained Lock and Forward Secrecy
 
@@ -960,14 +959,14 @@ In the fourth phase, each encrypted data packet carries not only a message but a
 The reference client's ratchet rotation formula (once per packet):
 
 ```plain
-new_EK = HKDF-SHA3-256(IKM = current EK ‖ next_seed, info = "ZT-DSP-EK-ROTATE", output = 256 bits)
+new_EK = HKDF-SHA3-256(IKM = current EK ‖ next_seed, info = "ISOSTRESS-EK-ROTATE", output = 256 bits)
 ```
 
 | Element | Comment (input/output/role) |
 |------|------------------------|
 | new_EK | **Output**: the next packet's encryption key, replacing the current EK (the current EK is zeroed immediately afterward) |
 | current EK ‖ next_seed | **Input**: the current key concatenated with the 32-byte pre-key seed carried by this packet. The seed is freshly generated by the sender each time (true random), so the next packet's key is unpredictable |
-| info = "ZT-DSP-EK-ROTATE" | **Context string**: distinguished from "ZT-DSP-EK-v3" -- the latter derives the initial EK, while the former performs per-packet rotation |
+| info = "ISOSTRESS-EK-ROTATE" | **Context string**: distinguished from "ISOSTRESS-EK-v3" -- the latter derives the initial EK, while the former performs per-packet rotation |
 
 This process is **sustained lock**:
 
@@ -978,20 +977,22 @@ This process is **sustained lock**:
 
 > **Practical Tip (keepalive and desynchronization)**: The reference client sends an **empty-payload heartbeat packet** (plaintext length 0) every 30 seconds, specifically to detect "half-open connections" (one side has dropped off, but the TCP connection is undetected because no data was sent). Heartbeat packets also participate in ratchet rotation -- even with no messages, the key chain keeps advancing. This is also why "an out-of-window packet must still rotate the EK and advance the sequence number" (4.2.4 receiving flow step 5) is so important: if the sender's heartbeat packet is discarded wholesale for being outside the timestamp window without rotation, the two ratchets desynchronize and all subsequent packets become undecryptable.
 
-> **Related Knowledge**: Sustained lock shares its origin with the "Double Ratchet" idea of the Signal protocol (the encryption foundation of WhatsApp/Signal) -- both "change the key with every message sent." The difference is that ZT-DSP's hopping is done entirely internally by the two parties (the pre-key seed travels with the packet) and does not depend on any server logic.
+> **Related Knowledge**: Sustained lock shares its origin with the "Double Ratchet" idea of the Signal protocol (the encryption foundation of WhatsApp/Signal) -- both "change the key with every message sent." The difference is that isostress's hopping is done entirely internally by the two parties (the pre-key seed travels with the packet) and does not depend on any server logic.
 
 ## 4.3 Silent Drop Mechanism
 
-Silent Drop is the core of ZT-DSP's confrontation architecture. Picture this scenario: an attacker is scanning the internet, looking for ZT-DSP servers. They send various probe packets to the target port: 1 byte of junk data, 32 bytes of random data, 128 bytes of forged data. (The above is a hypothetical scenario, not a technical description)
+Silent Drop is the core of isostress's confrontation architecture. Picture this scenario: an attacker is scanning the internet, looking for isostress servers. They send various probe packets to the target port: 1 byte of junk data, 32 bytes of random data, 128 bytes of forged data. (The above is a hypothetical scenario, not a technical description)
 
-If the server returned a different error code for each kind of error (e.g., "length error," "format error," "invalid signature"), the attacker could infer from the differences in the error codes: "this port is running ZT-DSP, and its parameters are like so..."
+If the server returned a different error code for each kind of error (e.g., "length error," "format error," "invalid signature"), the attacker could infer from the differences in the error codes: "this port is running isostress, and its parameters are like so..."
 
 **Silent drop eliminates this information leakage.** Whatever the attacker sends, the server behaves like a "closed port" -- no response at all. This makes large-scale protocol probing extremely difficult.
 
 > **Everyday Analogy**: Picture this scenario: silent drop is like a "light-proof door" -- the person knocking can only get "silence" and cannot tell from the response whether an empty room, a vault, or a whole squad of guards is behind the door. An ordinary protocol's door, by contrast, reveals its internal structure through "creaks" (error codes).
 > (The above is a hypothetical scenario, not a technical description)
 
-> **Practical Tip (implementation pitfalls)**: The "silence" of silent drop must be carried through to the end -- (1) return no network response; (2) record no logs (logs themselves are feedback for the attacker and also make the server a forensic target); (3) perform no expensive operation before dropping (drop at the outermost parameter check, preventing DoS amplification); (4) keep the timing of the drop path as consistent as possible with the normal path (so that attackers cannot infer "this really is a ZT-DSP server" from "response time differences").
+**"Logs" in this section** means logs sent over the network, logs written to persistent storage, and logs fed into any externally facing logging system. **Excluded** are diagnostic output written only to the local stderr and neither persisted nor forwarded, and termination counters that live only in local memory (see 5.6 and F.2 element 4).
+
+> **Practical Tip (implementation pitfalls)**: The "silence" of silent drop must be carried through to the end -- (1) return no network response; (2) write no externally facing logs (logs themselves are feedback for the attacker and also make the server a forensic target; local stderr diagnostics and local counters are excepted, see 5.6); (3) perform no expensive operation before dropping (drop at the outermost parameter check, preventing DoS amplification); (4) keep the timing of the drop path as consistent as possible with the normal path (so that attackers cannot infer "this really is an isostress server" from "response time differences").
 
 > **Common Misconception**: Silent drop ≠ "no defenses." It is an "anti-probing" layer, not an "anti-attack" layer -- a legitimate packet that passes the parameter check must still go through the full line of defenses: signature verification, CRL lookup, GCM validation, and so on. A server that relies only on silent drop without implementing validation logic will be easily breached by a malicious client holding a legitimate token.
 
@@ -999,7 +1000,7 @@ If the server returned a different error code for each kind of error (e.g., "len
 
 # Volume 5: Security Boundaries and Threat Model
 
-> **[Reader's Guide to This Volume]** This volume answers a key question: **Under which attacks is ZT-DSP still secure? Under which attacks does it fail?** Understanding "security boundaries" matters more than understanding "security features" -- knowing what you cannot defend against is what prevents a false sense of security.
+> **[Reader's Guide to This Volume]** This volume answers a key question: **Under which attacks is isostress still secure? Under which attacks does it fail?** Understanding "security boundaries" matters more than understanding "security features" -- knowing what you cannot defend against is what prevents a false sense of security.
 >
 > **[Focus for Beginners]** Focus on 5.1 (untrusted server) and 5.4 (the defense matrix for layered attacks (nine-layer threat)). The "Security Guarantees and Boundaries" of 5.5 is the most important honest statement in the whole document; be sure to read it through.
 >
@@ -1047,7 +1048,7 @@ WireGuard (a modern VPN tunneling protocol)
 > **Mandatory** (1) The server operator **MUST NOT** record the phase one pairing information;
 > [Protection Recommendations] (2) users spread and break up correlation through multiple servers; (3) scenarios sensitive to session duration can reconnect periodically (cutting off correlatable continuous sessions).
 >
-> [Compliance Note] The server operator is in the position of a "data processor": even if it technically cannot decrypt content, it **MUST NOT** retain metadata beyond what it has published, and it must publish a privacy policy stating "what is recorded and what is not."
+> [Compliance Note] The server operator is in the position of a "data processor": even if it technically cannot decrypt content, it **should** comply with metadata minimisation and publish a privacy policy stating "what is recorded and what is not."
 
 ## 5.2 Untrusted Client Scenario
 
@@ -1102,7 +1103,7 @@ Traffic Analysis
 | Attack Method | Defense Mechanism |
 |----------|----------|
 | Information interception | End-to-end X25519+AES-GCM; the interceptor cannot decrypt |
-| Secondary replay | 64-bit incrementing sequence number + timestamp window; a replayed packet's sequence number <= the maximum received value -> silently discard the packet, the session continues |
+| Secondary replay | 64-bit incrementing sequence number + timestamp window; a replayed packet's sequence number <= the maximum received value -> silently drop the packet, keep the session, and do not advance `seq_recv` |
 | Environment simulation | PSK verification + Ed25519 signature + silent drop; no PSK = cannot generate the correct randomness/beacon |
 | Traffic reflection | Session ID binding + source/destination token hash validation; a looped-back packet's destination hash does not match the receiver's identity -> drop the packet and terminate the session |
 | Traffic monitoring | Random padding (512~2048B) + timing jitter, eliminating length and timing fingerprints |
@@ -1115,15 +1116,15 @@ Traffic Analysis
 
 ## 5.5 Security Guarantees and Boundaries
 
-Under the layered attacks (nine-layer threat) above, ZT-DSP can guarantee:
+Under the layered attacks (nine-layer threat) above, isostress can guarantee:
 
 - **Guaranteed** — **Confidentiality**: the attacker cannot decrypt communication content (unless the PSK is leaked, or the EK currently in use at either endpoint together with that packet's next_seed is captured -- the rotation chain has no DH step, so one captured packet key yields every key after it)
 - **Guaranteed** — **Integrity**: the attacker cannot tamper with data without being detected
 - **Conditional** — **Availability**: under extreme attacks, communication may be interrupted; and within a session, any lost or reordered data packet makes the receiver treat it as a replay under 5.2, wipe all session keys and terminate the session, requiring a new handshake -- the protocol offers no loss tolerance
 - **Not guaranteed** — **Anonymity (absolute)**: if an attacker monitors globally and correlates multiple carriers, anonymity may be reduced
-**Absolute security does not exist.** The goal of ZT-DSP is: unbreakable at the cryptographic level, as resilient as possible at the engineering level (resilient, i.e. the ability to recover and survive in a degraded state after being attacked), and to maintain a minimum level of survival in extreme scenarios.
+**Absolute security does not exist.** The goal of isostress is: unbreakable at the cryptographic level, as resilient as possible at the engineering level (resilient, i.e. the ability to recover and survive in a degraded state after being attacked), and to maintain a minimum level of survival in extreme scenarios.
 
-> **Common Misconception (the single most important one in this document)**: **Anonymity ≠ Encryption.** What ZT-DSP guarantees is "content is not decrypted, identity is not impersonated", but it **does not guarantee** that "you as a person will not be discovered". Through traffic analysis, physical positioning, and behavioral patterns, an attacker may still narrow down your range. In addition, cryptographic security ≠ operational security (OPSEC) -- no matter how strong the encryption you use, if spyware is installed on the device, or you yourself leak the door number, you are still not secure.
+> **Common Misconception (the single most important one in this document)**: **Anonymity ≠ Encryption.** What isostress guarantees is "content is not decrypted, identity is not impersonated", but it **does not guarantee** that "you as a person will not be discovered". Through traffic analysis, physical positioning, and behavioral patterns, an attacker may still narrow down your range. In addition, cryptographic security ≠ operational security (OPSEC) -- no matter how strong the encryption you use, if spyware is installed on the device, or you yourself leak the door number, you are still not secure.
 >
 > [Privacy Risk] Boundaries of the threat model: this protocol does not defend against "physical contact attacks" (forensics after a device is confiscated), does not defend against "side-channel attacks" (power/electromagnetic analysis), and does not defend against "social engineering" (tricking you into handing over a token/door number).
 >
@@ -1142,17 +1143,17 @@ This section is deployment guidance and is not a conformance requirement under 0
 
 # Volume 8: FAQ and Common Misconceptions
 
-> **[Introduction to This Volume]** This volume collects the 15 questions beginners ask most often. Each question is annotated with the corresponding technical points and common misconceptions; it is a volume of the "quick reference manual" kind.
+> **[Introduction to This Volume]** This volume collects the 16 questions beginners ask most often. Each question is annotated with the corresponding technical points and common misconceptions; it is a volume of the "quick reference manual" kind.
 >
 > **[What Beginners Should Focus On]** It is recommended to read through this volume after finishing Volume 3 -- it can verify whether your understanding is on track (you can find a corresponding chapter for every question in Volume 3/4).
 
 ## Q1: I don't have a door number, so how do I enter the hotel to find someone? Isn't this an infinite loop?
 
-**A: It is not an infinite loop.** The door number is not issued at the hotel; you carry it with you before you even enter the door. In ZT-DSP, the door number (token hash) is obtained through out-of-band channels: QR code scanning, encrypted email, meeting in person, direct P2P, etc. If you did not bring a door number, the hotel front desk will not tell you anyone's room number -- this is not a bug, it is the bottom line of anonymity.
+**A: It is not an infinite loop.** The door number is not issued at the hotel; you carry it with you before you even enter the door. In isostress, the door number (token hash) is obtained through out-of-band channels: QR code scanning, encrypted email, meeting in person, direct P2P, etc. If you did not bring a door number, the hotel front desk will not tell you anyone's room number -- this is not a bug, it is the bottom line of anonymity.
 
 The flow is: ① Before going out, obtain the other party's door number H(Token_B) through an out-of-band channel -> ② At the hotel, show the front desk your own door number H(Token_A) and the other party's door number H(Token_B) -> ③ The front desk checks the match and sends you into the same room.
 
-> **Common Misconception**: "without a door number you cannot get in the door" ≠ a flawed protocol. Picture this scenario: this is like "without an address you cannot send a letter" -- it is not a problem with the post office, but an essential requirement of communication. ZT-DSP explicitly does not do "stranger discovery" (Q4); this is a feature, not a bug. (The above is a scenario, not a technical description)
+> **Common Misconception**: "without a door number you cannot get in the door" ≠ a flawed protocol. Picture this scenario: this is like "without an address you cannot send a letter" -- it is not a problem with the post office, but an essential requirement of communication. isostress explicitly does not do "stranger discovery" (Q4); this is a feature, not a bug. (The above is a scenario, not a technical description)
 
 ## Q2: Then where does my door number come from? What exactly does the TCA do?
 
@@ -1174,13 +1175,13 @@ If no TCA existed, anarchic clients would destroy the entire protocol ecosystem:
 
 > **Common Misconception**: TCA ≠ central server. The TCA only does "issuing + revocation"; it does not participate in communication, does not hold keys, and is not on the data transmission path. Picture this scenario: comparing it to a "passport-issuing country" is more accurate -- the passport country knows you have a passport, but does not know where you took the passport or whom you met. (The above is a scenario, not a technical description)
 
-## Q4: If my friend and I have never met and cannot exchange door numbers out-of-band, can we still use ZT-DSP?
+## Q4: If my friend and I have never met and cannot exchange door numbers out-of-band, can we still use isostress?
 
-**A: No direct connection.** The core design of ZT-DSP is "no presupposed trust, no presupposed connection" -- if you do not know the other party's door number, the protocol will not help you "discover" them.
+**A: No direct connection.** The core design of isostress is "no presupposed trust, no presupposed connection" -- if you do not know the other party's door number, the protocol will not help you "discover" them.
 
-Alternatives: forward the door number through a trusted intermediary (a mutual friend); publish the door number on a public bulletin board and wait for the other party to make contact; use a third-party application-layer protocol that supports group discovery, establish initial trust on it, and then descend to ZT-DSP for encrypted communication.
+Alternatives: forward the door number through a trusted intermediary (a mutual friend); publish the door number on a public bulletin board and wait for the other party to make contact; use a third-party application-layer protocol that supports group discovery, establish initial trust on it, and then descend to isostress for encrypted communication.
 
-**ZT-DSP is a pipe, not a yellow pages directory.** It is responsible for letting people who already know each other communicate securely, not for letting strangers discover each other.
+**isostress is a pipe, not a yellow pages directory.** It is responsible for letting people who already know each other communicate securely, not for letting strangers discover each other.
 
 ## Q5: Can the server see which sub-channel I am speaking in?
 
@@ -1202,7 +1203,7 @@ The server knows "there are devices communicating in this room", but not "which 
 
 The TCA exists to prevent anarchic abuse. With a TCA, the server can filter out "guests without a legitimate ID card" through a whitelist, protecting public-interest resources. But you can always choose: use multiple TCAs and do not lock yourself to a single authority; use P2P mode and bypass TCAs and servers entirely.
 
-> **Common Misconception**: "anonymity" ≠ "no one knows any information about you". ZT-DSP's anonymity is **layered anonymity**: each layer knows only the minimum information needed to perform its function (see the table above). Absolute, unconditional anonymity does not exist in the real world (see 5.5).
+> **Common Misconception**: "anonymity" ≠ "no one knows any information about you". isostress's anonymity is **layered anonymity**: each layer knows only the minimum information needed to perform its function (see the table above). Absolute, unconditional anonymity does not exist in the real world (see 5.5).
 
 ## Q7: What is a virtual room?
 
@@ -1231,7 +1232,7 @@ This is sustained lock: an attacker holding only ciphertext, even after intercep
 
 **A:** A common design adds a "collision mechanism" to Phase Two: both parties generate 1024 random numbers and exchange 32KB of hash values for comparison. This design is cryptographically redundant — both parties already hold the same PSK, and a deterministic derivation function necessarily yields the same output; exchanging hashes to verify adds neither security nor authentication.
 
-More importantly, the 32KB exchange brings problems such as traffic correlation (a strong fingerprint, which can be used to identify a ZT-DSP handshake), DoS amplification (a forged handshake request forces the server to forward a huge amount of hash data), and excessive latency (close to the performance limit on a 200ms-latency network). The protocol therefore omits any redundant collision phase and derives keys directly (X25519 + HKDF).
+More importantly, the 32KB exchange brings problems such as traffic correlation (a strong fingerprint, which can be used to identify an isostress handshake), DoS amplification (a forged handshake request forces the server to forward a huge amount of hash data), and excessive latency (close to the performance limit on a 200ms-latency network). The protocol therefore omits any redundant collision phase and derives keys directly (X25519 + HKDF).
 
 > **Common Misconception**: "exchanging hashes for verification" sounds more secure (one extra check), but is in fact **redundant and harmful**: what both parties derive is the result of the same deterministic function, so verifying it amounts to "verifying yourself with yourself"; and the 32KB traffic signature instead gives attackers a chance to identify the protocol. Security design is not "the more checks the better", but "every step has independent value".
 
@@ -1241,7 +1242,7 @@ More importantly, the 32KB exchange brings problems such as traffic correlation 
 
 ## Q12: Can I modify the protocol's parameters?
 
-**A: Yes, and this is a core feature of the protocol design.** ZT-DSP is an open protocol, and all parameters can be modified freely: random number length (16-bit, 64-bit, 256-bit, 1024-bit), generation rate (1 per second, 128 per second, 1024 per second, no software upper limit), time window (10 seconds, 30 seconds, 60 seconds, custom), encryption algorithm (AES-GCM, ChaCha20-Poly1305, or another algorithm you trust). The reference client also provides two additional adjustable items: the **timestamp window** (`--time-window`, default 30 seconds, configurable per-peer; a narrow window gives high security, a wide window gives high availability) and **random padding/timing jitter** (`--padding-min/max`, `--jitter`, off by default).
+**A: Yes, and this is a core feature of the protocol design.** isostress is an open protocol, and all parameters can be modified freely: random number length (16-bit, 64-bit, 256-bit, 1024-bit), generation rate (1 per second, 128 per second, 1024 per second, no software upper limit), time window (10 seconds, 30 seconds, 60 seconds, custom), encryption algorithm (AES-GCM, ChaCha20-Poly1305, or another algorithm you trust). The reference client also provides two additional adjustable items: the **timestamp window** (`--time-window`, default 30 seconds, configurable per-peer; a narrow window gives high security, a wide window gives high availability) and **random padding/timing jitter** (`--padding-min/max`, `--jitter`, off by default).
 
 But note: **the client and the server must use the same parameters to communicate.** If the server declares "I only accept 128 64-bit random numbers per second" while your client sends "1024 16-bit random numbers per second", the server will directly silently discard your packet, with no error message at all. This is the role of the "library": the server declares its parameter dialect in its library, and the client must fetch the library and match its parameters.
 
@@ -1249,15 +1250,15 @@ But note: **the client and the server must use the same parameters to communicat
 
 ## Q13: What is "silent drop"? Why does it not return an error when parameters do not match?
 
-**A: Silent Drop is the core of ZT-DSP's adversarial architecture.** If the server returned a different error code for every kind of error (such as "length error" or "format error"), an attacker could infer from the differences in error codes: "this port is running ZT-DSP, and its parameters are like this..."
+**A: Silent Drop is the core of isostress's adversarial architecture.** If the server returned a different error code for every kind of error (such as "length error" or "format error"), an attacker could infer from the differences in error codes: "this port is running isostress, and its parameters are like this..."
 
 Silent drop eliminates this information leak. Whatever the attacker sends, the server behaves like a "closed port" -- with no response at all. This makes large-scale protocol probing extremely difficult.
 
 > **Common Misconception**: silent drop means "no error reported" when you troubleshoot, but this does not mean the protocol is poorly designed -- it is a **deliberate** stealth mechanism. When debugging, check the parameters item by item against the library file (length/rate/window/algorithm), or temporarily enable debug mode in a test environment (be sure to turn it off in production).
 
-## Q14: Can I use ZT-DSP to do illegal things? Will the protocol assist me?
+## Q14: Can I use isostress to do illegal things? Will the protocol assist me?
 
-**A: ZT-DSP is a communication protocol. Like TCP/IP, HTTP, and SMTP, it is a neutral technical tool.** The protocol itself neither encourages nor prevents any particular use. It can be used for privacy-protecting personal communication, secure contact between journalists and sources, encrypted communication within an enterprise, and academic research and technical experiments; it can also be abused for spreading illegal content or coordinating criminal activity.
+**A: isostress is a communication protocol. Like TCP/IP, HTTP, and SMTP, it is a neutral technical tool.** The protocol itself neither encourages nor prevents any particular use. It can be used for privacy-protecting personal communication, secure contact between journalists and sources, encrypted communication within an enterprise, and academic research and technical experiments; it can also be abused for spreading illegal content or coordinating criminal activity.
 
 **A protocol cannot distinguish between legitimate and illegitimate uses. Responsibility for the user's behavior rests with the user, not with the protocol designer or implementer.** At the same time, note: technical anonymity is not legal anonymity, and cryptographic security is not operational security (OPSEC). In extreme scenarios, the reliable approach is not to transmit over any channel at all.
 
@@ -1301,6 +1302,7 @@ This proposal **must never be adopted**. It has three independent flaws, each fa
 Three steps in the current implementation are **not omittable** (see F.5): a fresh genuine random value `next_seed` per packet; the key chain rolled forward by that random value; immediate erasure of the old key. Convenient seeking, storage savings, and computational savings are not grounds for adopting this scheme.
 
 > **Common Misconception**: anything that can be computed is not a key. Any key derivable from the PSK or from another key is equivalent to no key at all.
+
 # Appendix B: Parameter Configuration Reference
 
 > **[Appendix Guide]** All parameters are **reference values and are all freely modifiable**. Both communicating parties must use the same parameters. For the boundaries and risks of parameter modification, see Q12.
@@ -1344,7 +1346,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *ZT-DSP Protocol General Guide* (document version 1.1.0; parameters unchanged since 1.0.1) |
+| Governing document | *isostress Protocol General Guide* (document version 1.0.0) |
 
 ### Advanced Server (moderate customization)
 
@@ -1357,7 +1359,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *ZT-DSP Protocol General Guide* (document version 1.1.0; parameters unchanged since 1.0.1) |
+| Governing document | *isostress Protocol General Guide* (document version 1.0.0) |
 
 ### High-Anonymity Server (heavy customization)
 
@@ -1370,7 +1372,7 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 | Key exchange | X25519 |
 | Hash algorithm | SHA-3-256 |
 | Token signature | Ed25519 |
-| Governing document | *ZT-DSP Protocol General Guide* (document version 1.1.0; parameters unchanged since 1.0.1) |
+| Governing document | *isostress Protocol General Guide* (document version 1.0.0) |
 
 # Appendix C: Minimal Implementation Checklist
 
@@ -1378,20 +1380,23 @@ Three steps in the current implementation are **not omittable** (see F.5): a fre
 
 ## C.1 Implementer Self-Check
 
-Before releasing your ZT-DSP implementation, confirm the following:
+Before releasing your isostress implementation, confirm the following:
 
 - [ ] **Configurable parameters**: all parameters (random number length, rate, window, etc.) are freely modifiable, with no hard-coded mandatory values (4.2.1)
-- [ ] **Silent Drop implementation**: packets that do not match the parameters are dropped directly, with no error code returned and no logging (4.3)
+- [ ] **Silent Drop implementation**: packets that do not match the parameters are dropped directly, with no error code returned and no externally facing logging (4.3; local stderr diagnostics and local counters are excepted, see 5.6)
+- [ ] **Silent hold · duration bound**: record the declared hold duration, hard ceiling ≤ 15 seconds (H.3)
+- [ ] **Silent hold · concurrency bound**: record the declared maximum number of connections concurrently in silent hold (H.3)
+- [ ] **Silent hold · buffer bound**: record the declared per-connection buffer size bound; on reaching a bound, reclaim in hold-entry order without sending any bytes to the peer (H.3)
 - [ ] **Forward secrecy**: use X25519 ephemeral key exchange; the ephemeral private key is zeroed after the session ends (4.2.2 step 5)
 - [ ] **Authenticated encryption**: use AES-256-GCM or ChaCha20-Poly1305; do not design your own encryption (4.2.4)
-- [ ] **Sequence number check**: strictly increasing; packets equal to or smaller than the last received value are dropped (4.2.3)
+- [ ] **Sequence number check**: strictly increasing; packets equal to or smaller than the last received value are **dropped, and the session is terminated** (4.2.3)
 - [ ] **GCM nonce construction**: nonce = 4-byte zero prefix ‖ 8-byte big-endian sequence number (12B total); never reused under the same key (4.2.4)
 - [ ] **AAD content**: AAD = session ID ‖ sequence number (8B big-endian), 40 bytes total; routing fields are visible but tamper-proof (4.2.4)
 - [ ] **Timestamp window**: configurable (documented default 30 seconds); out-of-window packets **still rotate the EK and advance the sequence number, and only the plaintext is dropped**, preventing ratchet desynchronization (4.2.4)
 - [ ] **Bidirectional Token Hash verification**: after decryption, verify that dst_hash in the packet == the local identity and src_hash == the peer identity (4.2.4)
 - [ ] **Confirmation tag exchange**: Phase 3 exchanges HMAC confirmation tags (CONFIRM-INIT/RESP), and the transcript binds both sides' Phase 1 raw frames + session salt + both public keys (4.2.3)
 - [ ] **Root key erasure**: after Phase 3 confirms successfully, the MK, Anchor, and PSK are all zeroed, and the session retains only the EK/session ID/sequence number (4.2.3)
-- [ ] **Ratchet rotation**: each packet carries next_seed, new_EK = HKDF(current EK ‖ next_seed, "ZT-DSP-EK-ROTATE"); rotate before sending (consume state first, then send) (4.2.5)
+- [ ] **Ratchet rotation**: each packet carries next_seed, new_EK = HKDF(current EK ‖ next_seed, "ISOSTRESS-EK-ROTATE"); rotate before sending (consume state first, then send) (4.2.5)
 - [ ] **Heartbeat keep-alive**: during the data phase, periodically send empty-payload packets (reference client: 30 seconds) to detect half-open connections (4.2.5)
 - [ ] **Token verification**: TCA signature verification + CRL query + Authorization Code whitelist (if required) (4.1.2/4.1.3)
 - [ ] **Waiting-pool management**: cleared on 30-second timeout, registry entries are mutually invisible, no broadcasting (4.2.1)
@@ -1400,7 +1405,7 @@ Before releasing your ZT-DSP implementation, confirm the following:
 
 ## C.2 User Self-Check
 
-Before using ZT-DSP, confirm the following:
+Before using isostress, confirm the following:
 
 - [ ] Understanding Out-of-Band Exchange: you have obtained the peer's house number through a secure channel (1.3/3.4)
 - [ ] Understanding PSK protection: you keep the PSK yourself; use `--psk-file` with 0600 permissions (4.1.4)
@@ -1410,7 +1415,7 @@ Before using ZT-DSP, confirm the following:
 
 # Appendix F: Byte-by-Byte On-Wire Protocol Specification
 
-> **[Appendix Guide]** Volume 4 explains "what the protocol does"; this appendix explains "what it actually looks like on the wire". This appendix describes the precise byte layout of **all four on-wire frame types** of ZT-DSP, the common encoding conventions, the limit constants, and the Silent Drop behavior contract. **Any two implementations claiming ZT-DSP compatibility must produce network traffic identical to this appendix at the byte level** — otherwise the Phase 3 confirmation tag verification will fail immediately.
+> **[Appendix Guide]** Volume 4 explains "what the protocol does"; this appendix explains "what it actually looks like on the wire". This appendix describes the precise byte layout of **all four on-wire frame types** of isostress, the common encoding conventions, the limit constants, and the Silent Drop behavior contract. **Any two implementations claiming isostress compatibility must produce network traffic identical to this appendix at the byte level** — otherwise the Phase 3 confirmation tag verification will fail immediately.
 >
 > **[Points of Interest for Beginners]** This appendix is an "engineering blueprint"; absolute beginners do not need to read it through. It is suggested to first read the four common conventions in F.0 to build intuition, and then consult each section as needed.
 >
@@ -1470,7 +1475,7 @@ The following conventions apply to **all four frame types**:
 
 **On-wire contract of the access nonce**:
 
-- Derivation: `nonce = HKDF-SHA3-256(IKM = PSK, salt = local fresh random salt (32B), info = "ZT-DSP-PHASE1-NONCE-v3", output length = random_len / 8 bytes)`
+- Derivation: `nonce = HKDF-SHA3-256(IKM = PSK, salt = local fresh random salt (32B), info = "ISOSTRESS-PHASE1-NONCE-v3", output length = random_len / 8 bytes)`
 - **The salt used for derivation is not transmitted with the frame** (it is newly generated locally for each handshake). Therefore **the core protocol has only one peer-side check: `len(nonce) × 8 == the random_len declared by the peer`** — the peer cannot (and does not attempt to) recompute that random number; the verification of "whether it was derived from the correct PSK" is borne indirectly by the confirmation tag (wrong PSK → wrong MK → the tag must be wrong). Statistical-level checks (random number quality enhancement, etc.) are the responsibility of the extension layer.
 - Each side sends its own nonce, and the two nonces are mutually independent.
 
@@ -1483,10 +1488,10 @@ The following conventions apply to **all four frame types**:
 Section 4.3 explained the **idea** of Silent Drop; this section gives its **behavior contract** — the five elements of "strict silence", none of which may be missing:
 
 1. **Send no bytes at all**. This includes error responses, empty packets, and any application-layer response beyond the TCP layer.
-2. **Do not actively close the connection**. Closing a connection (FIN/RST) is itself an observable signal — an attacker can use it to distinguish "rejected because of a parameter mismatch" from "nobody is listening on the port at all".
+2. **Do not actively close the connection (see H.3 for the silent hold duration)**. Closing a connection (FIN/RST) is itself an observable signal — an attacker can use it to distinguish "rejected because of a parameter mismatch" from "nobody is listening on the port at all".
 3. **Hang, read, and discard subsequent data**: continuously `recv` in 8192-byte blocks and discard them until the peer closes or the hold duration is exhausted. The hold duration defaults to the handshake timeout (**15 seconds, configurable**; for server-embedded scenarios it is advisable to reduce it and combine it with per-IP rate limiting, to prevent malicious connections from occupying connection slots for a long time).
 4. **Diagnostics go only to the local stderr**: the discard reason (such as "Phase 1 parse failed" or "parameter mismatch: random_len") is printed for the local operator to see, **never enters the network side**, and **MUST NOT** be connected to an externally facing logging system.
-5. **Network appearance is indistinguishable from a "closed port"**: from the attacker's perspective, a scan against a nonexistent service and a ZT-DSP server with wrong parameters should look like the same kind of "silence".
+5. **Network appearance is indistinguishable from a "closed port"**: from the attacker's perspective, a scan against a nonexistent service and an isostress server with wrong parameters should look like the same kind of "silence".
 
 **Complete trigger-point table** (responder's perspective; any single trigger immediately enters strict silence):
 
@@ -1496,7 +1501,7 @@ Section 4.3 explained the **idea** of Silent Drop; this section gives its **beha
 | Phase 2 | Frame read failure or timeout; public-key length ≠ 32B; DH computation failure (**low-order point public key** such as all-zero, u=1, or **all-zero DH output**) |
 | Phase 3 | Confirmation frame read failure, length ≠ 32B, or timeout |
 
-**Initiator asymmetry**: the initiator has already actively sent a frame in Phase 1, so the peer already knows it exists; therefore, when the initiator detects a failure it **actively disconnects and raises a local exception** (such as ZTDSPParamError) without breaking silence. The silence constraint applies only to "the side that waits passively".
+**Initiator asymmetry**: the initiator has already actively sent a frame in Phase 1, so the peer already knows it exists; therefore, when the initiator detects a failure it **actively disconnects and raises a local exception** (such as ISOSTRESSParamError) without breaking silence. The silence constraint applies only to "the side that waits passively".
 
 **Timing consistency**: the silent path **MUST NOT** produce a measurable response-time difference from the normal path (the silent path has no response anyway; what is meant here is that the "hold duration" should not vary with the error type).
 
@@ -1539,8 +1544,8 @@ transcript = Phase One initiator raw frame (including all length prefixes, byte 
            ‖ initiator ephemeral public key (32 bytes)
            ‖ responder ephemeral public key (32 bytes)
 
-tag_init = HMAC-SHA3-256(MK, "ZT-DSP-CONFIRM-INIT-v3" ‖ transcript)
-tag_resp = HMAC-SHA3-256(MK, "ZT-DSP-CONFIRM-RESP-v3" ‖ transcript)
+tag_init = HMAC-SHA3-256(MK, "ISOSTRESS-CONFIRM-INIT-v3" ‖ transcript)
+tag_resp = HMAC-SHA3-256(MK, "ISOSTRESS-CONFIRM-RESP-v3" ‖ transcript)
 ```
 
 > **The transcript contains no version or protocol identifier**: there is no version string in the concatenated material. Whether the peer follows the same document is reflected by the `tag_init` / `tag_resp` verification — a mismatch means the tags do not match.
@@ -1550,7 +1555,7 @@ tag_resp = HMAC-SHA3-256(MK, "ZT-DSP-CONFIRM-RESP-v3" ‖ transcript)
 1. The initiator sends the `tag_init` frame
 2. The responder reads that frame — **only frame-level errors** (read failure / length ≠ 32 / timeout) trigger strict silence
 3. The responder sends the `tag_resp` frame (note: at this point it has **not yet** verified the peer's tag content)
-4. Each side checks the peer's tag using **constant-time comparison**; if either side does not match → erase all key material → handshake failure (both the initiator and the responder report ZTDSPSecurityError)
+4. Each side checks the peer's tag using **constant-time comparison**; if either side does not match → erase all key material → handshake failure (both the initiator and the responder report ISOSTRESSSecurityError)
 
 > **Common misconception**: "the responder sends its own tag only after verification passes" is a common misreading and does not match the reference implementation. The responder "sends first, compares after". This is not a security hole: the tags are each side's own HMAC, and an attacker cannot impersonate either side by "sending a correct tag first" — it has no MK and cannot compute either side's correct tag; whichever side compares wrong immediately erases the keys and terminates.
 
@@ -1589,22 +1594,22 @@ tag_resp = HMAC-SHA3-256(MK, "ZT-DSP-CONFIRM-RESP-v3" ‖ transcript)
 
 **AAD**: `session_id ‖ seq (8B uint64 BE)`, **40 bytes** in total (session_id 32B + seq 8B). The routing fields are "visible but tamper-proof". **The AAD contains no version or protocol identifier**.
 
-**Receive verification pipeline (fixed order; a step terminates processing unless it is marked "Special")**:
+**Receive verification pipeline (fixed order; any step that fails terminates processing immediately)**:
 
 | Step | Verification | Meaning of failure | Consequence of failure |
 |------|------|----------|----------|
-| 1 | `seq > seq_recv` (seq_recv is initially −1) | Replay or out-of-order old packet | **Special**: silently discard the packet, the session continues; do not advance seq_recv, do not reply |
+| 1 | `seq > seq_recv` (seq_recv is initially −1) | Replay or out-of-order old packet | Session termination (security error) |
 | 2 | `session_id == local session ID` | Cross-talk or residual packet from an old session | Session termination (security error) |
 | 3 | GCM decryption and authentication (AAD participates in authentication) | Tampering or key mismatch | Session termination (security error) |
 | 4 | Payload length ≥ 105B | Truncated structure | Session termination (protocol error) |
 | 5 | `fmt ∈ {0x00, 0x01}` | Unknown payload format | Session termination (security error) |
 | 6 | Structural length consistency: fixed header + tail (including pad_len ≤ 2048) does not exceed the total payload length | Out-of-bounds/negative-slice attack | Session termination (protocol error) |
 | 7 | Bidirectional token hash verification: dst in the packet == local identity, src == peer identity | Traffic reflection / cross-talk / identity forgery | Session termination (security error) |
-| 8 | Timestamp window: `|ts − ts_ref| ≤ time_window`, where `ts_ref` is the timestamp of the first authenticated packet in the session | Authenticated but too far from the reference point | **Special**: does not terminate the session — it still rotates EK and advances seq_recv, discarding only the plaintext (to prevent ratchet desynchronization, see 4.2.4 receive flow step 5) |
+| 8 | Timestamp window: `|now − ts| ≤ time_window` | Authenticated but out-of-window replay/delayed packet | **Special**: does not terminate the session — it still rotates EK and advances seq_recv, discarding only the plaintext (to prevent ratchet desynchronization, see 4.2.4 receive flow step 5) |
 
-> **The meaning of step 1**: this check is replay protection. Loss and reordering within a session are guaranteed by the transport layer not to happen (see 5.6). **From 1.1, a repeated or too-old sequence number no longer terminates the session**: the receiver silently discards the packet, does not advance `seq_recv` and replies with no bytes, and the session continues. This changes only the receiver's handling of a repeated packet; the wire format is untouched.
+> **The meaning of step 1**: this check is replay protection. Loss and reordering within a session are guaranteed by the transport layer not to happen (see 5.6). An implementation MUST NOT turn it into "drop the old packet, keep the session" — that is a protocol change and must ship with a version bump.
 
-**Sender-side state roll-forward ("consume state first, attempt to send after")**: Before encrypted sending, the following are completed in order — generate next_seed → `new_EK = HKDF-SHA3-256(EK ‖ next_seed, info = "ZT-DSP-EK-ROTATE")` → erase the old EK and swap in new_EK → `seq += 1`. Therefore, when sending fails the key has already rolled forward and the session is unrecoverable (reconnection is the only option), but an attacker can never exploit "send failure leaving the state un-rolled-forward" to replay.
+**Sender-side state roll-forward ("consume state first, attempt to send after")**: Before encrypted sending, the following are completed in order — generate next_seed → `new_EK = HKDF-SHA3-256(EK ‖ next_seed, info = "ISOSTRESS-EK-ROTATE")` → erase the old EK and swap in new_EK → `seq += 1`. Therefore, when sending fails the key has already rolled forward and the session is unrecoverable (reconnection is the only option), but an attacker can never exploit "send failure leaving the state un-rolled-forward" to replay.
 
 ## F.6 Summary Table of Upper-Bound Constants
 
@@ -1651,16 +1656,16 @@ The implementation must build in the following hard upper bounds; **all upper-bo
 
 ## G.3 Sending Timing Jitter
 
-- **Configuration**: `jitter ≥ 0` (seconds), published CLI `--jitter`, default 0 (off).
+- **Configuration**: `jitter ≥ 0` (seconds), reference CLI `--jitter`, default 0 (off).
 - **Behavior**: each data packet waits a random duration in the interval `[0, jitter)` after encryption is complete and before it is actually written to the socket.
 - **Semantics**: purely **local sending behavior**; it changes no wire bytes at all; the peer is unaware and needs no cooperation.
 - **Design boundary**: jitter smooths only the "sending instant", not the "packet rate distribution" — when defense against statistical rhythm analysis is needed, it should be combined with the heartbeat baseline (G.5).
 
 ## G.4 Timestamp Window
 
-- **Configuration**: `time_window > 0` (seconds), published CLI `--time-window`, default 30; **configurable per peer** (the same client can use different windows for different peers).
-- **Semantics**: the receiver records the timestamp of the **first GCM-authenticated packet** in the session as the reference point `ts_ref` (that packet only sets the reference and is not itself judged); every later packet is checked with `|in-packet timestamp − ts_ref| ≤ time_window × 1000` (comparison in milliseconds). The window measures **drift**, not absolute offset, so the two ends **do not need synchronised clocks**. Delivery is normal within the window; **a packet that is out of window but has already passed GCM authentication still performs the ratchet rotation and the sequence-number advance, and only the plaintext is discarded** (see F.5 pipeline step 8) — this "availability completion" is the key to preventing permanent desynchronization when "the sender has rotated but the receiver has not", and **implementers must not omit it**.
-- **Trade-off**: a narrow window (e.g. 10s) → rejects delayed replay packets faster, but requires low network jitter (the baseline is the session's first packet, so clock skew between the two sides no longer enters this trade-off); a wide window (e.g. 60s) → tolerates slow networks and jitter, at the cost that replay packets have a longer "validity period". The core line of replay defense is always the sequence number (F.5 step 1); the timestamp window is the second line.
+- **Configuration**: `time_window > 0` (seconds), reference CLI `--time-window`, default 30; **configurable per peer** (the same client can use different windows for different peers).
+- **Semantics**: the receiver verifies `|current time − in-packet timestamp| ≤ time_window × 1000` (comparison in milliseconds). Delivery is normal within the window; **a packet that is out of window but has already passed GCM authentication still performs the ratchet rotation and the sequence-number advance, and only the plaintext is discarded** (see F.5 pipeline step 8) — this "availability completion" is the key to preventing permanent desynchronization when "the sender has rotated but the receiver has not", and **implementers must not omit it**.
+- **Trade-off**: a narrow window (e.g. 10s) → rejects delayed replay packets faster, but requires small clock skew between the two sides and low network latency; a wide window (e.g. 60s) → tolerates slow networks and clock drift, at the cost that replay packets have a longer "validity period". The core line of replay defense is always the sequence number (F.5 step 1); the timestamp window is the second line.
 
 ## G.5 Heartbeat as Baseline Traffic
 
@@ -1799,11 +1804,13 @@ The implementation must build in the following hard upper bounds; **all upper-bo
 | Half-packet timeout | Same as above | Deadline exhausted after some bytes have been read | — | **Forcibly close the socket**: frame synchronization is already broken and cannot be recovered; distinct from an "initial timeout" (not a single byte read, so the upper layer may safely retry) |
 | Data-phase timeout | 60s | After the handshake completes | Session end | Report a timeout and clean up the session (the 30s heartbeat stays inside the 60s window) |
 | Heartbeat interval | 30s | The previous heartbeat (or session establishment) | The next heartbeat | Send failure → determine a half-open connection and clean up the session |
-| Silent suspension duration | 15s (= handshake timeout, configurable) | Entering silent drop | The peer closes or the duration is exhausted | Close the connection (it has already been "silent" for 15s at this point) |
+| Silent suspension duration | 15s (= handshake timeout, configurable, range (0, 15s]) | Entering silent drop | The peer closes or the duration is exhausted | Silent drop with the connection kept open: during the hold it must not be closed actively and no further bytes may be sent; once the hold ends, normal close flow applies (see the resource bound below) |
 | Waiting-pool timeout (server side) | 30s | Entering the waiting pool | Successful pairing or timeout | The registry entry is cleared to prevent memory occupation |
 | Timestamp window | 30s (configurable per peer) | — | — | Not a timer but a verification threshold; for out-of-window packet handling see F.5 step 8 |
 
 > **Common misconception**: the key to Slowloris protection is not "the number 15 seconds" but **how the deadline is shared**. If every `recv` enjoys its own independent 15-second timeout, an attacker dragging out a single frame can stretch reading the 4-byte length field to 60 seconds; with a shared deadline, no matter how the peer dribbles, the whole frame budget is only 15 seconds.
+
+> **Resource bound (normative)**: silent holding is not unbounded occupancy. An implementation must declare three bounds per held connection -- hold duration (range (0, 15s], hard ceiling 15s not relaxable), the number of connections concurrently in silent hold, and the per-connection buffer size; when a bound is reached, connections are reclaimed in hold-entry order, and the reclamation action must not send any bytes to the peer. The implementation declares the three bound values and records their actual values in C.1. This rule constrains the **responder's** silent path only; the initiator's other failure paths close actively per H.4 (`force_close`), and the two do not conflict.
 
 ## H.4 Error Handling Matrix (Phase × Failure → Behavior of Both Sides)
 
@@ -1815,7 +1822,7 @@ The implementation must build in the following hard upper bounds; **all upper-bo
 | Phase Two | DH failure (low-order point, all-zero output) | Disconnect + erase + cryptographic error (the initiator has already sent its frame) | **Strict silence** (DH is front-loaded before sending) |
 | Phase Three | Peer confirmation frame error / timeout | Disconnect + erase + timeout error | **Strict silence** |
 | Phase Three | Tag content mismatch | Constant-time comparison fails → **erase all keys** + security error, disconnect | Same as the left (both sides compare independently and each fails separately) |
-| Data phase | seq repeated/regressed (replay) | — (an error on the peer side triggered by the sender) | **Do not terminate**: silently discard the packet, do not advance seq_recv, do not reply (see F.5 step 1) |
+| Data phase | seq repeated/regressed (replay) | — (an error on the peer side triggered by the sender) | Intercepted before the constant-time path → **session termination + erase**, security error |
 | Data phase | session_id mismatch / GCM authentication failure / unknown fmt / structural contradiction / bidirectional token hash verification failure | Same as above (all these checks happen on the receiving side) | **Session termination + erase** (security or protocol error) |
 | Data phase | Timestamp out of window (but GCM already passed) | — | **Do not terminate**: rotate EK, advance seq_recv, discard the plaintext (return an empty plaintext) |
 | Data phase | Send failure (disconnect / BrokenPipe / OSError) | **The session is irreversibly desynchronized**: the keys have already rolled forward and cannot be reclaimed → clean up the session and prompt for reconnection | The peer will terminate due to a read failure/timeout |
@@ -1827,24 +1834,24 @@ The implementation must build in the following hard upper bounds; **all upper-bo
 Implementers should converge local errors into **typed exceptions**, so that the upper layer can distinguish "should retry" from "should terminate" (the following is the exception tree of the reference client; other implementations are advised to keep the same classification granularity):
 
 ```plain
-ZTDSPError (protocol exception base class)
-├── ZTDSPSecurityError
-│   └── Meaning: security event — PSK mismatch, anchor confirmation failure, session ID mismatch,
+ISOSTRESSError (protocol exception base class)
+├── ISOSTRESSSecurityError
+│   └── Meaning: security event — PSK mismatch, anchor confirmation failure, replay/out-of-order, session ID mismatch,
 │       AEAD decryption failure, unknown payload format, bidirectional token hash verification failure
 │   └── Handling: always terminate the session and erase the keys; no retry, no ignoring
-├── ZTDSPParamError
+├── ISOSTRESSParamError
 │   ├── Meaning: parameter problem — the two sides' parameters do not match, illegal parameter value
 │   └── Handling: failure during the handshake; the initiator should check the parameters before disconnecting and retrying
 │   └── SilentDropError (its subclass)
 │       └── Meaning: **this side has entered strict silence** (F.2) — this is a "signal" rather than an ordinary error:
-│           after the upper layer catches it, it must never send any further data to the peer or close the connection (the silent path has taken over)
-├── ZTDSPProtocolError
+│           after the upper layer catches it, during the silent hold it must not send any further data to the peer or close the connection (the silent path has taken over; once the hold ends, normal close flow per H.3 applies)
+├── ISOSTRESSProtocolError
 │   └── Meaning: frame format problem — length over the limit, invalid JSON, structural length contradiction, nonce length mismatch
 │   └── Handling: during the handshake, follow silence/disconnect according to the role; during the data phase, terminate the session
-├── ZTDSPCryptoError
+├── ISOSTRESSCryptoError
 │   └── Meaning: cryptographic failure — weak DH output (low-order point), derivation failure, unsupported algorithm
 │   └── Handling: same as a security event (a low-order point is an attack)
-└── ZTDSPTimeoutError
+└── ISOSTRESSTimeoutError
     └── Meaning: timeout — handshake timeout, total read deadline exhausted, half-packet timeout, no packet in the data phase
     └── Handling: a half-packet timeout must be accompanied by a forced socket close; the rest follows the H.4 matrix
 ```
@@ -1909,7 +1916,7 @@ Every hard upper bound is stated in **F.6**. An implementation MUST enforce each
 
 ## J.1 Where the vectors live
 
-`test-vectors/vectors.json` in this repository (the public copy is the source of record; the file of the same name in `ZT-DSP-client` is a working copy). Ten vectors: four reproduced from RFC 5869 Appendix A.1 and A.3 and RFC 7748 section 6.1, one produced by OpenSSL 3.5.9 for cross-checking, and five generated by `test-vectors/generate_vectors.py`.
+`test-vectors/vectors.json` in this repository (the public copy is the source of record; the file of the same name in `isostress-client` is a working copy). Ten vectors: four reproduced from RFC 5869 Appendix A.1 and A.3 and RFC 7748 section 6.1, one produced by OpenSSL 3.5.9 for cross-checking, and five generated by `test-vectors/generate_vectors.py`.
 
 ## J.2 Format
 
@@ -1923,23 +1930,23 @@ The file is a JSON object carrying `schema`, `note`, `labels` and `vectors`. Eac
 
 ## J.4 Implementation identifiers
 
-Format: `<LANGUAGE>_<version>[-<YYYYMMDD>]`, for example the release `ZT-DSP_PY-1.0.0` or the development build `ZT-DSP_PY-1.0.0-20261024`.
+Format: `<LANGUAGE>-<version>[-<YYYYMMDD>]`, for example the release `ISOSTRESS_PY-1.0.0` or the development build `ISOSTRESS_PY-1.0.0-20261024`.
 
-- The language token is uppercase ASCII; the separator is a single underscore.
+- The language token is uppercase ASCII; a hyphen separates the language token from the version.
 - The date segment appears only in builds that have not reached a release candidate. Release candidates and releases drop it and share the same identifier.
 - `<version>` contains digits and dots only (the form `<major>.<minor>.<revision>`) and no hyphen; when the date segment is present, it is the trailing eight digits.
 - The date is the commit date of the source the build is made from, UTC+8. When no git checkout exists, use the source package's release date.
 - Package metadata keeps a plain numeric version without a date segment.
 - The version is the Program Version: the program's own version, unrelated to the document version. The document version the program aligns with is declared separately (see 0.1).
-- An implementation MUST report its identifier from its `--version` output, in the form `<identifier> (docs <document version>)`. Example: `ZT-DSP_PY-1.0.0-20261024 (docs 1.1.0)`.
+- An implementation MUST report its identifier from its `--version` output, in the form `<identifier> (docs <document version>)`. Example: `ISOSTRESS_PY-1.0.0-20261024 (docs 1.0.0)`.
 - The document version does not enter the wire format: neither the Phase One parameter JSON nor the Phase Four AAD contains a version field. When the two sides' document versions differ, the symptom is a parameter mismatch, a confirmation-tag failure or a GCM decryption failure, not a "version mismatch" error.
 
 ## J.5 Registry
 
 | Identifier | Scope |
 |---|---|
-| `ZT-DSP_PY-1.0.0` | Core protocol, Volume 4. Extension modules are not implemented |
-| `ZT-DSP_RS-1.0.0` | Core protocol, Volume 4. Extension modules are not implemented |
+| `ISOSTRESS_PY-1.0.0` | Core protocol, Volume 4. Extension modules are not implemented |
+| `ISOSTRESS_RS-1.0.0` | Core protocol, Volume 4. Extension modules are not implemented |
 
 A new implementation is added to this table by a pull request to this repository. An identifier that is not in this table may still be conformant, but a claim of conformance that omits the identifier does not stand — see Part 0, section 0.3.
 

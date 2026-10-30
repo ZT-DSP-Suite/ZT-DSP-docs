@@ -24,7 +24,7 @@ A change is done only when all four gates are green.
 | Gate | Command and directory | Pass condition |
 |---|---|---|
 | Unit tests | `python -m pytest -q` in `isostress-client/isostress_py/` | No failures |
-| Test vectors | `python -m pytest -q tests/test_vectors.py` in the same directory | All pass |
+| Test vectors | `python -m pytest -q isostress_py/tests/test_vectors.py` in `isostress-client/` | All pass |
 | Cross-implementation interop | `python interop_test.py` in `isostress-client/isostress_rs/` | Last line reads `[[ok]] interop suite passed` |
 | Structural self-check | `python scripts/check.py` in `isostress-docs/` | All nine checks PASS |
 

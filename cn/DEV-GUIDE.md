@@ -24,7 +24,7 @@
 | 门 | 命令与工作目录 | 通过标准 |
 |---|---|---|
 | 单元测试 | `isostress-client/isostress_py/` 下 `python -m pytest -q` | 无 failed |
-| 测试向量 | 同目录 `python -m pytest -q tests/test_vectors.py` | 全通过 |
+| 测试向量 | `isostress-client/` 下 `python -m pytest -q isostress_py/tests/test_vectors.py` | 全通过 |
 | 跨实现互通 | `isostress-client/isostress_rs/` 下 `python interop_test.py` | 末行 `[[ok]] interop suite passed` |
 | 结构自检 | `isostress-docs/` 下 `python scripts/check.py` | 九项全 PASS |
 

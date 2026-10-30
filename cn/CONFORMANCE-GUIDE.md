@@ -45,7 +45,7 @@
 审计方需要能跑的二进制，因此构建算必做项，不属可选项。
 
 1. 构建参考实现：在 `isostress-client/isostress_rs/` 下跑 `cargo build --release`。
-2. 跑测试向量：在 `isostress-client/isostress_py/` 下跑 `python -m pytest -q tests/test_vectors.py`。
+2. 跑测试向量：在 `isostress-client/` 下跑 `python -m pytest -q isostress_py/tests/test_vectors.py`。
 3. 跑跨实现互通：在 `isostress-client/isostress_rs/` 下跑 `python interop_test.py`，看末行是否为 `[[ok]] interop suite passed`。
 4. 跑本仓结构自检：在 `isostress-docs/` 下跑 `python scripts/check.py`，看是否九项全 PASS。
 

@@ -45,7 +45,7 @@ The definitions come from Part 0, section 0.3. This document adds no requirement
 An auditor needs a runnable binary, so the build is mandatory rather than optional.
 
 1. Build the reference implementation: run `cargo build --release` in `isostress-client/isostress_rs/`.
-2. Run the test vectors: run `python -m pytest -q tests/test_vectors.py` in `isostress-client/isostress_py/`.
+2. Run the test vectors: run `python -m pytest -q isostress_py/tests/test_vectors.py` in `isostress-client/`.
 3. Run the cross-implementation interop test: run `python interop_test.py` in `isostress-client/isostress_rs/` and check that the last line reads `[[ok]] interop suite passed`.
 4. Run this repository's structural self-check: run `python scripts/check.py` in `isostress-docs/` and check that all nine checks report PASS.
 
